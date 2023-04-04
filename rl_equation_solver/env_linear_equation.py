@@ -11,6 +11,39 @@ from networkx.drawing.nx_pydot import graphviz_layout
 
 
 class Env(gym.Env):
+    """ Env for solving algebraic equations using RL. Warm up with simple equations
+
+        a x + b = 0
+
+        The agent starts at state = 1 and chooses
+        an action by combing operations and terms:
+
+        operations: (add, subtract, mulitple, divide, pow)
+        terms: (a,b,0,1)
+
+        action[i][j] = (operation[i], terms[j])
+
+        So taking action[0][0] = (add, a) in state 1 would results in
+
+        new_state = a + 1
+
+        Followed by an action (div,b) would result in
+
+        new_state = (a+1) / b
+
+        The states are represented using sympy and can be mapped
+        onto a directed acyclic graph (dag). These state representation
+        is what we will feed the RL agent.
+
+        The agent is rewarded if it reduces the "loss" of the 
+        equation defined as the length of the state graph -- intuitively,
+        the complexity of the state:
+
+        loss = num_nodes + num_leaves of state graph
+
+        If the agent finds the solution, the equation terminates.
+
+    """
 
     metadata = {"render.modes": ["human"]}
 
@@ -34,14 +67,14 @@ class Env(gym.Env):
         return state_string
         
     def _get_state(self):
-        x, a, b, c = symbols('x a b c')
+        x, a, b = symbols('x a b')
         self.state_string = -b
         self.state_vec = self.to_vec(-b)
         return self.state_string 
 
     def _get_equation(self):
-        """ Simple quadratic """
-        x, a, b, c = symbols('x a b c')
+        """ Simple linear equation"""
+        x, a, b, = symbols('x a b')
         eqn = a*x + b
         return eqn
 
@@ -50,9 +83,9 @@ class Env(gym.Env):
         
         illegal_actions = [[truediv,0]]
         
-        x, a, b, c = symbols('x a b c')
+        x, a, b = symbols('x a b')
         operations = [add, sub, mul, truediv, pow]
-        terms = [a,b,c,0,1]
+        terms = [a,b,0,1]
         actions = [[op,term] for op in operations for term in terms if [op,term] not in illegal_actions]
         self.action_dim = len(actions)
         
@@ -60,14 +93,14 @@ class Env(gym.Env):
         self.terms = terms
 
         # This is for the features at each node
-        keys = ['Add','Mul','Pow'] + ['x','a','b','c']
+        keys = ['Add','Mul','Pow'] + ['x','a','b']
         self.feature_dict = {key:-(i+2) for i,key in enumerate(keys)}
                 
         return actions
 
     def step(self, action: int):
 
-        # action is an index, get the physical actions it indexes
+        # action is 0,1,2,3, ...,  get the physical actions it indexes
         [operation,term] = self.actions[action]
         state_string = self.state_string 
         new_state_string = operation(state_string, term)
@@ -176,7 +209,7 @@ class Env(gym.Env):
         for n in graph_json['nodes']:
             del n['name']
 
-        # Make edge grahp
+        # Make edge graph
         graph = json_graph.node_link_graph(graph_json, directed=True, multigraph=False)
         edge_vector = nx.to_numpy_array(graph).flatten()
         edge_vector =  pad_array(edge_vector, int(0.75*self.state_dim))
@@ -300,16 +333,16 @@ class Env(gym.Env):
         print(self.state)
         
 
-# env = Env()
-# done = False
-# action_dim = env.action_dim
-# actions = list(range(action_dim))
-# while not done:
-#     action = np.random.choice(action_dim)
-#     state, reward, done, info = env.step(action)
-#     loss = env.find_loss(env.state_string)
-#     print(f'S, loss = {env.state_string,loss}')
-# if loss == 0:
-#     print(f'solution is: {state}')
-# else:
-#     print(f'Terminating')
+env = Env()
+done = False
+action_dim = env.action_dim
+actions = list(range(action_dim))
+while not done:
+    action = np.random.choice(action_dim)
+    state, reward, done, info = env.step(action)
+    loss = env.find_loss(env.state_string)
+    print(f'S, loss = {env.state_string,loss}')
+if loss == 0:
+    print(f'solution is: {state}')
+else:
+    print(f'Terminating')
