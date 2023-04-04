@@ -1,1 +1,3 @@
 .vscode/settings.json
+rl_equation_solver/__pycache__/*
+RL_equation_solver.egg-info/*
