@@ -1,3 +1,20 @@
 pytest>=5.2
 torch
 sphinx!=5.2.0.post0 # bug fix, remove on next release
+
+backports.functools-lru-cache==1.6.4
+box2d-py==2.3.5
+glfw==2.5.7
+gym-notices==0.0.8
+ipykernel==6.22.0
+optuna==3.1.0
+pip-chill==1.0.1
+pydot==1.4.2
+pygame==2.3.0
+pyglet==1.5.27
+pyopengl==3.1.6
+sklearn==0.0.post1
+stable-baselines3==1.7.0
+swig==4.1.1
+tomli==2.0.1
+torch-geometric==2.3.0

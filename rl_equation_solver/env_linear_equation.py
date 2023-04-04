@@ -11,7 +11,8 @@ from networkx.drawing.nx_pydot import graphviz_layout
 
 
 class Env(gym.Env):
-    """ Env for solving algebraic equations using RL. Warm up with simple equations
+    """ Env for solving algebraic equations using RL. Warm up with simple 
+        equations
 
         a x + b = 0
 
@@ -86,7 +87,8 @@ class Env(gym.Env):
         x, a, b = symbols('x a b')
         operations = [add, sub, mul, truediv, pow]
         terms = [a,b,0,1]
-        actions = [[op,term] for op in operations for term in terms if [op,term] not in illegal_actions]
+        actions = [[op,term] for op in operations for term in terms if
+                    [op,term] not in illegal_actions]
         self.action_dim = len(actions)
         
         self.operations = operations
@@ -175,7 +177,8 @@ class Env(gym.Env):
             
             
         def _walk(parent, expr):
-            """Walk over the expression tree recursively creating nodes and links."""
+            """Walk over the expression tree recursively creating nodes and
+              links."""
             if expr.is_Atom:
                 node = Node(str(expr), Id.get())
                 node_list.append({"id": node.id, "name": node.name})
@@ -247,7 +250,8 @@ class Env(gym.Env):
             
             
         def _walk(parent, expr):
-            """Walk over the expression tree recursively creating nodes and links."""
+            """Walk over the expression tree recursively creating nodes and
+              links."""
             if expr.is_Atom:
                 node = Node(str(expr), Id.get())
                 node_list.append({"id": node.id, "name": node.name})
@@ -299,7 +303,8 @@ class Env(gym.Env):
             
             
         def _walk(parent, expr):
-            """Walk over the expression tree recursively creating nodes and links."""
+            """Walk over the expression tree recursively creating nodes
+              and links."""
             if expr.is_Atom:
                 node = Node(str(expr), Id.get())
                 node_list.append({"id": node.id, "name": node.name})
