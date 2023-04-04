@@ -5,3 +5,4 @@ gym
 networkx
 sympy
 numpy
+NREL-rex
