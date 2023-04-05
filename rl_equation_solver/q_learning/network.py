@@ -113,8 +113,6 @@ class QLearningModel:
 
         self.optimizer = optim.AdamW(self.policy_network.parameters(),
                                      lr=Config.LR, amsgrad=True)
-        self.memory = ReplayMemory(10000)
-        self.steps_done = 0
 
     def choose_action(self, state):
         """
@@ -232,7 +230,7 @@ class QLearningModel:
                 self.optimize_model()
 
                 # Soft update of the target network's weights
-                # θ′ ← τ θ + (1 −τ )θ′
+                # θ′ ← τθ + (1 − τ)θ′
                 # policy_network.state_dict() returns the parameters of the
                 # policy network target_network.load_state_dict() loads these
                 # parameters into the target network.
