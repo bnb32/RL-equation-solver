@@ -84,6 +84,7 @@ class BaseEnv(gym.Env):
         self.state_string = None
         self.state_vec = None
         self.feature_dict = {}
+        self._history = {'loss': [], 'reward': [], 'state': []}
 
         self.max_loss = 50
         self.state_dim = 1024
@@ -176,6 +177,17 @@ class BaseEnv(gym.Env):
     def find_loss(self, state):
         """
         Compute loss for the given state
+
+        Parameters
+        ----------
+        state : str
+            String representation of the current state
+
+        Returns
+        -------
+        loss : int
+            Number of edges plus number of nodes in graph representation of
+            the current solution approximation
         """
 
     def _make_physical_actions(self):
@@ -201,7 +213,7 @@ class BaseEnv(gym.Env):
 
         return actions
 
-    def step(self, action: int):
+    def step(self, action: int, training=False):
         """
         Take step corresponding to the given action
 
@@ -210,6 +222,8 @@ class BaseEnv(gym.Env):
         action : int
             Action index corresponding to the entry in the action list
             constructed in _make_physical_actions
+        training : bool
+            Whether this step is part of training or inference
 
         Returns
         -------
@@ -250,31 +264,42 @@ class BaseEnv(gym.Env):
 
         logger.info('S, loss, reward, info = '
                     f'{self.state_string, loss, reward, info}')
+
+        if training:
+            self.update_history(dict(loss=loss, reward=reward,
+                                     state=self.state_string))
+
         if loss == 0:
             logger.info(f'solution is: {self.state_string}')
 
         return new_state_vec, reward, done, info
 
-    @classmethod
-    def run(cls):
-        """
-        Run solver
-        """
-        env = cls()
-        done = False
-        action_dim = env.action_dim
-        while not done:
-            action = np.random.choice(action_dim)
-            state, _, done, _ = env.step(action)
-            loss = env.find_loss(env.state_string)
-        if loss == 0:
-            logger.info(f'solution is: {state}')
-        else:
-            logger.info('Terminating')
+    @property
+    def history(self):
+        """Get training history of policy_network"""
+        return self._history
+
+    def update_history(self, entry):
+        """Update training history of policy_network"""
+        self._history['loss'].append(entry['loss'])
+        self._history['reward'].append(entry['reward'])
+        self._history['state'].append(entry['state'])
 
     def find_reward(self, state_old, state_new):
         """
         Reward is decrease in loss
+
+        Parameters
+        ----------
+        state_old : str
+            String representation of last state
+        state_new : str
+            String representation of new state
+
+        Returns
+        -------
+        reward : int
+            Difference between loss for state_new and state_old
         """
         loss_old = self.find_loss(state_old)
         loss_new = self.find_loss(state_new)

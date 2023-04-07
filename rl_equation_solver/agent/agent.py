@@ -26,7 +26,7 @@ class Config:
     EPSILON_END = 0.05
     # EPSILON_DECAY controls the rate of exponential decay of epsilon, higher
     # means a slower decay
-    EPSILON_DECAY = 1000
+    EPSILON_DECAY = 10
     # TAU is the update rate of the target network
     TAU = 0.005
     # LR is the learning rate of the AdamW optimizer
@@ -85,8 +85,8 @@ class DQN(nn.Module):
         return self.layer3(x)
 
 
-class QLearningModel:
-    """Main Q-Learning Model with target and policy networks"""
+class Agent:
+    """Agent with DQN target and policy networks"""
 
     def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
         """
@@ -114,9 +114,26 @@ class QLearningModel:
         self.optimizer = optim.AdamW(self.policy_network.parameters(),
                                      lr=Config.LR, amsgrad=True)
 
+    @property
+    def history(self):
+        """Get training history"""
+        return self.env.history
+
+    def choose_optimal_action(self, state):
+        """
+        Choose action with max reward based on given state
+
+        max(1) will return largest column value of each row. second column on
+        max result is index of where max element was found so we pick action
+        with the larger expected reward.
+        """
+        with torch.no_grad():
+            return self.policy_network(state).max(1)[1].view(1, 1)
+
     def choose_action(self, state):
         """
-        Choose action based on given state
+        Choose action based on given state. Either choose optimal action or
+        random action depending on training step.
         """
         sample = random.random()
         decay = (Config.EPSILON_START - Config.EPSILON_END)
@@ -125,11 +142,7 @@ class QLearningModel:
 
         self.steps_done += 1
         if sample > epsilon_threshold:
-            # max(1) will return largest column value of each row.
-            # second column on max result is index of where max element was
-            # found so we pick action with the larger expected reward.
-            with torch.no_grad():
-                return self.policy_network(state).max(1)[1].view(1, 1)
+            return self.choose_optimal_action(state)
         else:
             return torch.tensor([[self.env.action_space.sample()]],
                                 device=self.device, dtype=torch.long)
@@ -209,7 +222,8 @@ class QLearningModel:
                 # sample an action
                 action = self.choose_action(state)
                 # execute it, observe the next screen and the reward
-                observation, reward, done, _ = self.env.step(action.item())
+                observation, reward, done, _ = self.env.step(action.item(),
+                                                             training=True)
                 reward = torch.tensor([reward], device=self.device)
 
                 if done:
@@ -244,6 +258,38 @@ class QLearningModel:
                 total_reward += reward
                 if done:
                     episode_duration.append(t + 1)
-                    logger.info(f"Episode {i}, Game terminated after {t}, "
-                                f"steps with reward {total_reward}")
+                    logger.info(f"Episode {i}, Solver terminated after {t} "
+                                f"steps with reward {total_reward}. Final "
+                                f"state = {self.env.state_string}")
                     break
+
+    def predict(self, state_string):
+        """
+        Predict the solution from the given state_string.
+        """
+        state = self.env.to_vec(state_string)
+        state = torch.tensor(state, dtype=torch.float32,
+                             device=self.device).unsqueeze(0)
+        done = False
+        t = 0
+        while not done:
+            action = self.choose_optimal_action(state)
+            _, _, done, _ = self.env.step(action.item())
+            loss = self.env.find_loss(self.env.state_string)
+            t += 1
+
+        logger.info(f"Solver terminated after {t} steps. Final "
+                    f"state = {self.env.state_string} with loss = {loss}.")
+
+    def save(self, output_file):
+        """Save the policy_network"""
+        torch.save(self.policy_network.state_dict(), output_file)
+        logger.info(f'Saved policy_network to {output_file}')
+
+    @classmethod
+    def load(cls, env, model_file):
+        """Load policy_network from model_file"""
+        agent = cls(env)
+        agent.policy_network.load_state_dict(torch.load(model_file))
+        logger.info(f'Loaded policy_network from {model_file}')
+        return agent

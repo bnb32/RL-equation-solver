@@ -1,10 +1,9 @@
 """Environment for linear equation solver"""
 
-from gym import spaces
 from sympy import symbols, simplify, expand
 import logging
 
-from rl_equation_solver.base import BaseEnv
+from rl_equation_solver.environment.base import BaseEnv
 
 
 logger = logging.getLogger(__name__)
@@ -46,23 +45,6 @@ class Env(BaseEnv):
     """
 
     metadata = {"render.modes": ["human"]}
-
-    def __init__(self):
-
-        # Initialize the state
-        self.state_string = None
-        self.state_vec = None
-
-        self.max_loss = 50
-        self.state_dim = 1024
-        self.equation = self._get_equation()
-        self.actions = self._make_physical_actions()
-        self.state = self._get_state()
-
-        # Gym compatibility
-        self.action_dim = len(self.actions)
-        self.action_space = spaces.Discrete(self.action_dim)
-        self.observation_space = spaces.Discrete(self.state_dim)
 
     def _get_symbols(self):
         """Get symbols for linear equation"""
@@ -108,6 +90,17 @@ class Env(BaseEnv):
     def find_loss(self, state):
         """
         Compute loss for the given state
+
+        Parameters
+        ----------
+        state : str
+            String representation of the current state
+
+        Returns
+        -------
+        loss : int
+            Number of edges plus number of nodes in graph representation of
+            the current solution approximation
         """
         x, _, _ = self._get_symbols()
         solution_approx = simplify(expand(self.equation.replace(x, state)))
