@@ -1,6 +1,6 @@
 """Run linear solver"""
 from rex import init_logger
-from rl_equation_solver.environment.linear_equation import Env
+from rl_equation_solver.environment.linear import Env
 from rl_equation_solver.agent.agent import Agent
 
 if __name__ == '__main__':

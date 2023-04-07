@@ -8,6 +8,7 @@ from torch import nn
 from torch import optim
 import torch.nn.functional as F
 import logging
+import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -18,21 +19,25 @@ class Config:
 
     # BATCH_SIZE is the number of Experience sampled from the replay buffer
     BATCH_SIZE = 128
-    # GAMMA is the discount factor as mentioned in the previous section
-    GAMMA = 0.99
+    # GAMMA is the discount factor
+    GAMMA = 0.9
     # EPSILON_START is the starting value of epsilon
     EPSILON_START = 0.9
     # EPSILON_END is the final value of epsilon
     EPSILON_END = 0.05
     # EPSILON_DECAY controls the rate of exponential decay of epsilon, higher
     # means a slower decay
-    EPSILON_DECAY = 10
+    EPSILON_DECAY = 100
     # TAU is the update rate of the target network
     TAU = 0.005
     # LR is the learning rate of the AdamW optimizer
     LR = 1e-4
     # the hidden layers in the DQN
     HIDDEN_SIZE = 128
+    # memory capacity
+    MEM_CAP = 10000
+    # reset after this many steps with constant loss
+    RESET_STEPS = 100
 
 
 # structure of the Experiences to store
@@ -102,7 +107,7 @@ class Agent:
         n_actions = env.action_space.n
         n_observations = env.observation_space.n
         self.steps_done = 0
-        self.memory = ReplayMemory(10000)
+        self.memory = ReplayMemory(Config.MEM_CAP)
         self.device = torch.device('mps:0' if torch.backends.mps.is_available()
                                    else 'cpu')
         self.policy_network = DQN(n_observations, n_actions,
@@ -261,6 +266,12 @@ class Agent:
                     logger.info(f"Episode {i}, Solver terminated after {t} "
                                 f"steps with reward {total_reward}. Final "
                                 f"state = {self.env.state_string}")
+                    break
+
+                losses = self.env.history['loss'][-Config.RESET_STEPS:]
+                if len(losses) >= Config.RESET_STEPS and len(set(losses)) <= 1:
+                    logger.info(f'Loss has been constant ({list(losses)[0]}) '
+                                f'for {Config.RESET_STEPS} steps. Reseting.')
                     break
 
     def predict(self, state_string):

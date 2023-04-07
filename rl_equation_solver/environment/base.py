@@ -3,7 +3,7 @@
 import gym
 from gym import spaces
 import numpy as np
-from sympy import simplify
+from sympy import simplify, expand, symbols
 from operator import add, sub, mul, truediv, pow
 import logging
 from abc import abstractmethod
@@ -83,6 +83,9 @@ class BaseEnv(gym.Env):
         # Initialize the state
         self.state_string = None
         self.state_vec = None
+        self.operations = None
+        self.actions = None
+        self.terms = None
         self.feature_dict = {}
         self._history = {'loss': [], 'reward': [], 'state': []}
 
@@ -127,23 +130,19 @@ class BaseEnv(gym.Env):
         Get terms for equation. e.g. [a, b, 0, 1]
         """
 
-    @abstractmethod
     def _get_state(self):
         """
         Get environment state
-
-        Example
-        -------
-        _, _, b = symbols('x a b')
-        self.state_string = -b
-        self.state_vec = self.to_vec(-b)
-        return self.state_string
 
         Returns
         -------
         state_string : str
             State string representing environment state
         """
+        *_, init = self._get_symbols()
+        self.state_string = -init
+        self.state_vec = self.to_vec(-init)
+        return self.state_string
 
     @abstractmethod
     def _get_equation(self):
@@ -173,7 +172,6 @@ class BaseEnv(gym.Env):
         return {key: -(i + 2) for i, key in enumerate(keys)}
         """
 
-    @abstractmethod
     def find_loss(self, state):
         """
         Compute loss for the given state
@@ -189,6 +187,16 @@ class BaseEnv(gym.Env):
             Number of edges plus number of nodes in graph representation of
             the current solution approximation
         """
+        x, *_ = self._get_symbols()
+        solution_approx = simplify(expand(self.equation.replace(x, state)))
+        if solution_approx == 0:
+            loss = 0
+        else:
+            state_graph, _ = self.to_graph(solution_approx)
+            loss = state_graph.number_of_nodes()
+            loss += state_graph.number_of_edges()
+
+        return loss
 
     def _make_physical_actions(self):
         """
@@ -200,13 +208,14 @@ class BaseEnv(gym.Env):
             List of operation, term pairs
         """
 
-        illegal_actions = [[truediv, 0]]
+        illegal_actions = [[truediv, 0], [pow, 1], [add, 0], [sub, 0],
+                           [mul, 1], [truediv, 1]]
         operations = [add, sub, mul, truediv, pow]
         terms = self._get_terms()
         actions = [[op, term] for op in operations for term in terms if
                    [op, term] not in illegal_actions]
         self.action_dim = len(actions)
-
+        self.actions = actions
         self.operations = operations
         self.terms = terms
         self.feature_dict = self._get_feature_dict()
@@ -368,9 +377,10 @@ class BaseEnv(gym.Env):
         node_labels = {node['id']: node['name'] for node
                        in graph_json['nodes']}
         node_features = list(node_labels.values())
+
         node_features = np.array([int(self.feature_dict[key]) if key
-                                 in self.feature_dict else int(key)
-                                 for key in node_features])
+                                  in self.feature_dict else int(key)
+                                  for key in node_features])
         node_features = pad_array(node_features, int(0.25 * self.state_dim))
 
         for n in graph_json['nodes']:

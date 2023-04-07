@@ -1,5 +1,5 @@
 """Test model loading, training, and running"""
-from rl_equation_solver.environment.linear_equation import Env
+from rl_equation_solver.environment.linear import Env
 from rl_equation_solver.agent.agent import Agent
 
 from rex import init_logger

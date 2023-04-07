@@ -1,6 +1,6 @@
 """Environment for linear equation solver"""
 
-from sympy import symbols, simplify, expand
+from sympy import symbols
 import logging
 
 from rl_equation_solver.environment.base import BaseEnv
@@ -55,20 +55,6 @@ class Env(BaseEnv):
         _, a, b = self._get_symbols()
         return [a, b, 0, 1]
 
-    def _get_state(self):
-        """
-        Get environment state
-
-        Returns
-        -------
-        state_string : str
-            State string representing environment state
-        """
-        _, _, b = self._get_symbols()
-        self.state_string = -b
-        self.state_vec = self.to_vec(-b)
-        return self.state_string
-
     def _get_equation(self):
         """
         Simple linear equation
@@ -86,29 +72,3 @@ class Env(BaseEnv):
         """Return feature dict representing features at each node"""
         keys = ['Add', 'Mul', 'Pow'] + ['x', 'a', 'b']
         return {key: -(i + 2) for i, key in enumerate(keys)}
-
-    def find_loss(self, state):
-        """
-        Compute loss for the given state
-
-        Parameters
-        ----------
-        state : str
-            String representation of the current state
-
-        Returns
-        -------
-        loss : int
-            Number of edges plus number of nodes in graph representation of
-            the current solution approximation
-        """
-        x, _, _ = self._get_symbols()
-        solution_approx = simplify(expand(self.equation.replace(x, state)))
-        if solution_approx == 0:
-            loss = 0
-        else:
-            state_graph, _ = self.to_graph(solution_approx)
-            loss = state_graph.number_of_nodes()
-            loss += state_graph.number_of_edges()
-
-        return loss
