@@ -5,9 +5,8 @@ from collections import namedtuple, deque
 from itertools import count
 import torch
 from torch import nn
-from torch import optim
-import torch.nn.functional as F
 import logging
+from abc import abstractmethod
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ class Config:
     # LR is the learning rate of the AdamW optimizer
     LR = 1e-4
     # the hidden layers in the DQN
-    HIDDEN_SIZE = 128
+    HIDDEN_SIZE = 256
     # memory capacity
     MEM_CAP = 10000
     # reset after this many steps with constant loss
@@ -49,7 +48,7 @@ class ReplayMemory:
     def __init__(self, capacity):
         self.memory = deque([], maxlen=capacity)
 
-    def apply_action(self, *args):
+    def push(self, *args):
         """Save the Experience into memory"""
         self.memory.append(Experience(*args))
 
@@ -61,35 +60,7 @@ class ReplayMemory:
         return len(self.memory)
 
 
-class DQN(nn.Module):
-    """Simple MLP network."""
-
-    def __init__(self, n_observations, n_actions, hidden_size):
-        """
-        Parameters
-        ----------
-        n_observations: int
-            observation/state size of the environment
-        n_actions : int
-            number of discrete actions available in the environment
-        hidden_size : int
-            size of hidden layers
-        """
-        super().__init__()
-        self.layer1 = nn.Linear(n_observations, hidden_size)
-        self.layer2 = nn.Linear(hidden_size, hidden_size)
-        self.layer3 = nn.Linear(hidden_size, n_actions)
-
-    def forward(self, x):
-        """
-        Forward pass for given state x
-        """
-        x = F.relu(self.layer1(x))
-        x = F.relu(self.layer2(x))
-        return self.layer3(x)
-
-
-class Agent:
+class BaseAgent:
     """Agent with DQN target and policy networks"""
 
     def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
@@ -103,20 +74,31 @@ class Agent:
             size of hidden layers
         """
         self.env = env
-        n_actions = env.action_space.n
-        n_observations = env.observation_space.n
         self.steps_done = 0
-        self.memory = ReplayMemory(Config.MEM_CAP)
-        self.device = torch.device('mps:0' if torch.backends.mps.is_available()
-                                   else 'cpu')
-        self.policy_network = DQN(n_observations, n_actions,
-                                  hidden_size).to(self.device)
-        self.target_network = DQN(n_observations, n_actions,
-                                  hidden_size).to(self.device)
-        self.target_network.load_state_dict(self.policy_network.state_dict())
+        self.memory = None
+        self.policy_network = None
+        self.target_network = None
+        self.optimizer = None
 
-        self.optimizer = optim.AdamW(self.policy_network.parameters(),
-                                     lr=Config.LR, amsgrad=True)
+    @abstractmethod
+    def init_state(self):
+        """Initialize state from the environment. This can be a vector
+        representation or graph representation"""
+
+    @abstractmethod
+    def convert_state(self, state_string):
+        """Convert state string to appropriate representation. This can be a
+        vector representation or graph representation"""
+
+    @property
+    def device(self):
+        """Get device for training network"""
+        if torch.cuda.is_available():
+            return torch.device('cuda:0')
+        elif torch.backends.mps.is_available():
+            return torch.device('mps:0')
+        else:
+            return torch.device('cpu')
 
     @property
     def history(self):
@@ -125,7 +107,7 @@ class Agent:
 
     def choose_optimal_action(self, state):
         """
-        Choose action with max expected reward := max a * Q(s, a)
+        Choose action with max expected reward := max_a Q(s, a)
 
         max(1) will return largest column value of each row. second column on
         max result is index of where max element was found so we pick action
@@ -222,7 +204,7 @@ class Agent:
         for i in range(num_episodes):
             # At the beginning we reset the environment an initialize the
             # state Tensor.
-            state = self.env.reset()
+            state = self.init_state()
             state = torch.tensor(state, dtype=torch.float32,
                                  device=self.device).unsqueeze(0)
             total_reward = 0
@@ -241,16 +223,13 @@ class Agent:
                                               device=self.device).unsqueeze(0)
 
                 # Store the experience in the memory
-                self.memory.apply_action(state, action, next_state, reward)
+                self.memory.push(state, action, next_state, reward)
 
                 # Move to the next state
                 state = next_state
 
                 # Kick agent out of local minima
-                losses = self.history['loss'][-Config.RESET_STEPS:]
-                if len(losses) >= Config.RESET_STEPS and len(set(losses)) <= 1:
-                    logger.info(f'Loss has been constant ({list(losses)[0]}) '
-                                f'for {Config.RESET_STEPS} steps. Reseting.')
+                if self.is_constant_loss(self.history['loss']):
                     break
 
                 # Perform one step of the optimization (on the policy network)
@@ -282,19 +261,33 @@ class Agent:
         """
         Predict the solution from the given state_string.
         """
-        state = self.env.to_vec(state_string)
+        state = self.convert_state(state_string)
         state = torch.tensor(state, dtype=torch.float32,
                              device=self.device).unsqueeze(0)
         done = False
         t = 0
+        losses = []
         while not done:
             action = self.choose_optimal_action(state)
             _, _, done, _ = self.env.step(action.item())
             loss = self.env.find_loss(self.env.state_string)
+            losses.append(loss)
             t += 1
+
+            if self.is_constant_loss(losses):
+                done = True
 
         logger.info(f"Solver terminated after {t} steps. Final "
                     f"state = {self.env.state_string} with loss = {loss}.")
+
+    def is_constant_loss(self, losses):
+        """Check for constant loss over a long number of steps"""
+        check = (len(losses) >= Config.RESET_STEPS
+                 and len(set(losses[-Config.RESET_STEPS:])) <= 1)
+        if check:
+            logger.info(f'Loss has been constant ({list(losses)[-1]}) '
+                        f'for {Config.RESET_STEPS} steps. Reseting.')
+        return check
 
     def save(self, output_file):
         """Save the policy_network"""

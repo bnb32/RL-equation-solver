@@ -90,6 +90,7 @@ class Env(gym.Env):
         self.order = order
         self.state_string = None
         self.state_vec = None
+        self.graph = None
         self.operations = None
         self.actions = None
         self.terms = None
@@ -97,7 +98,7 @@ class Env(gym.Env):
         self._history = {'loss': [], 'reward': [], 'state': []}
 
         self.max_loss = 50
-        self.state_dim = 1024
+        self.state_dim = 4096
         self.equation = self._get_equation()
         self.actions = self._make_physical_actions()
         self.state = self._get_state()

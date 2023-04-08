@@ -1,7 +1,7 @@
 """Run quadratic solver: solve a*x^2 + b*x + c = 0"""
 from rex import init_logger
 from rl_equation_solver.environment.algebraic import Env
-from rl_equation_solver.agent.agent import Agent
+from rl_equation_solver.agent.dqn import Agent
 
 if __name__ == '__main__':
     init_logger(__name__, log_level='DEBUG')
