@@ -1,5 +1,5 @@
 """Networks for agent policies"""
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 from rl_equation_solver.agent.layers import GraphConvolution
 

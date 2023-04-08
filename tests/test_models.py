@@ -41,8 +41,7 @@ def test_model_predict(log=True):
     env = Env()
     agent = Agent(env)
     agent.train(num_episodes=2)
-    _, _, b = env._get_symbols()
-    agent.predict(-b)
+    agent.predict(env._init_state())
 
 
 def test_model_save_load(log=True):
@@ -60,5 +59,4 @@ def test_model_save_load(log=True):
         agent.save(outfile)
 
         agent = Agent.load(env, outfile)
-        _, _, b = env._get_symbols()
-        agent.predict(-b)
+        agent.predict(env._init_state())

@@ -4,6 +4,8 @@ import logging
 
 from rl_equation_solver.agent.base import BaseAgent, Config, ReplayMemory
 from rl_equation_solver.agent.networks import GCN
+from rl_equation_solver.utilities.utilities import build_adjacency_matrix
+from torch_geometric.utils.convert import from_networkx
 
 
 logger = logging.getLogger(__name__)
@@ -22,10 +24,9 @@ class Agent(BaseAgent):
         hidden_size : int
             size of hidden layers
         """
-        self.env = env
+        super().__init__(env, hidden_size)
         n_actions = env.action_space.n
         n_observations = env.observation_space.n
-        self.steps_done = 0
         self.memory = ReplayMemory(Config.MEM_CAP)
         self.policy_network = GCN(n_observations, n_actions,
                                   hidden_size).to(self.device)
@@ -40,11 +41,14 @@ class Agent(BaseAgent):
 
     def init_state(self):
         """Initialize state as a graph"""
-        state_string = self.env._get_state()
+        state_string = self.env._init_state()
         self.env.state_string = state_string
-        self.env.graph, _ = self.env.to_graph(state_string)
-        return self.env.graph
+        self.env.graph = self.env.to_graph(state_string)
+        adj = build_adjacency_matrix(self.env.graph)
+        return from_networkx(self.env.graph), adj
 
     def convert_state(self, state):
         """Convert state string to graph representation"""
-        return self.env.to_graph(state)
+        graph, _ = self.env.to_graph(state)
+        adj = build_adjacency_matrix(self.env.graph)
+        return from_networkx(graph), adj

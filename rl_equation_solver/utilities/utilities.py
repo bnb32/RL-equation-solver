@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
+import networkx as nx
 
 
 def normalize(mx):
@@ -24,8 +25,10 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     return torch.sparse.FloatTensor(indices, values, shape)
 
 
-def build_adjacency_matrix(edges, labels):
+def build_adjacency_matrix_custom(graph):
     """Build adjacency matrix from graph edges and labels"""
+    edges = np.array(graph.edges)
+    labels = np.array(graph.nodes)
     adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
                         shape=(labels.shape[0], labels.shape[0]),
                         dtype=np.float32)
@@ -34,3 +37,8 @@ def build_adjacency_matrix(edges, labels):
     adj = sparse_mx_to_torch_sparse_tensor(adj)
 
     return adj
+
+
+def build_adjacency_matrix(graph):
+    """Build adjacency matrix from graph edges and labels"""
+    return nx.adjacency_matrix(graph)

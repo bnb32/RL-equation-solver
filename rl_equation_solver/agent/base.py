@@ -60,6 +60,7 @@ class ReplayMemory:
         return len(self.memory)
 
 
+# pylint: disable=not-callable
 class BaseAgent:
     """Agent with DQN target and policy networks"""
 
@@ -74,11 +75,13 @@ class BaseAgent:
             size of hidden layers
         """
         self.env = env
+        self.hidden_size = hidden_size
         self.steps_done = 0
         self.memory = None
         self.policy_network = None
         self.target_network = None
         self.optimizer = None
+        self._history = {'loss': [], 'reward': [], 'state': []}
 
     @abstractmethod
     def init_state(self):
@@ -100,11 +103,6 @@ class BaseAgent:
         else:
             return torch.device('cpu')
 
-    @property
-    def history(self):
-        """Get training history"""
-        return self.env.history
-
     def choose_optimal_action(self, state):
         """
         Choose action with max expected reward := max_a Q(s, a)
@@ -116,7 +114,7 @@ class BaseAgent:
         with torch.no_grad():
             return self.policy_network(state).max(1)[1].view(1, 1)
 
-    def choose_action(self, state):
+    def choose_action(self, state, training=False):
         """
         Choose action based on given state. Either choose optimal action or
         random action depending on training step.
@@ -127,7 +125,7 @@ class BaseAgent:
         epsilon_threshold = Config.EPSILON_END + decay
 
         self.steps_done += 1
-        if random_float > epsilon_threshold:
+        if random_float > epsilon_threshold or not training:
             return self.choose_optimal_action(state)
         else:
             return self.choose_random_action()
@@ -210,11 +208,9 @@ class BaseAgent:
             total_reward = 0
             for t in count():
                 # sample an action
-                action = self.choose_action(state)
-                # execute it, observe the next screen and the reward
-                observation, reward, done, _ = self.env.step(action.item(),
-                                                             training=True)
-                reward = torch.tensor([reward], device=self.device)
+                action, observation, done, info = self.step(state,
+                                                            training=True)
+                reward = torch.tensor([info['reward']], device=self.device)
 
                 if done:
                     next_state = None
@@ -257,6 +253,31 @@ class BaseAgent:
                                 f"state = {self.env.state_string}")
                     break
 
+    @property
+    def history(self):
+        """Get training history of policy_network"""
+        return self._history
+
+    def update_history(self, entry):
+        """Update training history of policy_network"""
+        self._history['loss'].append(entry['loss'])
+        self._history['reward'].append(entry['reward'])
+        self._history['state'].append(entry['state'])
+
+    def step(self, state, training=False):
+        """Take next step from current state
+
+        Parameters
+        ----------
+        state : str
+            State string representation
+        """
+        action = self.choose_action(state, training=training)
+        observation, done, info = self.env.step(action.item())
+        self.update_history(info)
+
+        return action, observation, done, info
+
     def predict(self, state_string):
         """
         Predict the solution from the given state_string.
@@ -268,8 +289,7 @@ class BaseAgent:
         t = 0
         losses = []
         while not done:
-            action = self.choose_optimal_action(state)
-            _, _, done, _ = self.env.step(action.item())
+            _, _, _, done = self.step(state, training=False)
             loss = self.env.find_loss(self.env.state_string)
             losses.append(loss)
             t += 1

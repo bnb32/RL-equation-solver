@@ -89,19 +89,19 @@ class Env(gym.Env):
         # Initialize the state
         self.order = order
         self.state_string = None
-        self.state_vec = None
-        self.graph = None
+        self.node_labels = None
         self.operations = None
         self.actions = None
         self.terms = None
         self.feature_dict = {}
-        self._history = {'loss': [], 'reward': [], 'state': []}
+        self._state_vec = None
+        self._state_graph = None
 
         self.max_loss = 50
         self.state_dim = 4096
         self.equation = self._get_equation()
         self.actions = self._make_physical_actions()
-        self.state = self._get_state()
+        self.state = self._init_state()
 
         # Gym compatibility
         self.action_dim = len(self.actions)
@@ -117,9 +117,7 @@ class Env(gym.Env):
         state_vec : np.ndarray
             Vector representing initial state
         """
-        state_string = self._get_state()
-        self.state_string = state_string
-        self.state_vec = self.to_vec(state_string)
+        _ = self._init_state()
         return self.state_vec
 
     def _get_symbols(self):
@@ -139,7 +137,29 @@ class Env(gym.Env):
         _, *coeffs = self._get_symbols()
         return [*coeffs, 1]
 
-    def _get_state(self):
+    @property
+    def state_vec(self):
+        """Get current state vector"""
+        self._state_vec = self.to_vec(self.state_string)
+        return self._state_vec
+
+    @state_vec.setter
+    def state_vec(self, value):
+        """Set state_vec value"""
+        self._state_vec = value
+
+    @property
+    def state_graph(self):
+        """Get current state graph"""
+        self._state_graph = self.to_graph(self.state_string)
+        return self._state_graph
+
+    @state_graph.setter
+    def state_graph(self, value):
+        """Set state_graph value"""
+        self._state_graph = value
+
+    def _init_state(self):
         """
         Get environment state
 
@@ -150,7 +170,6 @@ class Env(gym.Env):
         """
         *_, init = self._get_symbols()
         self.state_string = -init
-        self.state_vec = self.to_vec(-init)
         return self.state_string
 
     def _get_equation(self):
@@ -188,7 +207,7 @@ class Env(gym.Env):
         if solution_approx == 0:
             loss = 0
         else:
-            state_graph, _ = self.to_graph(solution_approx)
+            state_graph = self.to_graph(solution_approx)
             loss = state_graph.number_of_nodes()
             loss += state_graph.number_of_edges()
 
@@ -217,7 +236,7 @@ class Env(gym.Env):
 
         return actions
 
-    def step(self, action: int, training=False):
+    def step(self, action: int):
         """
         Take step corresponding to the given action
 
@@ -226,8 +245,6 @@ class Env(gym.Env):
         action : int
             Action index corresponding to the entry in the action list
             constructed in _make_physical_actions
-        training : bool
-            Whether this step is part of training or inference
 
         Returns
         -------
@@ -242,13 +259,12 @@ class Env(gym.Env):
         """
         # action is 0,1,2,3, ...,  get the physical actions it indexes
         [operation, term] = self.actions[action]
-        state_string = self.state_string
-        new_state_string = operation(state_string, term)
+        new_state_string = operation(self.state_string, term)
         new_state_string = simplify(new_state_string)
         new_state_vec = self.to_vec(new_state_string)
 
         # Reward
-        reward = self.find_reward(state_string, new_state_string)
+        reward = self.find_reward(self.state_string, new_state_string)
 
         # Done
         done = False
@@ -260,35 +276,18 @@ class Env(gym.Env):
         if loss == 0:
             done = True
 
-        # Extra info
-        info = {}
-
         # Update
         self.state_string = new_state_string
 
-        if training:
-            self.update_history({'loss': loss,
-                                 'reward': reward,
-                                 'state': self.state_string})
+        # Extra info
+        info = {'loss': loss, 'reward': reward, 'state': self.state_string}
 
-        logger.info('S, loss, reward, info = '
-                    f'{self.state_string, loss, reward, info}')
+        logger.info(f'info = {info}')
 
         if loss == 0:
             logger.info(f'solution is: {self.state_string}')
 
-        return new_state_vec, reward, done, info
-
-    @property
-    def history(self):
-        """Get training history of policy_network"""
-        return self._history
-
-    def update_history(self, entry):
-        """Update training history of policy_network"""
-        self._history['loss'].append(entry['loss'])
-        self._history['reward'].append(entry['reward'])
-        self._history['state'].append(entry['state'])
+        return new_state_vec, done, info
 
     def find_reward(self, state_old, state_new):
         """
@@ -356,11 +355,6 @@ class Env(gym.Env):
         np.ndarray
             State vector array
         """
-        node_list = []
-        link_list = []
-
-        self._walk(Node("Root", 0), expr, node_list, link_list)
-
         def pad_array(arr, length):
             """
             Pad array with zeros according the given length
@@ -372,30 +366,32 @@ class Env(gym.Env):
             else:
                 return arr
 
-        # Create the graph from the lists of nodes and links:
-        graph_json = {"nodes": node_list, "links": link_list}
-
-        # Make node features. Map number to -1, else ...
-        node_labels = {node['id']: node['name'] for node
-                       in graph_json['nodes']}
+        graph = self.to_graph(expr)
+        node_labels = self.get_node_labels(graph)
         node_features = list(node_labels.values())
-
         node_features = np.array([int(self.feature_dict[key]) if key
                                   in self.feature_dict else int(float(key))
                                   for key in node_features])
         node_features = pad_array(node_features, int(0.25 * self.state_dim))
-
-        for n in graph_json['nodes']:
-            del n['name']
-
-        # Make edge graph
-        graph = json_graph.node_link_graph(graph_json, directed=True,
-                                           multigraph=False)
         edge_vector = nx.to_numpy_array(graph).flatten()
         edge_vector = pad_array(edge_vector, int(0.75 * self.state_dim))
         state_vec = np.concatenate([node_features, edge_vector])
 
         return state_vec
+
+    def get_node_labels(self, graph):
+        """Get node labels from graph. Must be stored as node attributes as
+        graph.nodes[index]['name']
+
+        Parameters
+        ----------
+        graph : networkx.graph
+            Networkx graph object with node['name'] attributes
+        """
+        node_labels = {k: graph.nodes[k].get('name', None)
+                       for k in graph.nodes
+                       if graph.nodes[k]['name'] is not None}
+        return node_labels
 
     def to_graph(self, expr):
         """
@@ -415,8 +411,10 @@ class Env(gym.Env):
             del n['name']
         graph = json_graph.node_link_graph(graph_json, directed=True,
                                            multigraph=False)
+        for node in graph.nodes:
+            graph.nodes[node]['name'] = node_labels.get(node, None)
 
-        return graph, node_labels
+        return graph
 
     def plot_state_as_graph(self, expr):
         """

@@ -22,10 +22,9 @@ class Agent(BaseAgent):
         hidden_size : int
             size of hidden layers
         """
-        self.env = env
+        super().__init__(env, hidden_size)
         n_actions = env.action_space.n
         n_observations = env.observation_space.n
-        self.steps_done = 0
         self.memory = ReplayMemory(Config.MEM_CAP)
         self.policy_network = DQN(n_observations, n_actions,
                                   hidden_size).to(self.device)
@@ -40,7 +39,7 @@ class Agent(BaseAgent):
 
     def init_state(self):
         """Initialize state as a vector"""
-        state_string = self.env._get_state()
+        state_string = self.env._init_state()
         self.env.state_string = state_string
         self.env.state_vec = self.env.to_vec(state_string)
         return self.env.state_vec
