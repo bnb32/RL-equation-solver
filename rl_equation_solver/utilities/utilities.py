@@ -42,3 +42,12 @@ def build_adjacency_matrix_custom(graph):
 def build_adjacency_matrix(graph):
     """Build adjacency matrix from graph edges and labels"""
     return nx.adjacency_matrix(graph)
+
+
+def get_edge_index(graph):
+    """Get edge index from graph"""
+    adj = nx.to_scipy_sparse_matrix(graph).tocoo()
+    row = torch.from_numpy(adj.row.astype(np.int64)).to(torch.long)
+    col = torch.from_numpy(adj.col.astype(np.int64)).to(torch.long)
+    edge_index = torch.stack([row, col], dim=0)
+    return edge_index

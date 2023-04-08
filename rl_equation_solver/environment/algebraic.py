@@ -11,6 +11,9 @@ import networkx as nx
 from networkx.readwrite import json_graph
 from networkx.drawing.nx_pydot import graphviz_layout
 
+from rl_equation_solver.config import Config
+from rl_equation_solver.utilities.reward import RewardMixin
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +42,7 @@ class Node:
         return self.name
 
 
-class Env(gym.Env):
+class Env(gym.Env, RewardMixin):
     """
     Environment for solving algebraic equations using RL.
 
@@ -98,7 +101,7 @@ class Env(gym.Env):
         self._state_graph = None
 
         self.max_loss = 50
-        self.state_dim = 4096
+        self.state_dim = Config.VEC_DIM
         self.equation = self._get_equation()
         self.actions = self._make_physical_actions()
         self.state = self._init_state()
@@ -236,7 +239,7 @@ class Env(gym.Env):
 
         return actions
 
-    def step(self, action: int):
+    def step(self, action: int, step_number: int):
         """
         Take step corresponding to the given action
 
@@ -245,6 +248,8 @@ class Env(gym.Env):
         action : int
             Action index corresponding to the entry in the action list
             constructed in _make_physical_actions
+        step_number : int
+            Number of steps taken so far.
 
         Returns
         -------
@@ -279,20 +284,19 @@ class Env(gym.Env):
         # Update
         self.state_string = new_state_string
 
-        # Extra info
-        info = {'loss': loss, 'reward': reward, 'state': self.state_string}
-
-        logger.info(f'info = {info}')
-
         if loss == 0:
             logger.info(f'solution is: {self.state_string}')
+
+            # reward finding solution in fewer steps
+            reward += 1 / (1 + step_number)
+
+        # Extra info
+        info = {'loss': loss, 'reward': reward, 'state': self.state_string}
 
         return new_state_vec, done, info
 
     def find_reward(self, state_old, state_new):
         """
-        Reward is decrease in loss
-
         Parameters
         ----------
         state_old : str
@@ -305,9 +309,7 @@ class Env(gym.Env):
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_old = self.find_loss(state_old)
-        loss_new = self.find_loss(state_new)
-        return loss_old - loss_new
+        return self.inv_loss_reward(state_old, state_new)
 
     def _get_feature_dict(self):
         """Return feature dict representing features at each node"""

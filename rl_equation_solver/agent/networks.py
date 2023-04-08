@@ -1,7 +1,7 @@
 """Networks for agent policies"""
 from torch import nn
+from torch_geometric.nn import GCNConv
 import torch.nn.functional as F
-from rl_equation_solver.agent.layers import GraphConvolution
 
 
 class DQN(nn.Module):
@@ -49,15 +49,15 @@ class GCN(nn.Module):
             dropout rate
         """
         super().__init__()
-
-        self.gc1 = GraphConvolution(n_observations, hidden_size)
-        self.gc2 = GraphConvolution(hidden_size, n_actions)
+        self.conv1 = GCNConv(n_observations, hidden_size)
+        self.conv2 = GCNConv(hidden_size, n_actions)
         self.dropout = dropout
 
-    def forward(self, x, adj):
+    def forward(self, data):
         """Forward pass for a given state x"""
 
-        x = F.relu(self.gc1(x, adj))
+        x, edge_index = data.x, data.edge_index
+        x = F.relu(self.conv1(x, edge_index))
         x = F.dropout(x, self.dropout, training=self.training)
-        x = self.gc2(x, adj)
+        x = self.conv2(x, edge_index)
         return F.log_softmax(x, dim=1)

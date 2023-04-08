@@ -8,34 +8,10 @@ from torch import nn
 import logging
 from abc import abstractmethod
 
+from rl_equation_solver.config import Config
+
 
 logger = logging.getLogger(__name__)
-
-
-class Config:
-    """Model configuration"""
-
-    # BATCH_SIZE is the number of Experience sampled from the replay buffer
-    BATCH_SIZE = 128
-    # GAMMA is the discount factor
-    GAMMA = 0.99
-    # EPSILON_START is the starting value of epsilon
-    EPSILON_START = 0.9
-    # EPSILON_END is the final value of epsilon
-    EPSILON_END = 0.05
-    # EPSILON_DECAY controls the rate of exponential decay of epsilon, higher
-    # means a slower decay
-    EPSILON_DECAY = 1000
-    # TAU is the update rate of the target network
-    TAU = 0.005
-    # LR is the learning rate of the AdamW optimizer
-    LR = 1e-4
-    # the hidden layers in the DQN
-    HIDDEN_SIZE = 256
-    # memory capacity
-    MEM_CAP = 10000
-    # reset after this many steps with constant loss
-    RESET_STEPS = 100
 
 
 # structure of the Experiences to store
@@ -81,7 +57,7 @@ class BaseAgent:
         self.policy_network = None
         self.target_network = None
         self.optimizer = None
-        self._history = {'loss': [], 'reward': [], 'state': []}
+        self._history = {}
 
     @abstractmethod
     def init_state(self):
@@ -208,15 +184,14 @@ class BaseAgent:
             total_reward = 0
             for t in count():
                 # sample an action
-                action, observation, done, info = self.step(state,
-                                                            training=True)
-                reward = torch.tensor([info['reward']], device=self.device)
+                action, next_state, done, info = self.step(state,
+                                                           episode=i,
+                                                           step_number=t,
+                                                           training=True)
 
-                if done:
-                    next_state = None
-                else:
-                    next_state = torch.tensor(observation, dtype=torch.float32,
-                                              device=self.device).unsqueeze(0)
+                logger.info(f'episode {i}, info = {info}')
+
+                reward = torch.tensor([info['reward']], device=self.device)
 
                 # Store the experience in the memory
                 self.memory.push(state, action, next_state, reward)
@@ -225,7 +200,7 @@ class BaseAgent:
                 state = next_state
 
                 # Kick agent out of local minima
-                if self.is_constant_loss(self.history['loss']):
+                if self.is_constant_loss(self.history[i]['loss']):
                     break
 
                 # Perform one step of the optimization (on the policy network)
@@ -245,7 +220,7 @@ class BaseAgent:
                     value += target_net_state_dict[key] * (1 - Config.TAU)
                     target_net_state_dict[key] = value
                 self.target_network.load_state_dict(target_net_state_dict)
-                total_reward += reward
+                total_reward += info['reward']
                 if done:
                     episode_duration.append(t + 1)
                     logger.info(f"Episode {i}, Solver terminated after {t} "
@@ -258,25 +233,53 @@ class BaseAgent:
         """Get training history of policy_network"""
         return self._history
 
-    def update_history(self, entry):
+    def update_history(self, episode, entry):
         """Update training history of policy_network"""
-        self._history['loss'].append(entry['loss'])
-        self._history['reward'].append(entry['reward'])
-        self._history['state'].append(entry['state'])
+        if episode not in self._history:
+            self._history[episode] = {'loss': [], 'reward': [], 'state': []}
+        self._history[episode]['loss'].append(entry['loss'])
+        self._history[episode]['reward'].append(entry['reward'])
+        self._history[episode]['state'].append(entry['state'])
 
-    def step(self, state, training=False):
+    def step(self, state, episode=0, step_number=0, training=False):
         """Take next step from current state
 
         Parameters
         ----------
         state : str
             State string representation
+        episode : int
+            Episode number
+        step_number : int
+            Number of steps taken so far
+        training : str
+            Whether the step is part of training or inference. Determines
+            whether to update the history.
+
+        Returns
+        -------
+        action : Tensor
+            Action taken. Represented as a pytorch tensor.
+        next_state : Tensor | None
+            Next state after action. Represented as a pytorch tensor.
+        done : bool
+            Whether solution has been found or if state size conditions have
+            been exceeded.
+        info : dict
+            Dictionary with loss, reward, and state information
         """
         action = self.choose_action(state, training=training)
-        observation, done, info = self.env.step(action.item())
-        self.update_history(info)
+        observation, done, info = self.env.step(action.item(), step_number)
 
-        return action, observation, done, info
+        self.update_history(episode, info)
+
+        if done:
+            next_state = None
+        else:
+            next_state = torch.tensor(observation, dtype=torch.float32,
+                                      device=self.device).unsqueeze(0)
+
+        return action, next_state, done, info
 
     def predict(self, state_string):
         """
