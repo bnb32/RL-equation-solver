@@ -8,7 +8,6 @@ from torch import nn
 from torch import optim
 import torch.nn.functional as F
 import logging
-import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -20,14 +19,14 @@ class Config:
     # BATCH_SIZE is the number of Experience sampled from the replay buffer
     BATCH_SIZE = 128
     # GAMMA is the discount factor
-    GAMMA = 0.9
+    GAMMA = 0.99
     # EPSILON_START is the starting value of epsilon
     EPSILON_START = 0.9
     # EPSILON_END is the final value of epsilon
     EPSILON_END = 0.05
     # EPSILON_DECAY controls the rate of exponential decay of epsilon, higher
     # means a slower decay
-    EPSILON_DECAY = 100
+    EPSILON_DECAY = 1000
     # TAU is the update rate of the target network
     TAU = 0.005
     # LR is the learning rate of the AdamW optimizer
@@ -126,7 +125,7 @@ class Agent:
 
     def choose_optimal_action(self, state):
         """
-        Choose action with max reward based on given state
+        Choose action with max expected reward := max a * Q(s, a)
 
         max(1) will return largest column value of each row. second column on
         max result is index of where max element was found so we pick action
@@ -140,17 +139,21 @@ class Agent:
         Choose action based on given state. Either choose optimal action or
         random action depending on training step.
         """
-        sample = random.random()
+        random_float = random.random()
         decay = (Config.EPSILON_START - Config.EPSILON_END)
         decay *= math.exp(-1. * self.steps_done / Config.EPSILON_DECAY)
         epsilon_threshold = Config.EPSILON_END + decay
 
         self.steps_done += 1
-        if sample > epsilon_threshold:
+        if random_float > epsilon_threshold:
             return self.choose_optimal_action(state)
         else:
-            return torch.tensor([[self.env.action_space.sample()]],
-                                device=self.device, dtype=torch.long)
+            return self.choose_random_action()
+
+    def choose_random_action(self):
+        """Choose random action rather than the optimal action"""
+        return torch.tensor([[self.env.action_space.sample()]],
+                            device=self.device, dtype=torch.long)
 
     def optimize_model(self):
         """
@@ -243,6 +246,13 @@ class Agent:
                 # Move to the next state
                 state = next_state
 
+                # Kick agent out of local minima
+                losses = self.history['loss'][-Config.RESET_STEPS:]
+                if len(losses) >= Config.RESET_STEPS and len(set(losses)) <= 1:
+                    logger.info(f'Loss has been constant ({list(losses)[0]}) '
+                                f'for {Config.RESET_STEPS} steps. Reseting.')
+                    break
+
                 # Perform one step of the optimization (on the policy network)
                 # The agent  performs an optimization step on the Policy
                 # Network using the stored memory
@@ -266,12 +276,6 @@ class Agent:
                     logger.info(f"Episode {i}, Solver terminated after {t} "
                                 f"steps with reward {total_reward}. Final "
                                 f"state = {self.env.state_string}")
-                    break
-
-                losses = self.env.history['loss'][-Config.RESET_STEPS:]
-                if len(losses) >= Config.RESET_STEPS and len(set(losses)) <= 1:
-                    logger.info(f'Loss has been constant ({list(losses)[0]}) '
-                                f'for {Config.RESET_STEPS} steps. Reseting.')
                     break
 
     def predict(self, state_string):

@@ -39,7 +39,7 @@ class Node:
         return self.name
 
 
-class AlgebraicEnv(gym.Env):
+class Env(gym.Env):
     """
     Environment for solving algebraic equations using RL.
 
@@ -77,17 +77,17 @@ class AlgebraicEnv(gym.Env):
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, symbols=symbols('x a b')):
+    def __init__(self, order=2):
         """
         Parameters
         ----------
-        symbols : sympy.symbols
-            Set of initialized symbols from sympy symbols.
-            e.g. sympy.symbols('x a b')
+        order : int
+            Order of alegraic equation. e.g. if order = 2 then the equation
+            to solve will be a1 * x + a0 = 0
         """
 
         # Initialize the state
-        self.symbols = symbols
+        self.order = order
         self.state_string = None
         self.state_vec = None
         self.operations = None
@@ -129,12 +129,14 @@ class AlgebraicEnv(gym.Env):
         -------
         symbols
         """
-        return self.symbols
+        symbol_list = 'x '
+        symbol_list += ' '.join([f'a{i}' for i in range(self.order)[::-1]])
+        return symbols(symbol_list)
 
     def _get_terms(self):
         """Get terms for quadratic equation"""
         _, *coeffs = self._get_symbols()
-        return [*coeffs, 0, 1]
+        return [*coeffs, 1]
 
     def _get_state(self):
         """
@@ -177,8 +179,8 @@ class AlgebraicEnv(gym.Env):
         Returns
         -------
         loss : int
-            Number of edges plus number of nodes in graph representation of
-            the current solution approximation
+            Number of edges plus number of nodes in graph representation /
+            expression_tree of the current solution approximation
         """
         x, *_ = self._get_symbols()
         solution_approx = simplify(expand(self.equation.replace(x, state)))
@@ -201,8 +203,7 @@ class AlgebraicEnv(gym.Env):
             List of operation, term pairs
         """
 
-        illegal_actions = [[truediv, 0], [pow, 1], [add, 0], [sub, 0],
-                           [mul, 1], [truediv, 1]]
+        illegal_actions = [[truediv, 0]]
         operations = [add, sub, mul, truediv, pow]
         terms = self._get_terms()
         actions = [[op, term] for op in operations for term in terms if
@@ -264,12 +265,13 @@ class AlgebraicEnv(gym.Env):
         # Update
         self.state_string = new_state_string
 
+        if training:
+            self.update_history({'loss': loss,
+                                 'reward': reward,
+                                 'state': self.state_string})
+
         logger.info('S, loss, reward, info = '
                     f'{self.state_string, loss, reward, info}')
-
-        if training:
-            self.update_history(dict(loss=loss, reward=reward,
-                                     state=self.state_string))
 
         if loss == 0:
             logger.info(f'solution is: {self.state_string}')
@@ -309,7 +311,7 @@ class AlgebraicEnv(gym.Env):
 
     def _get_feature_dict(self):
         """Return feature dict representing features at each node"""
-        keys = ['Add', 'Mul', 'Pow']
+        keys = [op.__name__.capitalize() for op in self.operations]
         keys += [str(sym) for sym in self._get_symbols()]
         return {key: -(i + 2) for i, key in enumerate(keys)}
 
@@ -378,7 +380,7 @@ class AlgebraicEnv(gym.Env):
         node_features = list(node_labels.values())
 
         node_features = np.array([int(self.feature_dict[key]) if key
-                                  in self.feature_dict else int(key)
+                                  in self.feature_dict else int(float(key))
                                   for key in node_features])
         node_features = pad_array(node_features, int(0.25 * self.state_dim))
 
