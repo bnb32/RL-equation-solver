@@ -1,6 +1,6 @@
 pytest>=5.2
 torch
-sphinx!=5.2.0.post0 # bug fix, remove on next release
+sphinx
 gym
 networkx
 sympy

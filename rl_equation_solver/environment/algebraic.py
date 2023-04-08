@@ -6,7 +6,6 @@ import numpy as np
 from sympy import simplify, expand, symbols
 from operator import add, sub, mul, truediv, pow
 import logging
-from abc import abstractmethod
 
 import networkx as nx
 from networkx.readwrite import json_graph
@@ -40,9 +39,9 @@ class Node:
         return self.name
 
 
-class BaseEnv(gym.Env):
+class AlgebraicEnv(gym.Env):
     """
-    Base environment for solving algebraic equations using RL.
+    Environment for solving algebraic equations using RL.
 
     Example
     -------
@@ -78,9 +77,17 @@ class BaseEnv(gym.Env):
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self):
+    def __init__(self, symbols=symbols('x a b')):
+        """
+        Parameters
+        ----------
+        symbols : sympy.symbols
+            Set of initialized symbols from sympy symbols.
+            e.g. sympy.symbols('x a b')
+        """
 
         # Initialize the state
+        self.symbols = symbols
         self.state_string = None
         self.state_vec = None
         self.operations = None
@@ -114,7 +121,6 @@ class BaseEnv(gym.Env):
         self.state_vec = self.to_vec(state_string)
         return self.state_vec
 
-    @abstractmethod
     def _get_symbols(self):
         """
         Get equation symbols. e.g. symbols('x a b')
@@ -123,12 +129,12 @@ class BaseEnv(gym.Env):
         -------
         symbols
         """
+        return self.symbols
 
-    @abstractmethod
     def _get_terms(self):
-        """
-        Get terms for equation. e.g. [a, b, 0, 1]
-        """
+        """Get terms for quadratic equation"""
+        _, *coeffs = self._get_symbols()
+        return [*coeffs, 0, 1]
 
     def _get_state(self):
         """
@@ -144,33 +150,20 @@ class BaseEnv(gym.Env):
         self.state_vec = self.to_vec(-init)
         return self.state_string
 
-    @abstractmethod
     def _get_equation(self):
         """
         Simple linear equation
-
-        Example
-        -------
-        x, a, b, = symbols('x a b')
-        eqn = a * x + b
-        return eqn
 
         Returns
         -------
         eqn : Object
             Equation object constructed from symbols
         """
-
-    @abstractmethod
-    def _get_feature_dict(self):
-        """
-        Get features at each node.
-
-        Example
-        -------
-        keys = ['Add', 'Mul', 'Pow'] + ['x', 'a', 'b']
-        return {key: -(i + 2) for i, key in enumerate(keys)}
-        """
+        x, *coeffs, const = self._get_symbols()
+        eqn = const
+        for i, coeff in enumerate(coeffs[::-1]):
+            eqn += coeff * pow(x, i + 1)
+        return eqn
 
     def find_loss(self, state):
         """
@@ -313,6 +306,12 @@ class BaseEnv(gym.Env):
         loss_old = self.find_loss(state_old)
         loss_new = self.find_loss(state_new)
         return loss_old - loss_new
+
+    def _get_feature_dict(self):
+        """Return feature dict representing features at each node"""
+        keys = ['Add', 'Mul', 'Pow']
+        keys += [str(sym) for sym in self._get_symbols()]
+        return {key: -(i + 2) for i, key in enumerate(keys)}
 
     def _walk(self, parent, expr, node_list, link_list):
         """
