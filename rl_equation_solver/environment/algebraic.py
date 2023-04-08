@@ -3,10 +3,9 @@
 import gym
 from gym import spaces
 import numpy as np
-from sympy import simplify
+from sympy import simplify, expand, symbols
 from operator import add, sub, mul, truediv, pow
 import logging
-from abc import abstractmethod
 
 import networkx as nx
 from networkx.readwrite import json_graph
@@ -40,9 +39,9 @@ class Node:
         return self.name
 
 
-class BaseEnv(gym.Env):
+class Env(gym.Env):
     """
-    Base environment for solving algebraic equations using RL.
+    Environment for solving algebraic equations using RL.
 
     Example
     -------
@@ -78,12 +77,24 @@ class BaseEnv(gym.Env):
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self):
+    def __init__(self, order=2):
+        """
+        Parameters
+        ----------
+        order : int
+            Order of alegraic equation. e.g. if order = 2 then the equation
+            to solve will be a1 * x + a0 = 0
+        """
 
         # Initialize the state
+        self.order = order
         self.state_string = None
         self.state_vec = None
+        self.operations = None
+        self.actions = None
+        self.terms = None
         self.feature_dict = {}
+        self._history = {'loss': [], 'reward': [], 'state': []}
 
         self.max_loss = 50
         self.state_dim = 1024
@@ -110,7 +121,6 @@ class BaseEnv(gym.Env):
         self.state_vec = self.to_vec(state_string)
         return self.state_vec
 
-    @abstractmethod
     def _get_symbols(self):
         """
         Get equation symbols. e.g. symbols('x a b')
@@ -119,64 +129,69 @@ class BaseEnv(gym.Env):
         -------
         symbols
         """
+        symbol_list = 'x '
+        symbol_list += ' '.join([f'a{i}' for i in range(self.order)[::-1]])
+        return symbols(symbol_list)
 
-    @abstractmethod
     def _get_terms(self):
-        """
-        Get terms for equation. e.g. [a, b, 0, 1]
-        """
+        """Get terms for quadratic equation"""
+        _, *coeffs = self._get_symbols()
+        return [*coeffs, 1]
 
-    @abstractmethod
     def _get_state(self):
         """
         Get environment state
-
-        Example
-        -------
-        _, _, b = symbols('x a b')
-        self.state_string = -b
-        self.state_vec = self.to_vec(-b)
-        return self.state_string
 
         Returns
         -------
         state_string : str
             State string representing environment state
         """
+        *_, init = self._get_symbols()
+        self.state_string = -init
+        self.state_vec = self.to_vec(-init)
+        return self.state_string
 
-    @abstractmethod
     def _get_equation(self):
         """
         Simple linear equation
-
-        Example
-        -------
-        x, a, b, = symbols('x a b')
-        eqn = a * x + b
-        return eqn
 
         Returns
         -------
         eqn : Object
             Equation object constructed from symbols
         """
+        x, *coeffs, const = self._get_symbols()
+        eqn = const
+        for i, coeff in enumerate(coeffs[::-1]):
+            eqn += coeff * pow(x, i + 1)
+        return eqn
 
-    @abstractmethod
-    def _get_feature_dict(self):
-        """
-        Get features at each node.
-
-        Example
-        -------
-        keys = ['Add', 'Mul', 'Pow'] + ['x', 'a', 'b']
-        return {key: -(i + 2) for i, key in enumerate(keys)}
-        """
-
-    @abstractmethod
     def find_loss(self, state):
         """
         Compute loss for the given state
+
+        Parameters
+        ----------
+        state : str
+            String representation of the current state
+
+        Returns
+        -------
+        loss : int
+            Number of edges plus number of nodes in graph representation /
+            expression_tree of the current solution approximation
         """
+        x, *_ = self._get_symbols()
+        solution_approx = simplify(expand(self.equation.replace(x, state)))
+        if solution_approx == 0:
+            loss = 0
+        else:
+            state_graph, _ = self.to_graph(solution_approx)
+            loss = state_graph.number_of_nodes()
+            loss += state_graph.number_of_edges()
+
+        return loss
 
     def _make_physical_actions(self):
         """
@@ -194,14 +209,14 @@ class BaseEnv(gym.Env):
         actions = [[op, term] for op in operations for term in terms if
                    [op, term] not in illegal_actions]
         self.action_dim = len(actions)
-
+        self.actions = actions
         self.operations = operations
         self.terms = terms
         self.feature_dict = self._get_feature_dict()
 
         return actions
 
-    def step(self, action: int):
+    def step(self, action: int, training=False):
         """
         Take step corresponding to the given action
 
@@ -210,6 +225,8 @@ class BaseEnv(gym.Env):
         action : int
             Action index corresponding to the entry in the action list
             constructed in _make_physical_actions
+        training : bool
+            Whether this step is part of training or inference
 
         Returns
         -------
@@ -248,37 +265,55 @@ class BaseEnv(gym.Env):
         # Update
         self.state_string = new_state_string
 
+        if training:
+            self.update_history({'loss': loss,
+                                 'reward': reward,
+                                 'state': self.state_string})
+
         logger.info('S, loss, reward, info = '
                     f'{self.state_string, loss, reward, info}')
+
         if loss == 0:
             logger.info(f'solution is: {self.state_string}')
 
         return new_state_vec, reward, done, info
 
-    @classmethod
-    def run(cls):
-        """
-        Run solver
-        """
-        env = cls()
-        done = False
-        action_dim = env.action_dim
-        while not done:
-            action = np.random.choice(action_dim)
-            state, _, done, _ = env.step(action)
-            loss = env.find_loss(env.state_string)
-        if loss == 0:
-            logger.info(f'solution is: {state}')
-        else:
-            logger.info('Terminating')
+    @property
+    def history(self):
+        """Get training history of policy_network"""
+        return self._history
+
+    def update_history(self, entry):
+        """Update training history of policy_network"""
+        self._history['loss'].append(entry['loss'])
+        self._history['reward'].append(entry['reward'])
+        self._history['state'].append(entry['state'])
 
     def find_reward(self, state_old, state_new):
         """
         Reward is decrease in loss
+
+        Parameters
+        ----------
+        state_old : str
+            String representation of last state
+        state_new : str
+            String representation of new state
+
+        Returns
+        -------
+        reward : int
+            Difference between loss for state_new and state_old
         """
         loss_old = self.find_loss(state_old)
         loss_new = self.find_loss(state_new)
         return loss_old - loss_new
+
+    def _get_feature_dict(self):
+        """Return feature dict representing features at each node"""
+        keys = [op.__name__.capitalize() for op in self.operations]
+        keys += [str(sym) for sym in self._get_symbols()]
+        return {key: -(i + 2) for i, key in enumerate(keys)}
 
     def _walk(self, parent, expr, node_list, link_list):
         """
@@ -343,9 +378,10 @@ class BaseEnv(gym.Env):
         node_labels = {node['id']: node['name'] for node
                        in graph_json['nodes']}
         node_features = list(node_labels.values())
+
         node_features = np.array([int(self.feature_dict[key]) if key
-                                 in self.feature_dict else int(key)
-                                 for key in node_features])
+                                  in self.feature_dict else int(float(key))
+                                  for key in node_features])
         node_features = pad_array(node_features, int(0.25 * self.state_dim))
 
         for n in graph_json['nodes']:
