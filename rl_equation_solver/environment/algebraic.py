@@ -3,7 +3,7 @@
 import gym
 from gym import spaces
 import numpy as np
-from sympy import simplify, expand, symbols
+from sympy import symbols
 from operator import add, sub, mul, truediv, pow
 import logging
 
@@ -12,7 +12,6 @@ from networkx.readwrite import json_graph
 from networkx.drawing.nx_pydot import graphviz_layout
 
 from rl_equation_solver.config import Config
-from rl_equation_solver.utilities.reward import RewardMixin
 
 
 logger = logging.getLogger(__name__)
@@ -42,7 +41,7 @@ class Node:
         return self.name
 
 
-class Env(gym.Env, RewardMixin):
+class Env(gym.Env):
     """
     Environment for solving algebraic equations using RL.
 
@@ -190,32 +189,6 @@ class Env(gym.Env, RewardMixin):
             eqn += coeff * pow(x, i + 1)
         return eqn
 
-    def find_loss(self, state):
-        """
-        Compute loss for the given state
-
-        Parameters
-        ----------
-        state : str
-            String representation of the current state
-
-        Returns
-        -------
-        loss : int
-            Number of edges plus number of nodes in graph representation /
-            expression_tree of the current solution approximation
-        """
-        x, *_ = self._get_symbols()
-        solution_approx = simplify(expand(self.equation.replace(x, state)))
-        if solution_approx == 0:
-            loss = 0
-        else:
-            state_graph = self.to_graph(solution_approx)
-            loss = state_graph.number_of_nodes()
-            loss += state_graph.number_of_edges()
-
-        return loss
-
     def _make_physical_actions(self):
         """
         Operations x terms
@@ -238,78 +211,6 @@ class Env(gym.Env, RewardMixin):
         self.feature_dict = self._get_feature_dict()
 
         return actions
-
-    def step(self, action: int, step_number: int):
-        """
-        Take step corresponding to the given action
-
-        Parameters
-        ----------
-        action : int
-            Action index corresponding to the entry in the action list
-            constructed in _make_physical_actions
-        step_number : int
-            Number of steps taken so far.
-
-        Returns
-        -------
-        new_state_vec : np.ndarray
-            New state vector after step
-        reward : float
-            Reward from taking this step
-        done : bool
-            Whether problem is solved or if maximum state dimension is reached
-        info : dict
-            Additional information
-        """
-        # action is 0,1,2,3, ...,  get the physical actions it indexes
-        [operation, term] = self.actions[action]
-        new_state_string = operation(self.state_string, term)
-        new_state_string = simplify(new_state_string)
-        new_state_vec = self.to_vec(new_state_string)
-
-        # Reward
-        reward = self.find_reward(self.state_string, new_state_string)
-
-        # Done
-        done = False
-        if self.too_long(new_state_vec):
-            done = True
-
-        # If loss is zero, you have solved the problem
-        loss = self.find_loss(new_state_string)
-        if loss == 0:
-            done = True
-
-        # Update
-        self.state_string = new_state_string
-
-        if loss == 0:
-            logger.info(f'solution is: {self.state_string}')
-
-            # reward finding solution in fewer steps
-            reward += 1 / (1 + step_number)
-
-        # Extra info
-        info = {'loss': loss, 'reward': reward, 'state': self.state_string}
-
-        return new_state_vec, done, info
-
-    def find_reward(self, state_old, state_new):
-        """
-        Parameters
-        ----------
-        state_old : str
-            String representation of last state
-        state_new : str
-            String representation of new state
-
-        Returns
-        -------
-        reward : int
-            Difference between loss for state_new and state_old
-        """
-        return self.inv_loss_reward(state_old, state_new)
 
     def _get_feature_dict(self):
         """Return feature dict representing features at each node"""
@@ -428,21 +329,6 @@ class Env(gym.Env, RewardMixin):
                 node_color="none", bbox={'facecolor': 'skyblue',
                                          'edgecolor': 'black',
                                          'boxstyle': 'round,pad=0.2'})
-
-    def too_long(self, state):
-        """
-        Check if state dimension is too large
-
-        Parameters
-        ----------
-        state : str
-            State string representation
-
-        Returns
-        -------
-        bool
-        """
-        return len(state) > self.state_dim
 
     # pylint: disable=unused-argument
     def render(self, mode='human'):

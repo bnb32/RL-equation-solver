@@ -7,8 +7,10 @@ import torch
 from torch import nn
 import logging
 from abc import abstractmethod
+from sympy import simplify, expand
 
 from rl_equation_solver.config import Config
+from rl_equation_solver.utilities.reward import RewardMixin
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +39,7 @@ class ReplayMemory:
 
 
 # pylint: disable=not-callable
-class BaseAgent:
+class BaseAgent(RewardMixin):
     """Agent with DQN target and policy networks"""
 
     def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
@@ -58,6 +60,8 @@ class BaseAgent:
         self.target_network = None
         self.optimizer = None
         self._history = {}
+        self.max_loss = 50
+        self.current_episode = 0
 
     @abstractmethod
     def init_state(self):
@@ -175,9 +179,9 @@ class BaseAgent:
         """
 
         episode_duration = []
-        for i in range(num_episodes):
-            # At the beginning we reset the environment an initialize the
-            # state Tensor.
+        start = self.current_episode
+        end = start + num_episodes
+        for i in range(start, end):
             state = self.init_state()
             state = torch.tensor(state, dtype=torch.float32,
                                  device=self.device).unsqueeze(0)
@@ -223,10 +227,12 @@ class BaseAgent:
                 total_reward += info['reward']
                 if done:
                     episode_duration.append(t + 1)
-                    logger.info(f"Episode {i}, Solver terminated after {t} "
-                                f"steps with reward {total_reward}. Final "
-                                f"state = {self.env.state_string}")
+                    logger.info(f"Episode {self.current_episode}, Solver "
+                                f"terminated after {t} steps with reward "
+                                f"{total_reward}. Final state = "
+                                f"{self.state_string}")
                     break
+            self.current_episode += 1
 
     @property
     def history(self):
@@ -269,7 +275,7 @@ class BaseAgent:
             Dictionary with loss, reward, and state information
         """
         action = self.choose_action(state, training=training)
-        observation, done, info = self.env.step(action.item(), step_number)
+        observation, done, info = self._step(action.item(), step_number)
 
         self.update_history(episode, info)
 
@@ -280,6 +286,104 @@ class BaseAgent:
                                       device=self.device).unsqueeze(0)
 
         return action, next_state, done, info
+
+    def find_loss(self, state):
+        """
+        Compute loss for the given state
+
+        Parameters
+        ----------
+        state : str
+            String representation of the current state
+
+        Returns
+        -------
+        loss : int
+            Number of edges plus number of nodes in graph representation /
+            expression_tree of the current solution approximation
+        """
+        x, *_ = self.env._get_symbols()
+        solution_approx = simplify(expand(self.env.equation.replace(x, state)))
+        if solution_approx == 0:
+            loss = 0
+        else:
+            state_graph = self.env.to_graph(solution_approx)
+            loss = state_graph.number_of_nodes()
+            loss += state_graph.number_of_edges()
+
+        return loss
+
+    def _step(self, action: int, step_number: int):
+        """
+        Take step corresponding to the given action
+
+        Parameters
+        ----------
+        action : int
+            Action index corresponding to the entry in the action list
+            constructed in _make_physical_actions
+        step_number : int
+            Number of steps taken so far.
+
+        Returns
+        -------
+        new_state_vec : np.ndarray
+            New state vector after step
+        reward : float
+            Reward from taking this step
+        done : bool
+            Whether problem is solved or if maximum state dimension is reached
+        info : dict
+            Additional information
+        """
+        # action is 0,1,2,3, ...,  get the physical actions it indexes
+        [operation, term] = self.env.actions[action]
+        new_state_string = operation(self.state_string, term)
+        new_state_string = simplify(new_state_string)
+        new_state_vec = self.env.to_vec(new_state_string)
+
+        # Reward
+        reward = self.find_reward(self.state_string, new_state_string)
+
+        # Done
+        done = False
+        if self.too_long(new_state_vec):
+            done = True
+
+        # If loss is zero, you have solved the problem
+        loss = self.find_loss(new_state_string)
+        if loss == 0:
+            done = True
+
+        # Update
+        self.state_string = new_state_string
+
+        if loss == 0:
+            logger.info(f'solution is: {self.state_string}')
+
+            # reward finding solution in fewer steps
+            reward += 10 / (1 + step_number)
+
+        # Extra info
+        info = {'loss': loss, 'reward': reward, 'state': self.state_string}
+
+        return new_state_vec, done, info
+
+    def find_reward(self, state_old, state_new):
+        """
+        Parameters
+        ----------
+        state_old : str
+            String representation of last state
+        state_new : str
+            String representation of new state
+
+        Returns
+        -------
+        reward : int
+            Difference between loss for state_new and state_old
+        """
+        return self.loss_diff_reward(state_old, state_new)
 
     def predict(self, state_string):
         """
@@ -293,7 +397,7 @@ class BaseAgent:
         losses = []
         while not done:
             _, _, _, done = self.step(state, training=False)
-            loss = self.env.find_loss(self.env.state_string)
+            loss = self.find_loss(self.env.state_string)
             losses.append(loss)
             t += 1
 
@@ -324,3 +428,28 @@ class BaseAgent:
         agent.policy_network.load_state_dict(torch.load(model_file))
         logger.info(f'Loaded policy_network from {model_file}')
         return agent
+
+    def too_long(self, state):
+        """
+        Check if state dimension is too large
+
+        Parameters
+        ----------
+        state : str
+            State string representation
+
+        Returns
+        -------
+        bool
+        """
+        return len(state) > self.env.state_dim
+
+    @property
+    def state_string(self):
+        """Get state string representation"""
+        return self.env.state_string
+
+    @state_string.setter
+    def state_string(self, value):
+        """Set state string representation"""
+        self.env.state_string = value
