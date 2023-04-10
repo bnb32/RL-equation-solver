@@ -27,3 +27,5 @@ class Config:
     RESET_STEPS = 100
     # state vec max size
     VEC_DIM = 4096
+    # max number of features to encode
+    FEATURE_DIM = 100

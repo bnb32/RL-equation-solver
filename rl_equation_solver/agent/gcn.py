@@ -4,15 +4,15 @@ import logging
 
 from rl_equation_solver.agent.base import BaseAgent, Config, ReplayMemory
 from rl_equation_solver.agent.networks import GCN
-from rl_equation_solver.utilities.utilities import build_adjacency_matrix
-from torch_geometric.utils.convert import from_networkx
+from rl_equation_solver.utilities import utilities
+from rl_equation_solver.utilities.utilities import GraphEmbedding
 
 
 logger = logging.getLogger(__name__)
 
 
 class Agent(BaseAgent):
-    """Agent with DQN target and policy networks"""
+    """Agent with GCN target and policy networks"""
 
     def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
         """
@@ -25,12 +25,12 @@ class Agent(BaseAgent):
             size of hidden layers
         """
         super().__init__(env, hidden_size)
-        n_actions = env.action_space.n
-        n_observations = env.observation_space.n
+        self.n_observations = env.observation_space.n
+        self.n_actions = env.action_space.n
         self.memory = ReplayMemory(Config.MEM_CAP)
-        self.policy_network = GCN(n_observations, n_actions,
+        self.policy_network = GCN(self.n_observations, self.n_actions,
                                   hidden_size).to(self.device)
-        self.target_network = GCN(n_observations, n_actions,
+        self.target_network = GCN(self.n_observations, self.n_actions,
                                   hidden_size).to(self.device)
         self.target_network.load_state_dict(self.policy_network.state_dict())
 
@@ -43,12 +43,20 @@ class Agent(BaseAgent):
         """Initialize state as a graph"""
         state_string = self.env._init_state()
         self.env.state_string = state_string
-        self.env.graph = self.env.to_graph(state_string)
-        adj = build_adjacency_matrix(self.env.graph)
-        return from_networkx(self.env.graph), adj
+        self.env.graph = utilities.to_graph(state_string,
+                                            self.env.feature_dict)
+        return GraphEmbedding(self.env.graph,
+                              n_observations=self.n_observations,
+                              n_actions=self.n_actions,
+                              n_features=Config.FEATURE_DIM,
+                              device=self.device)
 
     def convert_state(self, state):
         """Convert state string to graph representation"""
-        graph, _ = self.env.to_graph(state)
-        adj = build_adjacency_matrix(self.env.graph)
-        return from_networkx(graph), adj
+        self.env.graph = utilities.to_graph(state,
+                                            self.env.feature_dict)
+        return GraphEmbedding(self.env.graph,
+                              n_observations=self.n_observations,
+                              n_actions=self.n_actions,
+                              n_features=Config.FEATURE_DIM,
+                              device=self.device)

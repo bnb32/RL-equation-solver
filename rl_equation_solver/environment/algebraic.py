@@ -1,47 +1,18 @@
 """Environment for linear equation solver"""
 
-import gym
 from gym import spaces
-import numpy as np
 from sympy import symbols
-from operator import add, sub, mul, truediv, pow
+from operator import add, sub, truediv, pow
 import logging
 
-import networkx as nx
-from networkx.readwrite import json_graph
-from networkx.drawing.nx_pydot import graphviz_layout
-
 from rl_equation_solver.config import Config
+from rl_equation_solver.utilities import utilities
 
 
 logger = logging.getLogger(__name__)
 
 
-class Id:
-    """A helper class for autoincrementing node numbers."""
-    counter = 0
-
-    @classmethod
-    def get(cls):
-        """
-        Get the node number
-        """
-        cls.counter += 1
-        return cls.counter
-
-
-class Node:
-    """Represents a single operation or atomic argument."""
-
-    def __init__(self, label, expr_id):
-        self.id = expr_id
-        self.name = label
-
-    def __repr__(self):
-        return self.name
-
-
-class Env(gym.Env):
+class Env:
     """
     Environment for solving algebraic equations using RL.
 
@@ -91,24 +62,50 @@ class Env(gym.Env):
         # Initialize the state
         self.order = order
         self.state_string = None
-        self.node_labels = None
-        self.operations = None
-        self.actions = None
-        self.terms = None
-        self.feature_dict = {}
+        self.operations = [add, sub, truediv, pow]
+        self._actions = None
+        self._terms = None
+        self._feature_dict = None
         self._state_vec = None
         self._state_graph = None
+        self._equation = None
 
         self.max_loss = 50
         self.state_dim = Config.VEC_DIM
-        self.equation = self._get_equation()
-        self.actions = self._make_physical_actions()
         self.state = self._init_state()
 
         # Gym compatibility
         self.action_dim = len(self.actions)
         self.action_space = spaces.Discrete(self.action_dim)
         self.observation_space = spaces.Discrete(self.state_dim)
+
+    @property
+    def feature_dict(self):
+        """Get the feature dictionary"""
+        if self._feature_dict is None:
+            self._feature_dict = self._get_feature_dict()
+        return self._feature_dict
+
+    @property
+    def terms(self):
+        """Get list of fundamental terms"""
+        if self._terms is None:
+            self._terms = self._get_terms()
+        return self._terms
+
+    @property
+    def actions(self):
+        """Get list of fundamental actions"""
+        if self._actions is None:
+            self._actions = self._get_actions()
+        return self._actions
+
+    @property
+    def equation(self):
+        """Get equation from symbols"""
+        if self._equation is None:
+            self._equation = self._get_equation()
+        return self._equation
 
     def reset(self):
         """
@@ -142,7 +139,9 @@ class Env(gym.Env):
     @property
     def state_vec(self):
         """Get current state vector"""
-        self._state_vec = self.to_vec(self.state_string)
+        self._state_vec = utilities.to_vec(self.state_string,
+                                           self.feature_dict,
+                                           self.state_dim)
         return self._state_vec
 
     @state_vec.setter
@@ -153,13 +152,19 @@ class Env(gym.Env):
     @property
     def state_graph(self):
         """Get current state graph"""
-        self._state_graph = self.to_graph(self.state_string)
+        self._state_graph = utilities.to_graph(self.state_string,
+                                               self.feature_dict)
         return self._state_graph
 
     @state_graph.setter
     def state_graph(self, value):
         """Set state_graph value"""
         self._state_graph = value
+
+    @property
+    def node_labels(self):
+        """Get node labels for current state graph"""
+        return utilities.get_node_labels(self.state_graph)
 
     def _init_state(self):
         """
@@ -189,7 +194,7 @@ class Env(gym.Env):
             eqn += coeff * pow(x, i + 1)
         return eqn
 
-    def _make_physical_actions(self):
+    def _get_actions(self):
         """
         Operations x terms
 
@@ -198,137 +203,16 @@ class Env(gym.Env):
         actions : list
             List of operation, term pairs
         """
-
         illegal_actions = [[truediv, 0]]
-        operations = [add, sub, mul, truediv, pow]
-        terms = self._get_terms()
-        actions = [[op, term] for op in operations for term in terms if
-                   [op, term] not in illegal_actions]
-        self.action_dim = len(actions)
-        self.actions = actions
-        self.operations = operations
-        self.terms = terms
-        self.feature_dict = self._get_feature_dict()
-
+        actions = [[op, term] for op in self.operations for term in self.terms
+                   if [op, term] not in illegal_actions]
         return actions
 
     def _get_feature_dict(self):
         """Return feature dict representing features at each node"""
-        keys = [op.__name__.capitalize() for op in self.operations]
+        keys = ['Add', 'Mul', 'Pow']
         keys += [str(sym) for sym in self._get_symbols()]
         return {key: -(i + 2) for i, key in enumerate(keys)}
-
-    def _walk(self, parent, expr, node_list, link_list):
-        """
-        Walk over the expression tree recursively creating nodes and links.
-
-        Parameters
-        ----------
-        parent : Node
-            Parent node
-        expr : str
-            State string
-        node_list : list
-            List of node dictionaries with 'id' and 'name' keys
-        link_list : list
-            List of link dictionaries with 'source' and 'target' keys
-        """
-        if expr.is_Atom:
-            node = Node(str(expr), Id.get())
-            node_list.append({"id": node.id, "name": node.name})
-            link_list.append({"source": parent.id, "target": node.id})
-        else:
-            node = Node(str(type(expr).__name__), Id.get())
-            node_list.append({"id": node.id, "name": node.name})
-            link_list.append({"source": parent.id, "target": node.id})
-            for arg in expr.args:
-                self._walk(node, arg, node_list, link_list)
-
-    def to_vec(self, expr):
-        """
-        Get state vector for given expression
-
-        Parameters
-        ----------
-        expr : str
-            State string representation
-
-        Returns
-        -------
-        np.ndarray
-            State vector array
-        """
-        def pad_array(arr, length):
-            """
-            Pad array with zeros according the given length
-            """
-            if len(arr) < length:
-                padded_arr = np.zeros(length)
-                padded_arr[:len(arr)] = arr
-                return padded_arr
-            else:
-                return arr
-
-        graph = self.to_graph(expr)
-        node_labels = self.get_node_labels(graph)
-        node_features = list(node_labels.values())
-        node_features = np.array([int(self.feature_dict[key]) if key
-                                  in self.feature_dict else int(float(key))
-                                  for key in node_features])
-        node_features = pad_array(node_features, int(0.25 * self.state_dim))
-        edge_vector = nx.to_numpy_array(graph).flatten()
-        edge_vector = pad_array(edge_vector, int(0.75 * self.state_dim))
-        state_vec = np.concatenate([node_features, edge_vector])
-
-        return state_vec
-
-    def get_node_labels(self, graph):
-        """Get node labels from graph. Must be stored as node attributes as
-        graph.nodes[index]['name']
-
-        Parameters
-        ----------
-        graph : networkx.graph
-            Networkx graph object with node['name'] attributes
-        """
-        node_labels = {k: graph.nodes[k].get('name', None)
-                       for k in graph.nodes
-                       if graph.nodes[k]['name'] is not None}
-        return node_labels
-
-    def to_graph(self, expr):
-        """
-        Make a graph plot of the internal representation of SymPy expression.
-        """
-
-        node_list = []
-        link_list = []
-
-        self._walk(Node("Root", 0), expr, node_list, link_list)
-
-        # Create the graph from the lists of nodes and links:
-        graph_json = {"nodes": node_list, "links": link_list}
-        node_labels = {node['id']: node['name'] for node
-                       in graph_json['nodes']}
-        for n in graph_json['nodes']:
-            del n['name']
-        graph = json_graph.node_link_graph(graph_json, directed=True,
-                                           multigraph=False)
-        for node in graph.nodes:
-            graph.nodes[node]['name'] = node_labels.get(node, None)
-
-        return graph
-
-    def plot_state_as_graph(self, expr):
-        """
-        Make a graph plot of the internal representation of SymPy expression.
-        """
-        graph, labels = self.to_graph(expr)
-        pos = graphviz_layout(graph, prog="dot")
-        nx.draw(graph.to_directed(), pos, labels=labels, node_shape="s",
-                node_color="none", bbox={'facecolor': 'skyblue',
-                                         'edgecolor': 'black',
-                                         'boxstyle': 'round,pad=0.2'})
 
     # pylint: disable=unused-argument
     def render(self, mode='human'):

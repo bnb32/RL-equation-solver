@@ -1,9 +1,11 @@
 """Agent with DQN based policy"""
+import torch
 from torch import optim
 import logging
 
 from rl_equation_solver.agent.base import BaseAgent, Config, ReplayMemory
 from rl_equation_solver.agent.networks import DQN
+from rl_equation_solver.utilities import utilities
 
 
 logger = logging.getLogger(__name__)
@@ -41,9 +43,15 @@ class Agent(BaseAgent):
         """Initialize state as a vector"""
         state_string = self.env._init_state()
         self.env.state_string = state_string
-        self.env.state_vec = self.env.to_vec(state_string)
-        return self.env.state_vec
+        self.env.state_vec = utilities.to_vec(state_string,
+                                              self.env.feature_dict,
+                                              self.env.state_dim)
+        return torch.tensor(self.env.state_vec, dtype=torch.float32,
+                            device=self.device).unsqueeze(0)
 
     def convert_state(self, state):
         """Convert state string to vector representation"""
-        return self.env.to_vec(state)
+        self.env.state_vec = utilities.to_vec(state, self.env.feature_dict,
+                                              self.env.state_dim)
+        return torch.tensor(self.env.state_vec, dtype=torch.float32,
+                            device=self.device).unsqueeze(0)

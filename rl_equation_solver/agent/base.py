@@ -11,6 +11,7 @@ from sympy import simplify, expand
 
 from rl_equation_solver.config import Config
 from rl_equation_solver.utilities.reward import RewardMixin
+from rl_equation_solver.utilities import utilities
 
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,7 @@ class BaseAgent(RewardMixin):
         self._history = {}
         self.max_loss = 50
         self.current_episode = 0
+        self.info = None
 
     @abstractmethod
     def init_state(self):
@@ -169,6 +171,12 @@ class BaseAgent(RewardMixin):
         torch.nn.utils.clip_grad_value_(self.policy_network.parameters(), 100)
         self.optimizer.step()
 
+    def log_info(self, episode, info):
+        """Write info to logger"""
+        out = info.copy()
+        out['reward'] = '{:.3e}'.format(out['reward'])
+        logger.info(f'episode {episode}, {out}')
+
     def train(self, num_episodes):
         """Train the model for the given number of episodes.
 
@@ -183,8 +191,6 @@ class BaseAgent(RewardMixin):
         end = start + num_episodes
         for i in range(start, end):
             state = self.init_state()
-            state = torch.tensor(state, dtype=torch.float32,
-                                 device=self.device).unsqueeze(0)
             total_reward = 0
             for t in count():
                 # sample an action
@@ -192,8 +198,7 @@ class BaseAgent(RewardMixin):
                                                            episode=i,
                                                            step_number=t,
                                                            training=True)
-
-                logger.info(f'episode {i}, info = {info}')
+                self.log_info(self.current_episode, info)
 
                 reward = torch.tensor([info['reward']], device=self.device)
 
@@ -204,7 +209,7 @@ class BaseAgent(RewardMixin):
                 state = next_state
 
                 # Kick agent out of local minima
-                if self.is_constant_loss(self.history[i]['loss']):
+                if self.is_constant_loss(self.history[i]['loss']) and not done:
                     break
 
                 # Perform one step of the optimization (on the policy network)
@@ -266,8 +271,9 @@ class BaseAgent(RewardMixin):
         -------
         action : Tensor
             Action taken. Represented as a pytorch tensor.
-        next_state : Tensor | None
-            Next state after action. Represented as a pytorch tensor.
+        next_state : Tensor
+            Next state after action. Represented as a pytorch tensor or
+            GraphEmbedding.
         done : bool
             Whether solution has been found or if state size conditions have
             been exceeded.
@@ -275,15 +281,12 @@ class BaseAgent(RewardMixin):
             Dictionary with loss, reward, and state information
         """
         action = self.choose_action(state, training=training)
-        observation, done, info = self._step(action.item(), step_number)
+        next_state, done, info = self._step(action.item(), step_number)
 
         self.update_history(episode, info)
 
         if done:
             next_state = None
-        else:
-            next_state = torch.tensor(observation, dtype=torch.float32,
-                                      device=self.device).unsqueeze(0)
 
         return action, next_state, done, info
 
@@ -307,7 +310,8 @@ class BaseAgent(RewardMixin):
         if solution_approx == 0:
             loss = 0
         else:
-            state_graph = self.env.to_graph(solution_approx)
+            state_graph = utilities.to_graph(solution_approx,
+                                             self.env.feature_dict)
             loss = state_graph.number_of_nodes()
             loss += state_graph.number_of_edges()
 
@@ -327,8 +331,9 @@ class BaseAgent(RewardMixin):
 
         Returns
         -------
-        new_state_vec : np.ndarray
-            New state vector after step
+        new_state : Tensor | GraphEmbedding
+            New state after action. Represented as a pytorch Tensor or
+            GraphEmbedding
         reward : float
             Reward from taking this step
         done : bool
@@ -340,7 +345,9 @@ class BaseAgent(RewardMixin):
         [operation, term] = self.env.actions[action]
         new_state_string = operation(self.state_string, term)
         new_state_string = simplify(new_state_string)
-        new_state_vec = self.env.to_vec(new_state_string)
+        new_state_vec = utilities.to_vec(new_state_string,
+                                         self.env.feature_dict,
+                                         self.env.state_dim)
 
         # Reward
         reward = self.find_reward(self.state_string, new_state_string)
@@ -365,9 +372,10 @@ class BaseAgent(RewardMixin):
             reward += 10 / (1 + step_number)
 
         # Extra info
-        info = {'loss': loss, 'reward': reward, 'state': self.state_string}
+        self.info = {'loss': loss, 'reward': reward,
+                     'state': self.state_string}
 
-        return new_state_vec, done, info
+        return self.convert_state(new_state_string), done, self.info
 
     def find_reward(self, state_old, state_new):
         """
@@ -383,7 +391,7 @@ class BaseAgent(RewardMixin):
         reward : int
             Difference between loss for state_new and state_old
         """
-        return self.loss_diff_reward(state_old, state_new)
+        return self.inv_loss_reward(state_old, state_new)
 
     def predict(self, state_string):
         """

@@ -3,3 +3,4 @@ rl_equation_solver/__pycache__/*
 RL_equation_solver.egg-info/*
 rl_equation_solver/q_learning/__pycache__/*
 *.pyc
+rl_equation_solver/dev/figs/*
