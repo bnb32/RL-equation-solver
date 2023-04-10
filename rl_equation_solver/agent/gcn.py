@@ -58,3 +58,8 @@ class Agent(BaseAgent):
                               n_observations=self.n_observations,
                               n_features=Config.FEATURE_NUM,
                               device=self.device)
+
+    def batch_states(self, states, device):
+        """Batch agent states"""
+        batch = utilities.Batch()(states, device)
+        return batch

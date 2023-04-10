@@ -1,10 +1,9 @@
 """DQN module"""
 import math
 import random
-from collections import namedtuple, deque
+from collections import deque
 from itertools import count
 import torch
-from torch import nn
 import logging
 from abc import abstractmethod
 from sympy import simplify, expand
@@ -12,52 +11,11 @@ import numpy as np
 
 from rl_equation_solver.config import Config
 from rl_equation_solver.utilities.reward import RewardMixin
+from rl_equation_solver.utilities.loss import LossMixin
 from rl_equation_solver.utilities import utilities
 
 
 logger = logging.getLogger(__name__)
-
-
-# structure of the Experiences to store
-Experience = namedtuple('Experience',
-                        ('state', 'action', 'next_state', 'reward'))
-
-
-class Batch:
-    """Graph Embedding or state vector Batch"""
-
-    def __init__(self):
-        """Initialize the batch"""
-        self.experience = None
-        self.non_final_mask = None
-        self.non_final_next_states = None
-        self.non_final_next_states = None
-        self.state_batch = None
-        self.action_batch = None
-        self.reward_batch = None
-
-    @classmethod
-    def __call__(cls, states, device):
-        """Concatenate batch states"""
-        batch = cls()
-        batch.experience = Experience(*zip(*states))
-        batch.non_final_mask = torch.tensor(
-            tuple(map(lambda s: s is not None, batch.experience.next_state)),
-            device=device, dtype=torch.bool)
-        batch.non_final_next_states = [s for s in batch.experience.next_state
-                                       if s is not None]
-        batch.state_batch = [s for s in batch.experience.state
-                             if s is not None]
-        batch.action_batch = torch.cat(batch.experience.action)
-        batch.reward_batch = torch.cat(batch.experience.reward)
-
-        type_check = (any(s.__class__.__name__ == 'GraphEmbedding'
-                          for s in batch.state_batch))
-        if not type_check:
-            batch.non_final_next_states = \
-                torch.cat(batch.non_final_next_states)
-            batch.state_batch = torch.cat(batch.state_batch)
-        return batch
 
 
 class ReplayMemory:
@@ -67,7 +25,7 @@ class ReplayMemory:
 
     def push(self, *args):
         """Save the Experience into memory"""
-        self.memory.append(Experience(*args))
+        self.memory.append(utilities.Experience(*args))
 
     def sample(self, batch_size):
         """select a random batch of Experience for training"""
@@ -78,7 +36,7 @@ class ReplayMemory:
 
 
 # pylint: disable=not-callable
-class BaseAgent(RewardMixin):
+class BaseAgent(RewardMixin, LossMixin):
     """Agent with DQN target and policy networks"""
 
     def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
@@ -128,6 +86,8 @@ class BaseAgent(RewardMixin):
                 self._device = torch.device('mps:0')
             else:
                 self._device = torch.device('cpu')
+        elif isinstance(self._device, str):
+            self._device = torch.device(self._device)
         return self._device
 
     def choose_optimal_action(self, state):
@@ -147,7 +107,7 @@ class BaseAgent(RewardMixin):
         random action depending on training step.
         """
         random_float = random.random()
-        decay = (Config.EPSILON_START - Config.EPSILON_END)
+        decay = Config.EPSILON_START - Config.EPSILON_END
         decay *= math.exp(-1. * self.steps_done / Config.EPSILON_DECAY)
         epsilon_threshold = Config.EPSILON_END + decay
 
@@ -159,9 +119,8 @@ class BaseAgent(RewardMixin):
 
     def compute_loss(self, state_action_values, expected_state_action_values):
         """Compute Huber loss"""
-        criterion = nn.SmoothL1Loss()
-        loss = criterion(state_action_values,
-                         expected_state_action_values.unsqueeze(1))
+        loss = self.huber_loss(state_action_values,
+                               expected_state_action_values.unsqueeze(1))
         return loss
 
     def update_info(self, key, value):
@@ -182,7 +141,7 @@ class BaseAgent(RewardMixin):
             return
 
         transition = self.memory.sample(Config.BATCH_SIZE)
-        batch = Batch()(transition, device=self.device)
+        batch = self.batch_states(transition, device=self.device)
 
         # Compute Q(s_t, a)
         # These are the actions which would've been taken
