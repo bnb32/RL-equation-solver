@@ -1,6 +1,6 @@
 """Test model loading, training, and running"""
 from rl_equation_solver.environment.algebraic import Env
-from rl_equation_solver.agent.agent import Agent
+from rl_equation_solver.agent.dqn import Agent
 
 from rex import init_logger
 from tempfile import TemporaryDirectory

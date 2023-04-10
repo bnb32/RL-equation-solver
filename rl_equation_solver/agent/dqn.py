@@ -55,3 +55,10 @@ class Agent(BaseAgent):
                                               self.env.state_dim)
         return torch.tensor(self.env.state_vec, dtype=torch.float32,
                             device=self.device).unsqueeze(0)
+
+    def batch_states(self, states, device):
+        """Batch agent states"""
+        batch = utilities.Batch()(states, device)
+        batch.non_final_next_states = torch.cat(batch.non_final_next_states)
+        batch.state_batch = torch.cat(batch.state_batch)
+        return batch

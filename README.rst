@@ -2,7 +2,20 @@
 Welcome to RL-Equation-Solver!
 ##############################
 
-This software is an equation solver using Deep Q Networks implemented in PyTorch.
+.. image:: https://github.com/bnb32/RL-equation-solver/workflows/Documentation/badge.svg
+    :target: https://bnb32.github.io/RL-equation-solver/
+
+.. image:: https://github.com/bnb32/RL-equation-solver/workflows/Pytests/badge.svg
+    :target: https://github.com/bnb32/RL-equation-solver/actions?query=workflow%3A%22Pytests%22
+
+.. image:: https://github.com/bnb32/RL-equation-solver/workflows/Lint%20Code%20Base/badge.svg
+    :target: https://github.com/bnb32/RL-equation-solver/actions?query=workflow%3A%22Lint+Code+Base%22
+
+.. image:: https://codecov.io/gh/bnb32/RL-equation-solver/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/bnb32/RL-equation-solver
+
+
+This software is an equation solver using various neural networks implemented in PyTorch.
 
 Installing RL-equation-solver
 =============================

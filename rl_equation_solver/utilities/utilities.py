@@ -1,11 +1,47 @@
 """Collection of useful functions"""
 import numpy as np
 import scipy.sparse as sp
+from collections import namedtuple
 import torch
 from torch_geometric.utils.convert import from_networkx
 import networkx as nx
 from networkx.readwrite import json_graph
 from networkx.drawing.nx_pydot import graphviz_layout
+
+
+Experience = namedtuple('Experience',
+                        ('state', 'action', 'next_state', 'reward'))
+
+
+class Batch:
+    """Graph Embedding or state vector Batch"""
+
+    def __init__(self):
+        """Initialize the batch"""
+        self.experience = None
+        self.non_final_mask = None
+        self.non_final_next_states = None
+        self.non_final_next_states = None
+        self.state_batch = None
+        self.action_batch = None
+        self.reward_batch = None
+
+    @classmethod
+    def __call__(cls, states, device):
+        """Batch states for given set of states and send to device. States
+        can be either instances of GraphEmbedding or np.ndarray"""
+        batch = cls()
+        batch.experience = Experience(*zip(*states))
+        batch.non_final_mask = torch.tensor(
+            tuple(map(lambda s: s is not None, batch.experience.next_state)),
+            device=device, dtype=torch.bool)
+        batch.non_final_next_states = [s for s in batch.experience.next_state
+                                       if s is not None]
+        batch.state_batch = [s for s in batch.experience.state
+                             if s is not None]
+        batch.action_batch = torch.cat(batch.experience.action)
+        batch.reward_batch = torch.cat(batch.experience.reward)
+        return batch
 
 
 class Id:
