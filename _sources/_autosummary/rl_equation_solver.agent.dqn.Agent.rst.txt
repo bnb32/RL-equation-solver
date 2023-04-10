@@ -1,0 +1,59 @@
+rl\_equation\_solver.agent.dqn.Agent
+====================================
+
+.. currentmodule:: rl_equation_solver.agent.dqn
+
+.. autoclass:: Agent
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Agent.append_history
+      ~Agent.batch_states
+      ~Agent.choose_action
+      ~Agent.choose_optimal_action
+      ~Agent.choose_random_action
+      ~Agent.compute_loss
+      ~Agent.convert_state
+      ~Agent.diff_loss_reward
+      ~Agent.exp_loss_reward
+      ~Agent.expression_complexity
+      ~Agent.find_reward
+      ~Agent.huber_loss
+      ~Agent.init_state
+      ~Agent.inv_loss_reward
+      ~Agent.is_constant_complexity
+      ~Agent.l2_loss
+      ~Agent.load
+      ~Agent.log_info
+      ~Agent.optimize_model
+      ~Agent.predict
+      ~Agent.save
+      ~Agent.smooth_l1_loss
+      ~Agent.step
+      ~Agent.sub_loss_reward
+      ~Agent.too_long
+      ~Agent.train
+      ~Agent.update_history
+      ~Agent.update_info
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Agent.device
+      ~Agent.history
+      ~Agent.state_string
+   
+   

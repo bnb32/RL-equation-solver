@@ -1,0 +1,23 @@
+rl\_equation\_solver.version
+============================
+
+.. automodule:: rl_equation_solver.version
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

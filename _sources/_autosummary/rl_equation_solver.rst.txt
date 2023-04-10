@@ -1,0 +1,33 @@
+﻿rl\_equation\_solver
+====================
+
+.. automodule:: rl_equation_solver
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   rl_equation_solver.agent
+   rl_equation_solver.config
+   rl_equation_solver.environment
+   rl_equation_solver.version
+

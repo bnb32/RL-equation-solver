@@ -1,0 +1,33 @@
+rl\_equation\_solver.agent
+==========================
+
+.. automodule:: rl_equation_solver.agent
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   rl_equation_solver.agent.base
+   rl_equation_solver.agent.dqn
+   rl_equation_solver.agent.gcn
+   rl_equation_solver.agent.networks
+

@@ -1,0 +1,674 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rl_equation_solver.agent.gcn.Agent &mdash; rl_equation_solver 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rl_equation_solver.agent.networks" href="rl_equation_solver.agent.networks.html" />
+    <link rel="prev" title="rl_equation_solver.agent.gcn" href="rl_equation_solver.agent.gcn.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rl_equation_solver
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/installation_usage.html">Installation and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-1-clone-repo-recommended-for-developers">Option 1: Clone repo (recommended for developers)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="rl_equation_solver.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.dqn.Agent.html">rl_equation_solver.agent.dqn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">rl_equation_solver.agent.gcn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.networks.html">rl_equation_solver.agent.networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.networks.DQN.html">rl_equation_solver.agent.networks.DQN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.networks.GCN.html">rl_equation_solver.agent.networks.GCN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.config.html">rl_equation_solver.config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.environment.algebraic.html">rl_equation_solver.environment.algebraic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.environment.algebraic.Env.html">rl_equation_solver.environment.algebraic.Env</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.version.html">rl_equation_solver.version</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">rl_equation_solver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="rl_equation_solver.html">rl_equation_solver</a> &raquo;</li>
+        
+          <li><a href="rl_equation_solver.agent.html">rl_equation_solver.agent</a> &raquo;</li>
+        
+          <li><a href="rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a> &raquo;</li>
+        
+      <li>rl_equation_solver.agent.gcn.Agent</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/rl_equation_solver.agent.gcn.Agent.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="rl-equation-solver-agent-gcn-agent">
+<h1>rl_equation_solver.agent.gcn.Agent<a class="headerlink" href="#rl-equation-solver-agent-gcn-agent" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/gcn.html#Agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent" title="rl_equation_solver.agent.base.BaseAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAgent</span></code></a></p>
+<p>Agent with GCN target and policy networks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>Object</em>) – Environment instance.
+e.g. rl_equation_solver.env_linear_equation.Env()</p></li>
+<li><p><strong>hidden_size</strong> (<em>int</em>) – size of hidden layers</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.append_history" title="rl_equation_solver.agent.gcn.Agent.append_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_history</span></code></a>(episode, entry)</p></td>
+<td><p>Append latest step for training history of policy_network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.batch_states" title="rl_equation_solver.agent.gcn.Agent.batch_states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batch_states</span></code></a>(states, device)</p></td>
+<td><p>Batch agent states</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.choose_action" title="rl_equation_solver.agent.gcn.Agent.choose_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_action</span></code></a>(state[, training])</p></td>
+<td><p>Choose action based on given state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.choose_optimal_action" title="rl_equation_solver.agent.gcn.Agent.choose_optimal_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_optimal_action</span></code></a>(state)</p></td>
+<td><p>Choose action with max expected reward := max_a Q(s, a)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.choose_random_action" title="rl_equation_solver.agent.gcn.Agent.choose_random_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_random_action</span></code></a>()</p></td>
+<td><p>Choose random action rather than the optimal action</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.compute_loss" title="rl_equation_solver.agent.gcn.Agent.compute_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_loss</span></code></a>(state_action_values, ...)</p></td>
+<td><p>Compute Huber loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.convert_state" title="rl_equation_solver.agent.gcn.Agent.convert_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_state</span></code></a>(state)</p></td>
+<td><p>Convert state string to graph representation</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.diff_loss_reward" title="rl_equation_solver.agent.gcn.Agent.diff_loss_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diff_loss_reward</span></code></a>(state_old, state_new)</p></td>
+<td><p>Reward is decrease in complexity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.exp_loss_reward" title="rl_equation_solver.agent.gcn.Agent.exp_loss_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp_loss_reward</span></code></a>(state_old, state_new)</p></td>
+<td><p>Reward is decrease in complexity</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.expression_complexity" title="rl_equation_solver.agent.gcn.Agent.expression_complexity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expression_complexity</span></code></a>(state)</p></td>
+<td><p>Compute graph / expression complexity for the given state</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.find_reward" title="rl_equation_solver.agent.gcn.Agent.find_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_reward</span></code></a>(state_old, state_new)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_old</strong> (<em>str</em>) -- String representation of last state</p></li>
+</ul>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.huber_loss" title="rl_equation_solver.agent.gcn.Agent.huber_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">huber_loss</span></code></a>(x, y[, delta])</p></td>
+<td><p>Huber loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.init_state" title="rl_equation_solver.agent.gcn.Agent.init_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_state</span></code></a>()</p></td>
+<td><p>Initialize state as a graph</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.inv_loss_reward" title="rl_equation_solver.agent.gcn.Agent.inv_loss_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inv_loss_reward</span></code></a>(state_old, state_new)</p></td>
+<td><p>Reward is decrease in complexity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.is_constant_complexity" title="rl_equation_solver.agent.gcn.Agent.is_constant_complexity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_constant_complexity</span></code></a>(complexities)</p></td>
+<td><p>Check for constant loss over a long number of steps</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.l2_loss" title="rl_equation_solver.agent.gcn.Agent.l2_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l2_loss</span></code></a>(x, y)</p></td>
+<td><p>L2 Loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.load" title="rl_equation_solver.agent.gcn.Agent.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(env, model_file)</p></td>
+<td><p>Load policy_network from model_file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.log_info" title="rl_equation_solver.agent.gcn.Agent.log_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_info</span></code></a>(episode)</p></td>
+<td><p>Write info to logger</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.optimize_model" title="rl_equation_solver.agent.gcn.Agent.optimize_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_model</span></code></a>()</p></td>
+<td><p>function that performs a single step of the optimization</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.predict" title="rl_equation_solver.agent.gcn.Agent.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(state_string)</p></td>
+<td><p>Predict the solution from the given state_string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.save" title="rl_equation_solver.agent.gcn.Agent.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(output_file)</p></td>
+<td><p>Save the policy_network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.smooth_l1_loss" title="rl_equation_solver.agent.gcn.Agent.smooth_l1_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth_l1_loss</span></code></a>(x, y)</p></td>
+<td><p>Smooth L1 Loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.step" title="rl_equation_solver.agent.gcn.Agent.step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span></code></a>(state[, episode, step_number, training])</p></td>
+<td><p>Take next step from current state</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.sub_loss_reward" title="rl_equation_solver.agent.gcn.Agent.sub_loss_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_loss_reward</span></code></a>(state_old, state_new)</p></td>
+<td><p>Reward is decrease in complexity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.too_long" title="rl_equation_solver.agent.gcn.Agent.too_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">too_long</span></code></a>(state)</p></td>
+<td><p>Check if state dimension is too large</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.train" title="rl_equation_solver.agent.gcn.Agent.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(num_episodes)</p></td>
+<td><p>Train the model for the given number of episodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.update_history" title="rl_equation_solver.agent.gcn.Agent.update_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_history</span></code></a>(key, value)</p></td>
+<td><p>Update latest step for training history of policy_network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.update_info" title="rl_equation_solver.agent.gcn.Agent.update_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_info</span></code></a>(key, value)</p></td>
+<td><p>Update history info with given value for the given key</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.device" title="rl_equation_solver.agent.gcn.Agent.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></a></p></td>
+<td><p>Get device for training network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.history" title="rl_equation_solver.agent.gcn.Agent.history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">history</span></code></a></p></td>
+<td><p>Get training history of policy_network</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.gcn.Agent.state_string" title="rl_equation_solver.agent.gcn.Agent.state_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_string</span></code></a></p></td>
+<td><p>Get state string representation</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.init_state">
+<span class="sig-name descname"><span class="pre">init_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/gcn.html#Agent.init_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.init_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize state as a graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.convert_state">
+<span class="sig-name descname"><span class="pre">convert_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/gcn.html#Agent.convert_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.convert_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert state string to graph representation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.batch_states">
+<span class="sig-name descname"><span class="pre">batch_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/gcn.html#Agent.batch_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.batch_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch agent states</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.append_history">
+<span class="sig-name descname"><span class="pre">append_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">episode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.append_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append latest step for training history of policy_network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.choose_action">
+<span class="sig-name descname"><span class="pre">choose_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.choose_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose action based on given state. Either choose optimal action or
+random action depending on training step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.choose_optimal_action">
+<span class="sig-name descname"><span class="pre">choose_optimal_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.choose_optimal_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose action with max expected reward := max_a Q(s, a)</p>
+<p>max(1) will return largest column value of each row. second column on
+max result is index of where max element was found so we pick action
+with the larger expected reward.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.choose_random_action">
+<span class="sig-name descname"><span class="pre">choose_random_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.choose_random_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose random action rather than the optimal action</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.compute_loss">
+<span class="sig-name descname"><span class="pre">compute_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_action_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_state_action_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.compute_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Huber loss</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.device">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get device for training network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.diff_loss_reward">
+<span class="sig-name descname"><span class="pre">diff_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.diff_loss_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reward is decrease in complexity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_old</strong> (<em>str</em>) – String representation of last state</p></li>
+<li><p><strong>state_new</strong> (<em>str</em>) – String representation of new state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>reward</strong> (<em>int</em>) – Difference between loss for state_new and state_old</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.exp_loss_reward">
+<span class="sig-name descname"><span class="pre">exp_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.exp_loss_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reward is decrease in complexity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_old</strong> (<em>str</em>) – String representation of last state</p></li>
+<li><p><strong>state_new</strong> (<em>str</em>) – String representation of new state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>reward</strong> (<em>int</em>) – Difference between loss for state_new and state_old</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.expression_complexity">
+<span class="sig-name descname"><span class="pre">expression_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.expression_complexity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute graph / expression complexity for the given state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>str</em>) – String representation of the current state</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>complexity</strong> (<em>int</em>) – Number of edges plus number of nodes in graph representation /
+expression_tree of the current solution approximation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.find_reward">
+<span class="sig-name descname"><span class="pre">find_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.find_reward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_old</strong> (<em>str</em>) – String representation of last state</p></li>
+<li><p><strong>state_new</strong> (<em>str</em>) – String representation of new state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>reward</strong> (<em>int</em>) – Difference between loss for state_new and state_old</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.history">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get training history of policy_network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.huber_loss">
+<span class="sig-name descname"><span class="pre">huber_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.huber_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Huber loss</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.inv_loss_reward">
+<span class="sig-name descname"><span class="pre">inv_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.inv_loss_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reward is decrease in complexity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_old</strong> (<em>str</em>) – String representation of last state</p></li>
+<li><p><strong>state_new</strong> (<em>str</em>) – String representation of new state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>reward</strong> (<em>int</em>) – Difference between loss for state_new and state_old</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.is_constant_complexity">
+<span class="sig-name descname"><span class="pre">is_constant_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">complexities</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.is_constant_complexity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for constant loss over a long number of steps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.l2_loss">
+<span class="sig-name descname"><span class="pre">l2_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.l2_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>L2 Loss</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load policy_network from model_file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.log_info">
+<span class="sig-name descname"><span class="pre">log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">episode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.log_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write info to logger</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.optimize_model">
+<span class="sig-name descname"><span class="pre">optimize_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.optimize_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>function that performs a single step of the optimization</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the solution from the given state_string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the policy_network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.smooth_l1_loss">
+<span class="sig-name descname"><span class="pre">smooth_l1_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.smooth_l1_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth L1 Loss</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.state_string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_string</span></span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.state_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get state string representation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take next step from current state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>str</em>) – State string representation</p></li>
+<li><p><strong>episode</strong> (<em>int</em>) – Episode number</p></li>
+<li><p><strong>step_number</strong> (<em>int</em>) – Number of steps taken so far</p></li>
+<li><p><strong>training</strong> (<em>str</em>) – Whether the step is part of training or inference. Determines
+whether to update the history.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>action</strong> (<em>Tensor</em>) – Action taken. Represented as a pytorch tensor.</p></li>
+<li><p><strong>next_state</strong> (<em>Tensor</em>) – Next state after action. Represented as a pytorch tensor or
+GraphEmbedding.</p></li>
+<li><p><strong>done</strong> (<em>bool</em>) – Whether solution has been found or if state size conditions have
+been exceeded.</p></li>
+<li><p><strong>info</strong> (<em>dict</em>) – Dictionary with loss, reward, and state information</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.sub_loss_reward">
+<span class="sig-name descname"><span class="pre">sub_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.sub_loss_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reward is decrease in complexity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_old</strong> (<em>str</em>) – String representation of last state</p></li>
+<li><p><strong>state_new</strong> (<em>str</em>) – String representation of new state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>reward</strong> (<em>int</em>) – Difference between loss for state_new and state_old</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.too_long">
+<span class="sig-name descname"><span class="pre">too_long</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.too_long" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if state dimension is too large</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>str</em>) – State string representation</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>bool</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the model for the given number of episodes.</p>
+<p>The agent will perform a soft update of the Target Network’s weights,
+with the equation TAU * policy_net_state_dict + (1-TAU) *
+target_net_state_dict, this helps to make the Target Network’s weights
+converge to the Policy Network’s weights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.update_history">
+<span class="sig-name descname"><span class="pre">update_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.update_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update latest step for training history of policy_network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.update_info">
+<span class="sig-name descname"><span class="pre">update_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.gcn.Agent.update_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update history info with given value for the given key</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rl_equation_solver.agent.networks.html" class="btn btn-neutral float-right" title="rl_equation_solver.agent.networks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rl_equation_solver.agent.gcn.html" class="btn btn-neutral float-left" title="rl_equation_solver.agent.gcn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

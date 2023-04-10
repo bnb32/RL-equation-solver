@@ -1,0 +1,30 @@
+rl\_equation\_solver.environment
+================================
+
+.. automodule:: rl_equation_solver.environment
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   rl_equation_solver.environment.algebraic
+

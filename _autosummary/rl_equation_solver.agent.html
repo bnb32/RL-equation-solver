@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rl_equation_solver.agent &mdash; rl_equation_solver 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rl_equation_solver.agent.base" href="rl_equation_solver.agent.base.html" />
+    <link rel="prev" title="rl_equation_solver" href="rl_equation_solver.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rl_equation_solver
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc/installation_usage.html">Installation and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-1-clone-repo-recommended-for-developers">Option 1: Clone repo (recommended for developers)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="rl_equation_solver.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">rl_equation_solver.agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.dqn.Agent.html">rl_equation_solver.agent.dqn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.gcn.Agent.html">rl_equation_solver.agent.gcn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.networks.html">rl_equation_solver.agent.networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.networks.DQN.html">rl_equation_solver.agent.networks.DQN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.networks.GCN.html">rl_equation_solver.agent.networks.GCN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.config.html">rl_equation_solver.config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.environment.algebraic.html">rl_equation_solver.environment.algebraic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.environment.algebraic.Env.html">rl_equation_solver.environment.algebraic.Env</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.version.html">rl_equation_solver.version</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">rl_equation_solver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="rl_equation_solver.html">rl_equation_solver</a> &raquo;</li>
+        
+      <li>rl_equation_solver.agent</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/rl_equation_solver.agent.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="module-rl_equation_solver.agent">
+<span id="rl-equation-solver-agent"></span><h1>rl_equation_solver.agent<a class="headerlink" href="#module-rl_equation_solver.agent" title="Permalink to this heading">¶</a></h1>
+<p>Agent module</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.agent.base.html#module-rl_equation_solver.agent.base" title="rl_equation_solver.agent.base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.agent.base</span></code></a></p></td>
+<td><p>DQN module</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rl_equation_solver.agent.dqn.html#module-rl_equation_solver.agent.dqn" title="rl_equation_solver.agent.dqn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.agent.dqn</span></code></a></p></td>
+<td><p>Agent with DQN based policy</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.agent.gcn.html#module-rl_equation_solver.agent.gcn" title="rl_equation_solver.agent.gcn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.agent.gcn</span></code></a></p></td>
+<td><p>Agent with GCN based policy</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rl_equation_solver.agent.networks.html#module-rl_equation_solver.agent.networks" title="rl_equation_solver.agent.networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.agent.networks</span></code></a></p></td>
+<td><p>Networks for agent policies</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rl_equation_solver.agent.base.html" class="btn btn-neutral float-right" title="rl_equation_solver.agent.base" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rl_equation_solver.html" class="btn btn-neutral float-left" title="rl_equation_solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

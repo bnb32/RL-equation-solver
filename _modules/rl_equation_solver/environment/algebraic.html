@@ -1,0 +1,459 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rl_equation_solver.environment.algebraic &mdash; rl_equation_solver 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rl_equation_solver
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Home page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc/installation_usage.html">Installation and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../misc/installation.html#option-1-clone-repo-recommended-for-developers">Option 1: Clone repo (recommended for developers)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.Agent.html">rl_equation_solver.agent.dqn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.gcn.Agent.html">rl_equation_solver.agent.gcn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.html">rl_equation_solver.agent.networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.DQN.html">rl_equation_solver.agent.networks.DQN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.GCN.html">rl_equation_solver.agent.networks.GCN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.html">rl_equation_solver.config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.algebraic.html">rl_equation_solver.environment.algebraic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html">rl_equation_solver.environment.algebraic.Env</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.version.html">rl_equation_solver.version</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rl_equation_solver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>rl_equation_solver.environment.algebraic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rl_equation_solver.environment.algebraic</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Environment for linear equation solver&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">gym</span> <span class="kn">import</span> <span class="n">spaces</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">add</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">truediv</span><span class="p">,</span> <span class="nb">pow</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">rl_equation_solver.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">rl_equation_solver.utilities</span> <span class="kn">import</span> <span class="n">utilities</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Env"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env">[docs]</a><span class="k">class</span> <span class="nc">Env</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Environment for solving algebraic equations using RL.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    a x + b = 0</span>
+
+<span class="sd">    The agent starts at state = 1 and chooses</span>
+<span class="sd">    an action by combing operations and terms:</span>
+
+<span class="sd">    operations: (add, subtract, mulitple, divide, pow)</span>
+<span class="sd">    terms: (a, b, 0, 1)</span>
+
+<span class="sd">    action[i][j] = (operation[i], terms[j])</span>
+
+<span class="sd">    So taking action[0][0] = (add, a) in state 1 would result in</span>
+
+<span class="sd">    new_state = a + 1</span>
+
+<span class="sd">    Followed by an action (div, b) would result in</span>
+
+<span class="sd">    new_state = (a + 1) / b</span>
+
+<span class="sd">    The states are represented using sympy and can be mapped onto a directed</span>
+<span class="sd">    acyclic graph (dag). These state representation is what we will feed the</span>
+<span class="sd">    RL agent.</span>
+
+<span class="sd">    The agent is rewarded if it reduces the &quot;loss&quot; of the equation defined as</span>
+<span class="sd">    the length of the state graph -- intuitively, the complexity of the state:</span>
+
+<span class="sd">    loss = num_nodes + num_leaves of state graph</span>
+
+<span class="sd">    If the agent finds the solution, the equation terminates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;render.modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;human&quot;</span><span class="p">]}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : int</span>
+<span class="sd">            Order of alegraic equation. e.g. if order = 2 then the equation</span>
+<span class="sd">            to solve will be a1 * x + a0 = 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize the state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_string</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="o">=</span> <span class="p">[</span><span class="n">add</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">truediv</span><span class="p">,</span> <span class="nb">pow</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_vec</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_graph</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_equation</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_loss</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_dim</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">VEC_DIM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_state</span><span class="p">()</span>
+
+        <span class="c1"># Gym compatibility</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">=</span> <span class="n">spaces</span><span class="o">.</span><span class="n">Discrete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span> <span class="o">=</span> <span class="n">spaces</span><span class="o">.</span><span class="n">Discrete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_dim</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feature_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the feature dictionary&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feature_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_feature_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_dict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of fundamental terms&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_terms</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of fundamental actions&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_actions</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get equation from symbols&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_equation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_equation</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equation</span>
+
+<div class="viewcode-block" id="Env.reset"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the environment state</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        state_vec : np.ndarray</span>
+<span class="sd">            Vector representing initial state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_state</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_vec</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get equation symbols. e.g. symbols(&#39;x a b&#39;)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        symbols</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">symbol_list</span> <span class="o">=</span> <span class="s1">&#39;x &#39;</span>
+        <span class="n">symbol_list</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;a</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">symbols</span><span class="p">(</span><span class="n">symbol_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get terms for quadratic equation&quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="o">*</span><span class="n">coeffs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_symbols</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">coeffs</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state_vec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current state vector&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_vec</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">to_vec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">state_dim</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_vec</span>
+
+    <span class="nd">@state_vec</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">state_vec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set state_vec value&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_vec</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current state graph&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_graph</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_graph</span>
+
+    <span class="nd">@state_graph</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">state_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set state_graph value&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_graph</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get node labels for current state graph&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_node_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_graph</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get environment state</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        state_string : str</span>
+<span class="sd">            State string representing environment state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_symbols</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_string</span> <span class="o">=</span> <span class="o">-</span><span class="n">init</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_string</span>
+
+    <span class="k">def</span> <span class="nf">_get_equation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simple linear equation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        eqn : Object</span>
+<span class="sd">            Equation object constructed from symbols</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">const</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_symbols</span><span class="p">()</span>
+        <span class="n">eqn</span> <span class="o">=</span> <span class="n">const</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coeff</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">eqn</span> <span class="o">+=</span> <span class="n">coeff</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">eqn</span>
+
+    <span class="k">def</span> <span class="nf">_get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Operations x terms</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        actions : list</span>
+<span class="sd">            List of operation, term pairs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">illegal_actions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">truediv</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">op</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span>
+                   <span class="k">if</span> <span class="p">[</span><span class="n">op</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">illegal_actions</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">actions</span>
+
+    <span class="k">def</span> <span class="nf">_get_feature_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return feature dict representing features at each node&quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Add&#39;</span><span class="p">,</span> <span class="s1">&#39;Mul&#39;</span><span class="p">,</span> <span class="s1">&#39;Pow&#39;</span><span class="p">]</span>
+        <span class="n">keys</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span> <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_symbols</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">)}</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+<div class="viewcode-block" id="Env.render"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;human&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the state string representation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

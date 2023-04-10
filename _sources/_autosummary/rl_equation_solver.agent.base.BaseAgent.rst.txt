@@ -1,0 +1,59 @@
+rl\_equation\_solver.agent.base.BaseAgent
+=========================================
+
+.. currentmodule:: rl_equation_solver.agent.base
+
+.. autoclass:: BaseAgent
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseAgent.append_history
+      ~BaseAgent.batch_states
+      ~BaseAgent.choose_action
+      ~BaseAgent.choose_optimal_action
+      ~BaseAgent.choose_random_action
+      ~BaseAgent.compute_loss
+      ~BaseAgent.convert_state
+      ~BaseAgent.diff_loss_reward
+      ~BaseAgent.exp_loss_reward
+      ~BaseAgent.expression_complexity
+      ~BaseAgent.find_reward
+      ~BaseAgent.huber_loss
+      ~BaseAgent.init_state
+      ~BaseAgent.inv_loss_reward
+      ~BaseAgent.is_constant_complexity
+      ~BaseAgent.l2_loss
+      ~BaseAgent.load
+      ~BaseAgent.log_info
+      ~BaseAgent.optimize_model
+      ~BaseAgent.predict
+      ~BaseAgent.save
+      ~BaseAgent.smooth_l1_loss
+      ~BaseAgent.step
+      ~BaseAgent.sub_loss_reward
+      ~BaseAgent.too_long
+      ~BaseAgent.train
+      ~BaseAgent.update_history
+      ~BaseAgent.update_info
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseAgent.device
+      ~BaseAgent.history
+      ~BaseAgent.state_string
+   
+   

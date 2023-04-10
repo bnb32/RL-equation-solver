@@ -1,0 +1,31 @@
+rl\_equation\_solver.environment.algebraic
+==========================================
+
+.. automodule:: rl_equation_solver.environment.algebraic
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      Env
+   
+   
+
+   
+   
+   
+
+
+

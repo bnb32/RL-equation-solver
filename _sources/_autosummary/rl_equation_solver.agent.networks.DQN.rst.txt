@@ -1,0 +1,74 @@
+rl\_equation\_solver.agent.networks.DQN
+=======================================
+
+.. currentmodule:: rl_equation_solver.agent.networks
+
+.. autoclass:: DQN
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DQN.add_module
+      ~DQN.apply
+      ~DQN.bfloat16
+      ~DQN.buffers
+      ~DQN.children
+      ~DQN.cpu
+      ~DQN.cuda
+      ~DQN.double
+      ~DQN.eval
+      ~DQN.extra_repr
+      ~DQN.float
+      ~DQN.forward
+      ~DQN.get_buffer
+      ~DQN.get_extra_state
+      ~DQN.get_parameter
+      ~DQN.get_submodule
+      ~DQN.half
+      ~DQN.ipu
+      ~DQN.load_state_dict
+      ~DQN.modules
+      ~DQN.named_buffers
+      ~DQN.named_children
+      ~DQN.named_modules
+      ~DQN.named_parameters
+      ~DQN.parameters
+      ~DQN.register_backward_hook
+      ~DQN.register_buffer
+      ~DQN.register_forward_hook
+      ~DQN.register_forward_pre_hook
+      ~DQN.register_full_backward_hook
+      ~DQN.register_load_state_dict_post_hook
+      ~DQN.register_module
+      ~DQN.register_parameter
+      ~DQN.requires_grad_
+      ~DQN.set_extra_state
+      ~DQN.share_memory
+      ~DQN.state_dict
+      ~DQN.to
+      ~DQN.to_empty
+      ~DQN.train
+      ~DQN.type
+      ~DQN.xpu
+      ~DQN.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DQN.T_destination
+      ~DQN.dump_patches
+      ~DQN.training
+   
+   

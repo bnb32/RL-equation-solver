@@ -1,0 +1,40 @@
+rl\_equation\_solver.config.Config
+==================================
+
+.. currentmodule:: rl_equation_solver.config
+
+.. autoclass:: Config
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Config.BATCH_SIZE
+      ~Config.EPSILON_DECAY
+      ~Config.EPSILON_END
+      ~Config.EPSILON_START
+      ~Config.FEATURE_NUM
+      ~Config.GAMMA
+      ~Config.HIDDEN_SIZE
+      ~Config.LR
+      ~Config.MEM_CAP
+      ~Config.RESET_STEPS
+      ~Config.TAU
+      ~Config.VEC_DIM
+   
+   

@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rl_equation_solver.agent.base &mdash; rl_equation_solver 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rl_equation_solver
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Home page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc/installation_usage.html">Installation and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../misc/installation.html#option-1-clone-repo-recommended-for-developers">Option 1: Clone repo (recommended for developers)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.Agent.html">rl_equation_solver.agent.dqn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.gcn.Agent.html">rl_equation_solver.agent.gcn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.html">rl_equation_solver.agent.networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.DQN.html">rl_equation_solver.agent.networks.DQN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.GCN.html">rl_equation_solver.agent.networks.GCN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.html">rl_equation_solver.config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.algebraic.html">rl_equation_solver.environment.algebraic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html">rl_equation_solver.environment.algebraic.Env</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.version.html">rl_equation_solver.version</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rl_equation_solver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>rl_equation_solver.agent.base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rl_equation_solver.agent.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;DQN module&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">simplify</span><span class="p">,</span> <span class="n">expand</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">rl_equation_solver.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">rl_equation_solver.utilities.reward</span> <span class="kn">import</span> <span class="n">RewardMixin</span>
+<span class="kn">from</span> <span class="nn">rl_equation_solver.utilities.loss</span> <span class="kn">import</span> <span class="n">LossMixin</span>
+<span class="kn">from</span> <span class="nn">rl_equation_solver.utilities</span> <span class="kn">import</span> <span class="n">utilities</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ReplayMemory"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html#rl_equation_solver.agent.base.ReplayMemory">[docs]</a><span class="k">class</span> <span class="nc">ReplayMemory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores the Experience Replay buffer&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([],</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">capacity</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReplayMemory.push"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html#rl_equation_solver.agent.base.ReplayMemory.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the Experience into memory&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">utilities</span><span class="o">.</span><span class="n">Experience</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ReplayMemory.sample"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html#rl_equation_solver.agent.base.ReplayMemory.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;select a random batch of Experience for training&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span></div>
+
+
+<span class="c1"># pylint: disable=not-callable</span>
+<div class="viewcode-block" id="BaseAgent"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent">[docs]</a><span class="k">class</span> <span class="nc">BaseAgent</span><span class="p">(</span><span class="n">RewardMixin</span><span class="p">,</span> <span class="n">LossMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Agent with DQN target and policy networks&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">Config</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        env : Object</span>
+<span class="sd">            Environment instance.</span>
+<span class="sd">            e.g. rl_equation_solver.env_linear_equation.Env()</span>
+<span class="sd">        hidden_size : int</span>
+<span class="sd">            size of hidden layers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_loss</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">device</span>
+
+<div class="viewcode-block" id="BaseAgent.init_state"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.init_state">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">init_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize state from the environment. This can be a vector</span>
+<span class="sd">        representation or graph representation&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="BaseAgent.convert_state"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.convert_state">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">convert_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert state string to appropriate representation. This can be a</span>
+<span class="sd">        vector representation or graph representation&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="BaseAgent.batch_states"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.batch_states">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">batch_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert states into a batch&quot;&quot;&quot;</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get device for training network&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;mps:0&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span>
+
+<div class="viewcode-block" id="BaseAgent.choose_optimal_action"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.choose_optimal_action">[docs]</a>    <span class="k">def</span> <span class="nf">choose_optimal_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Choose action with max expected reward := max_a Q(s, a)</span>
+
+<span class="sd">        max(1) will return largest column value of each row. second column on</span>
+<span class="sd">        max result is index of where max element was found so we pick action</span>
+<span class="sd">        with the larger expected reward.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseAgent.choose_action"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.choose_action">[docs]</a>    <span class="k">def</span> <span class="nf">choose_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Choose action based on given state. Either choose optimal action or</span>
+<span class="sd">        random action depending on training step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">random_float</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="n">decay</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">EPSILON_START</span> <span class="o">-</span> <span class="n">Config</span><span class="o">.</span><span class="n">EPSILON_END</span>
+        <span class="n">decay</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">/</span> <span class="n">Config</span><span class="o">.</span><span class="n">EPSILON_DECAY</span><span class="p">)</span>
+        <span class="n">epsilon_threshold</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">EPSILON_END</span> <span class="o">+</span> <span class="n">decay</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">random_float</span> <span class="o">&gt;</span> <span class="n">epsilon_threshold</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">training</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_optimal_action</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_random_action</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseAgent.compute_loss"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.compute_loss">[docs]</a>    <span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_action_values</span><span class="p">,</span> <span class="n">expected_state_action_values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute Huber loss&quot;&quot;&quot;</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">huber_loss</span><span class="p">(</span><span class="n">state_action_values</span><span class="p">,</span>
+                               <span class="n">expected_state_action_values</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">loss</span></div>
+
+<div class="viewcode-block" id="BaseAgent.update_info"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.update_info">[docs]</a>    <span class="k">def</span> <span class="nf">update_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update history info with given value for the given key&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="BaseAgent.choose_random_action"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.choose_random_action">[docs]</a>    <span class="k">def</span> <span class="nf">choose_random_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Choose random action rather than the optimal action&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()]],</span>
+                            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseAgent.optimize_model"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.optimize_model">[docs]</a>    <span class="k">def</span> <span class="nf">optimize_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        function that performs a single step of the optimization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">transition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">Config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_states</span><span class="p">(</span><span class="n">transition</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Compute Q(s_t, a)</span>
+        <span class="c1"># These are the actions which would&#39;ve been taken</span>
+        <span class="c1"># for each batch state according to policy_net</span>
+        <span class="n">state_action_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state_batch</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">action_batch</span><span class="p">)</span>
+
+        <span class="c1"># Compute V(s_{t+1}) for all next states.</span>
+        <span class="c1"># Expected values of actions for non_final_next_states are computed</span>
+        <span class="c1"># based on the &quot;older&quot; target_net; selecting their best reward with</span>
+        <span class="c1"># max(1)[0].</span>
+        <span class="n">next_state_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Config</span><span class="o">.</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">next_state_values</span><span class="p">[</span><span class="n">batch</span><span class="o">.</span><span class="n">non_final_mask</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">non_final_next_states</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Compute the expected Q values</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">reward_batch</span> <span class="o">+</span> <span class="p">(</span><span class="n">Config</span><span class="o">.</span><span class="n">GAMMA</span> <span class="o">*</span> <span class="n">next_state_values</span><span class="p">)</span>
+        <span class="n">expected_state_action_values</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_loss</span><span class="p">(</span><span class="n">state_action_values</span><span class="p">,</span>
+                                 <span class="n">expected_state_action_values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_info</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_history</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+        <span class="c1"># optimize the model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+        <span class="c1"># In-place gradient clipping</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_value_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseAgent.log_info"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.log_info">[docs]</a>    <span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">episode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write info to logger&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.3e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;episode </span><span class="si">{</span><span class="n">episode</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseAgent.train"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_episodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for the given number of episodes.</span>
+
+<span class="sd">        The agent will perform a soft update of the Target Network&#39;s weights,</span>
+<span class="sd">        with the equation TAU * policy_net_state_dict + (1-TAU) *</span>
+<span class="sd">        target_net_state_dict, this helps to make the Target Network&#39;s weights</span>
+<span class="sd">        converge to the Policy Network&#39;s weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">episode_duration</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">num_episodes</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_state</span><span class="p">()</span>
+            <span class="n">total_reward</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+                <span class="c1"># sample an action</span>
+                <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span>
+                                                           <span class="n">episode</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                                           <span class="n">step_number</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+                                                           <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]],</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+                <span class="c1"># Store the experience in the memory</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+
+                <span class="c1"># Move to the next state</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+
+                <span class="c1"># Kick agent out of local minima</span>
+                <span class="n">check</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_constant_complexity</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;complexity&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">done</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="c1"># Perform one step of the optimization (on the policy network)</span>
+                <span class="c1"># The agent  performs an optimization step on the Policy</span>
+                <span class="c1"># Network using the stored memory</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimize_model</span><span class="p">()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span><span class="p">)</span>
+                <span class="c1"># Soft update of the target network&#39;s weights</span>
+                <span class="c1"># θ′ ← τθ + (1 − τ)θ′</span>
+                <span class="c1"># policy_network.state_dict() returns the parameters of the</span>
+                <span class="c1"># policy network target_network.load_state_dict() loads these</span>
+                <span class="c1"># parameters into the target network.</span>
+                <span class="n">target_net_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+                <span class="n">policy_net_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">policy_net_state_dict</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">policy_net_state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*</span> <span class="n">Config</span><span class="o">.</span><span class="n">TAU</span>
+                    <span class="n">value</span> <span class="o">+=</span> <span class="n">target_net_state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Config</span><span class="o">.</span><span class="n">TAU</span><span class="p">)</span>
+                    <span class="n">target_net_state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">target_net_state_dict</span><span class="p">)</span>
+                <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                    <span class="n">episode_duration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Episode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span><span class="si">}</span><span class="s2">, Solver &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;terminated after </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> steps with reward &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">total_reward</span><span class="si">}</span><span class="s2">. Final state = &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get training history of policy_network&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span>
+
+<div class="viewcode-block" id="BaseAgent.append_history"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.append_history">[docs]</a>    <span class="k">def</span> <span class="nf">append_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">episode</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append latest step for training history of policy_network&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">episode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">episode</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;complexity&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                                      <span class="s1">&#39;reward&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">episode</span><span class="p">][</span><span class="s1">&#39;complexity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;complexity&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">episode</span><span class="p">][</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">episode</span><span class="p">][</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">episode</span><span class="p">][</span><span class="s1">&#39;state&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BaseAgent.update_history"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update latest step for training history of policy_network&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="BaseAgent.step"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">episode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_number</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Take next step from current state</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state : str</span>
+<span class="sd">            State string representation</span>
+<span class="sd">        episode : int</span>
+<span class="sd">            Episode number</span>
+<span class="sd">        step_number : int</span>
+<span class="sd">            Number of steps taken so far</span>
+<span class="sd">        training : str</span>
+<span class="sd">            Whether the step is part of training or inference. Determines</span>
+<span class="sd">            whether to update the history.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        action : Tensor</span>
+<span class="sd">            Action taken. Represented as a pytorch tensor.</span>
+<span class="sd">        next_state : Tensor</span>
+<span class="sd">            Next state after action. Represented as a pytorch tensor or</span>
+<span class="sd">            GraphEmbedding.</span>
+<span class="sd">        done : bool</span>
+<span class="sd">            Whether solution has been found or if state size conditions have</span>
+<span class="sd">            been exceeded.</span>
+<span class="sd">        info : dict</span>
+<span class="sd">            Dictionary with loss, reward, and state information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_action</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">training</span><span class="p">)</span>
+        <span class="n">next_state</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">step_number</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_history</span><span class="p">(</span><span class="n">episode</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span></div>
+
+<div class="viewcode-block" id="BaseAgent.expression_complexity"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.expression_complexity">[docs]</a>    <span class="k">def</span> <span class="nf">expression_complexity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute graph / expression complexity for the given state</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state : str</span>
+<span class="sd">            String representation of the current state</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        complexity : int</span>
+<span class="sd">            Number of edges plus number of nodes in graph representation /</span>
+<span class="sd">            expression_tree of the current solution approximation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_get_symbols</span><span class="p">()</span>
+        <span class="n">solution_approx</span> <span class="o">=</span> <span class="n">simplify</span><span class="p">(</span><span class="n">expand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">state</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">solution_approx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">complexity</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state_graph</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">solution_approx</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">)</span>
+            <span class="n">complexity</span> <span class="o">=</span> <span class="n">state_graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+            <span class="n">complexity</span> <span class="o">+=</span> <span class="n">state_graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">complexity</span></div>
+
+    <span class="k">def</span> <span class="nf">_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">step_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take step corresponding to the given action</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        action : int</span>
+<span class="sd">            Action index corresponding to the entry in the action list</span>
+<span class="sd">            constructed in _make_physical_actions</span>
+<span class="sd">        step_number : int</span>
+<span class="sd">            Number of steps taken so far.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        new_state : Tensor | GraphEmbedding</span>
+<span class="sd">            New state after action. Represented as a pytorch Tensor or</span>
+<span class="sd">            GraphEmbedding</span>
+<span class="sd">        reward : float</span>
+<span class="sd">            Reward from taking this step</span>
+<span class="sd">        done : bool</span>
+<span class="sd">            Whether problem is solved or if maximum state dimension is reached</span>
+<span class="sd">        info : dict</span>
+<span class="sd">            Additional information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># action is 0,1,2,3, ...,  get the physical actions it indexes</span>
+        <span class="p">[</span><span class="n">operation</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
+        <span class="n">new_state_string</span> <span class="o">=</span> <span class="n">operation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">,</span> <span class="n">term</span><span class="p">)</span>
+        <span class="n">new_state_string</span> <span class="o">=</span> <span class="n">simplify</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">)</span>
+        <span class="n">new_state_vec</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">to_vec</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_dim</span><span class="p">)</span>
+
+        <span class="c1"># Reward</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_reward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">,</span> <span class="n">new_state_string</span><span class="p">)</span>
+
+        <span class="c1"># Done</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">too_long</span><span class="p">(</span><span class="n">new_state_vec</span><span class="p">):</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># If complexity is zero, you have solved the problem</span>
+        <span class="n">complexity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression_complexity</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">complexity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_string</span> <span class="o">=</span> <span class="n">new_state_string</span>
+
+        <span class="k">if</span> <span class="n">complexity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;solution is: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="c1"># reward finding solution in fewer steps</span>
+            <span class="n">reward</span> <span class="o">+=</span> <span class="mi">10</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">step_number</span><span class="p">)</span>
+
+        <span class="c1"># Extra info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;complexity&#39;</span><span class="p">:</span> <span class="n">complexity</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                     <span class="s1">&#39;reward&#39;</span><span class="p">:</span> <span class="n">reward</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_state</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">),</span> <span class="n">done</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span>
+
+<div class="viewcode-block" id="BaseAgent.find_reward"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.find_reward">[docs]</a>    <span class="k">def</span> <span class="nf">find_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_old</span><span class="p">,</span> <span class="n">state_new</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state_old : str</span>
+<span class="sd">            String representation of last state</span>
+<span class="sd">        state_new : str</span>
+<span class="sd">            String representation of new state</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reward : int</span>
+<span class="sd">            Difference between loss for state_new and state_old</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">diff_loss_reward</span><span class="p">(</span><span class="n">state_old</span><span class="p">,</span> <span class="n">state_new</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseAgent.predict"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Predict the solution from the given state_string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_state</span><span class="p">(</span><span class="n">state_string</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">complexities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">complexity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression_complexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span><span class="p">)</span>
+            <span class="n">complexities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">complexity</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_constant_complexity</span><span class="p">(</span><span class="n">complexity</span><span class="p">):</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solver terminated after </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> steps. Final &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;state = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span><span class="si">}</span><span class="s2"> with complexity = &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">complexity</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseAgent.is_constant_complexity"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.is_constant_complexity">[docs]</a>    <span class="k">def</span> <span class="nf">is_constant_complexity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">complexities</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check for constant loss over a long number of steps&quot;&quot;&quot;</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complexities</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">Config</span><span class="o">.</span><span class="n">RESET_STEPS</span>
+                 <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">complexities</span><span class="p">[</span><span class="o">-</span><span class="n">Config</span><span class="o">.</span><span class="n">RESET_STEPS</span><span class="p">:]))</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loss has been constant (</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">complexities</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">) &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;for </span><span class="si">{</span><span class="n">Config</span><span class="o">.</span><span class="n">RESET_STEPS</span><span class="si">}</span><span class="s1"> steps. Reseting.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">check</span></div>
+
+<div class="viewcode-block" id="BaseAgent.save"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the policy_network&quot;&quot;&quot;</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">output_file</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Saved policy_network to </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseAgent.load"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">model_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load policy_network from model_file&quot;&quot;&quot;</span>
+        <span class="n">agent</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">agent</span><span class="o">.</span><span class="n">policy_network</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_file</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded policy_network from </span><span class="si">{</span><span class="n">model_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">agent</span></div>
+
+<div class="viewcode-block" id="BaseAgent.too_long"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.too_long">[docs]</a>    <span class="k">def</span> <span class="nf">too_long</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if state dimension is too large</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state : str</span>
+<span class="sd">            State string representation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_dim</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get state string representation&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span>
+
+    <span class="nd">@state_string</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">state_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set state string representation&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span> <span class="o">=</span> <span class="n">value</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

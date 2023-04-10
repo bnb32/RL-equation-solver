@@ -1,0 +1,31 @@
+rl\_equation\_solver.config
+===========================
+
+.. automodule:: rl_equation_solver.config
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      Config
+   
+   
+
+   
+   
+   
+
+
+
