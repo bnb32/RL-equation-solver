@@ -6,3 +6,5 @@ networkx
 sympy
 numpy
 NREL-rex
+pydot
+torch_geometric
