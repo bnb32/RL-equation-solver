@@ -8,6 +8,7 @@ from torch import nn
 import logging
 from abc import abstractmethod
 from sympy import simplify, expand
+import numpy as np
 
 from rl_equation_solver.config import Config
 from rl_equation_solver.utilities.reward import RewardMixin
@@ -20,6 +21,43 @@ logger = logging.getLogger(__name__)
 # structure of the Experiences to store
 Experience = namedtuple('Experience',
                         ('state', 'action', 'next_state', 'reward'))
+
+
+class Batch:
+    """Graph Embedding or state vector Batch"""
+
+    def __init__(self):
+        """Initialize the batch"""
+        self.experience = None
+        self.non_final_mask = None
+        self.non_final_next_states = None
+        self.non_final_next_states = None
+        self.state_batch = None
+        self.action_batch = None
+        self.reward_batch = None
+
+    @classmethod
+    def __call__(cls, states, device):
+        """Concatenate batch states"""
+        batch = cls()
+        batch.experience = Experience(*zip(*states))
+        batch.non_final_mask = torch.tensor(
+            tuple(map(lambda s: s is not None, batch.experience.next_state)),
+            device=device, dtype=torch.bool)
+        batch.non_final_next_states = [s for s in batch.experience.next_state
+                                       if s is not None]
+        batch.state_batch = [s for s in batch.experience.state
+                             if s is not None]
+        batch.action_batch = torch.cat(batch.experience.action)
+        batch.reward_batch = torch.cat(batch.experience.reward)
+
+        type_check = (any(s.__class__.__name__ == 'GraphEmbedding'
+                          for s in batch.state_batch))
+        if not type_check:
+            batch.non_final_next_states = \
+                torch.cat(batch.non_final_next_states)
+            batch.state_batch = torch.cat(batch.state_batch)
+        return batch
 
 
 class ReplayMemory:
@@ -76,6 +114,10 @@ class BaseAgent(RewardMixin):
         """Convert state string to appropriate representation. This can be a
         vector representation or graph representation"""
 
+    @abstractmethod
+    def batch_states(self, states):
+        """Convert states into a batch"""
+
     @property
     def device(self):
         """Get device for training network"""
@@ -122,6 +164,10 @@ class BaseAgent(RewardMixin):
                          expected_state_action_values.unsqueeze(1))
         return loss
 
+    def update_info(self, key, value):
+        """Update history info with given value for the given key"""
+        self.info[key] = value
+
     def choose_random_action(self):
         """Choose random action rather than the optimal action"""
         return torch.tensor([[self.env.action_space.sample()]],
@@ -134,25 +180,15 @@ class BaseAgent(RewardMixin):
 
         if len(self.memory) < Config.BATCH_SIZE:
             return
+
         transition = self.memory.sample(Config.BATCH_SIZE)
-        batch = Experience(*zip(*transition))
-
-        # Compute a mask of non-final states and concatenate the batch element
-        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                                batch.next_state)),
-                                      device=self.device, dtype=torch.bool)
-        non_final_next_states = torch.cat([s for s in batch.next_state
-                                           if s is not None])
-
-        state_batch = torch.cat(batch.state)
-        action_batch = torch.cat(batch.action)
-        reward_batch = torch.cat(batch.reward)
+        batch = Batch()(transition, device=self.device)
 
         # Compute Q(s_t, a)
         # These are the actions which would've been taken
         # for each batch state according to policy_net
-        state_action_values = \
-            self.policy_network(state_batch).gather(1, action_batch)
+        state_action_values = self.policy_network(batch.state_batch) \
+            .gather(1, batch.action_batch)
 
         # Compute V(s_{t+1}) for all next states.
         # Expected values of actions for non_final_next_states are computed
@@ -161,15 +197,17 @@ class BaseAgent(RewardMixin):
         next_state_values = torch.zeros(Config.BATCH_SIZE, device=self.device)
 
         with torch.no_grad():
-            next_state_values[non_final_mask] = \
-                self.target_network(non_final_next_states).max(1)[0]
+            next_state_values[batch.non_final_mask] = \
+                self.target_network(batch.non_final_next_states).max(1)[0]
 
         # Compute the expected Q values
-        value = reward_batch + (Config.GAMMA * next_state_values)
+        value = batch.reward_batch + (Config.GAMMA * next_state_values)
         expected_state_action_values = value
 
         loss = self.compute_loss(state_action_values,
                                  expected_state_action_values)
+        self.update_info('loss', loss.item())
+        self.update_history('loss', loss.item())
 
         # optimize the model
         self.optimizer.zero_grad()
@@ -179,9 +217,9 @@ class BaseAgent(RewardMixin):
         torch.nn.utils.clip_grad_value_(self.policy_network.parameters(), 100)
         self.optimizer.step()
 
-    def log_info(self, episode, info):
+    def log_info(self, episode):
         """Write info to logger"""
-        out = info.copy()
+        out = self.info.copy()
         out['reward'] = '{:.3e}'.format(out['reward'])
         logger.info(f'episode {episode}, {out}')
 
@@ -206,8 +244,6 @@ class BaseAgent(RewardMixin):
                                                            episode=i,
                                                            step_number=t,
                                                            training=True)
-                self.log_info(self.current_episode, info)
-
                 reward = torch.tensor([info['reward']], device=self.device)
 
                 # Store the experience in the memory
@@ -217,7 +253,9 @@ class BaseAgent(RewardMixin):
                 state = next_state
 
                 # Kick agent out of local minima
-                if self.is_constant_loss(self.history[i]['loss']) and not done:
+                check = (self.is_constant_complexity(
+                    self.history[i]['complexity']) and not done)
+                if check:
                     break
 
                 # Perform one step of the optimization (on the policy network)
@@ -225,6 +263,7 @@ class BaseAgent(RewardMixin):
                 # Network using the stored memory
                 self.optimize_model()
 
+                self.log_info(self.current_episode)
                 # Soft update of the target network's weights
                 # θ′ ← τθ + (1 − τ)θ′
                 # policy_network.state_dict() returns the parameters of the
@@ -252,13 +291,19 @@ class BaseAgent(RewardMixin):
         """Get training history of policy_network"""
         return self._history
 
-    def update_history(self, episode, entry):
-        """Update training history of policy_network"""
+    def append_history(self, episode, entry):
+        """Append latest step for training history of policy_network"""
         if episode not in self._history:
-            self._history[episode] = {'loss': [], 'reward': [], 'state': []}
-        self._history[episode]['loss'].append(entry['loss'])
+            self._history[episode] = {'complexity': [], 'loss': [],
+                                      'reward': [], 'state': []}
+        self._history[episode]['complexity'].append(entry['complexity'])
+        self._history[episode]['loss'].append(entry.get('loss', np.nan))
         self._history[episode]['reward'].append(entry['reward'])
         self._history[episode]['state'].append(entry['state'])
+
+    def update_history(self, key, value):
+        """Update latest step for training history of policy_network"""
+        self._history[self.current_episode][key][-1] = value
 
     def step(self, state, episode=0, step_number=0, training=False):
         """Take next step from current state
@@ -291,7 +336,7 @@ class BaseAgent(RewardMixin):
         action = self.choose_action(state, training=training)
         next_state, done, info = self._step(action.item(), step_number)
 
-        self.update_history(episode, info)
+        self.append_history(episode, info)
 
         if done:
             next_state = None
@@ -309,21 +354,21 @@ class BaseAgent(RewardMixin):
 
         Returns
         -------
-        loss : int
+        complexity : int
             Number of edges plus number of nodes in graph representation /
             expression_tree of the current solution approximation
         """
         x, *_ = self.env._get_symbols()
         solution_approx = simplify(expand(self.env.equation.replace(x, state)))
         if solution_approx == 0:
-            loss = 0
+            complexity = 0
         else:
             state_graph = utilities.to_graph(solution_approx,
                                              self.env.feature_dict)
-            loss = state_graph.number_of_nodes()
-            loss += state_graph.number_of_edges()
+            complexity = state_graph.number_of_nodes()
+            complexity += state_graph.number_of_edges()
 
-        return loss
+        return complexity
 
     def _step(self, action: int, step_number: int):
         """
@@ -365,23 +410,23 @@ class BaseAgent(RewardMixin):
         if self.too_long(new_state_vec):
             done = True
 
-        # If loss is zero, you have solved the problem
-        loss = self.expression_complexity(new_state_string)
-        if loss == 0:
+        # If complexity is zero, you have solved the problem
+        complexity = self.expression_complexity(new_state_string)
+        if complexity == 0:
             done = True
 
         # Update
         self.state_string = new_state_string
 
-        if loss == 0:
+        if complexity == 0:
             logger.info(f'solution is: {self.state_string}')
 
             # reward finding solution in fewer steps
             reward += 10 / (1 + step_number)
 
         # Extra info
-        self.info = {'loss': loss, 'reward': reward,
-                     'state': self.state_string}
+        self.info = {'complexity': complexity, 'loss': np.nan,
+                     'reward': reward, 'state': self.state_string}
 
         return self.convert_state(new_state_string), done, self.info
 
@@ -399,7 +444,7 @@ class BaseAgent(RewardMixin):
         reward : int
             Difference between loss for state_new and state_old
         """
-        return self.inv_loss_reward(state_old, state_new)
+        return self.diff_loss_reward(state_old, state_new)
 
     def predict(self, state_string):
         """
@@ -410,25 +455,26 @@ class BaseAgent(RewardMixin):
                              device=self.device).unsqueeze(0)
         done = False
         t = 0
-        losses = []
+        complexities = []
         while not done:
             _, _, _, done = self.step(state, training=False)
-            loss = self.expression_complexity(self.env.state_string)
-            losses.append(loss)
+            complexity = self.expression_complexity(self.env.state_string)
+            complexities.append(complexity)
             t += 1
 
-            if self.is_constant_loss(losses):
+            if self.is_constant_complexity(complexity):
                 done = True
 
         logger.info(f"Solver terminated after {t} steps. Final "
-                    f"state = {self.env.state_string} with loss = {loss}.")
+                    f"state = {self.env.state_string} with complexity = "
+                    f"{complexity}.")
 
-    def is_constant_loss(self, losses):
+    def is_constant_complexity(self, complexities):
         """Check for constant loss over a long number of steps"""
-        check = (len(losses) >= Config.RESET_STEPS
-                 and len(set(losses[-Config.RESET_STEPS:])) <= 1)
+        check = (len(complexities) >= Config.RESET_STEPS
+                 and len(set(complexities[-Config.RESET_STEPS:])) <= 1)
         if check:
-            logger.info(f'Loss has been constant ({list(losses)[-1]}) '
+            logger.info(f'Loss has been constant ({list(complexities)[-1]}) '
                         f'for {Config.RESET_STEPS} steps. Reseting.')
         return check
 

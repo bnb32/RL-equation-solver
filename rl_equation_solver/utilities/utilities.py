@@ -37,6 +37,15 @@ class Node:
         return self.name
 
 
+class VectorEmbedding:
+    """Vector embedding class for embedding feature vector in vector of
+    fixed size"""
+    def __init__(self, vector, n_observations, device):
+        self.vector = pad_array(vector, n_observations)
+        self.vector = torch.tensor(self.vector, device=device,
+                                   dtype=torch.float32)
+
+
 class GraphEmbedding:
     """Graph embedding class for embedding adjacency matrix and node features
     in matrices of fixed sizes"""

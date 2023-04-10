@@ -59,7 +59,7 @@ class GCN(nn.Module):
                               cached=True)
         self.dropout = dropout
 
-    def forward(self, graph):
+    def _forward(self, graph):
         """Forward pass for a given state graph"""
         x = graph.x.T
         edge_index = graph.adj
@@ -69,3 +69,10 @@ class GCN(nn.Module):
         x = self.layer2(x, edge_index)
         x = torch.matmul(graph.onehot_values, x)
         return x
+
+    def forward(self, graph):
+        """Forward pass for a given state graph or tuple of graphs"""
+        if isinstance(graph, (tuple, list)):
+            return torch.cat([self._forward(G) for G in graph])
+        else:
+            return self._forward(graph)

@@ -10,7 +10,7 @@ class RewardMixin:
     def expression_complexity(self, state):
         """Get the graph / expression complexity for a given state"""
 
-    def loss_diff_reward(self, state_old, state_new):
+    def diff_loss_reward(self, state_old, state_new):
         """
         Reward is decrease in complexity
 
