@@ -1,8 +1,8 @@
 """Networks for agent policies"""
+import torch
 from torch import nn
 import torch.nn.functional as F
-
-from rl_equation_solver.agent.layers import GraphConvolution as GCNConv
+from torch_geometric.nn import GCNConv
 
 
 class DQN(nn.Module):
@@ -53,16 +53,19 @@ class GCN(nn.Module):
         self.n_observations = n_observations
         self.n_actions = n_actions
         self.hidden_size = hidden_size
-        self.layer1 = GCNConv(n_observations, hidden_size)
-        self.layer2 = GCNConv(hidden_size, n_actions)
+        self.layer1 = GCNConv(n_observations, hidden_size, normalize=True,
+                              cached=True)
+        self.layer2 = GCNConv(hidden_size, n_actions, normalize=True,
+                              cached=True)
         self.dropout = dropout
 
     def forward(self, graph):
         """Forward pass for a given state graph"""
-        x = graph.x
+        x = graph.x.T
         edge_index = graph.adj
         x = F.dropout(x, p=self.dropout, training=self.training)
         x = F.relu(self.layer1(x, edge_index))
         x = F.dropout(x, p=self.dropout, training=self.training)
-        x = self.layer2(x, edge_index).unsqueeze(0)
+        x = self.layer2(x, edge_index)
+        x = torch.matmul(graph.onehot_values, x)
         return x

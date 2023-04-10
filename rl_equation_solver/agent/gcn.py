@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class Agent(BaseAgent):
     """Agent with GCN target and policy networks"""
 
-    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
+    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
         """
         Parameters
         ----------
@@ -24,7 +24,7 @@ class Agent(BaseAgent):
         hidden_size : int
             size of hidden layers
         """
-        super().__init__(env, hidden_size)
+        super().__init__(env, hidden_size, device=device)
         self.n_observations = env.observation_space.n
         self.n_actions = env.action_space.n
         self.memory = ReplayMemory(Config.MEM_CAP)
@@ -47,8 +47,7 @@ class Agent(BaseAgent):
                                             self.env.feature_dict)
         return GraphEmbedding(self.env.graph,
                               n_observations=self.n_observations,
-                              n_actions=self.n_actions,
-                              n_features=Config.FEATURE_DIM,
+                              n_features=Config.FEATURE_NUM,
                               device=self.device)
 
     def convert_state(self, state):
@@ -57,6 +56,5 @@ class Agent(BaseAgent):
                                             self.env.feature_dict)
         return GraphEmbedding(self.env.graph,
                               n_observations=self.n_observations,
-                              n_actions=self.n_actions,
-                              n_features=Config.FEATURE_DIM,
+                              n_features=Config.FEATURE_NUM,
                               device=self.device)

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class Agent(BaseAgent):
     """Agent with DQN target and policy networks"""
 
-    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
+    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
         """
         Parameters
         ----------
@@ -24,7 +24,7 @@ class Agent(BaseAgent):
         hidden_size : int
             size of hidden layers
         """
-        super().__init__(env, hidden_size)
+        super().__init__(env, hidden_size, device=device)
         n_actions = env.action_space.n
         n_observations = env.observation_space.n
         self.memory = ReplayMemory(Config.MEM_CAP)

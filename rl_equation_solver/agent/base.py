@@ -43,7 +43,7 @@ class ReplayMemory:
 class BaseAgent(RewardMixin):
     """Agent with DQN target and policy networks"""
 
-    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE):
+    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
         """
         Parameters
         ----------
@@ -64,6 +64,7 @@ class BaseAgent(RewardMixin):
         self.max_loss = 50
         self.current_episode = 0
         self.info = None
+        self._device = device
 
     @abstractmethod
     def init_state(self):
@@ -78,12 +79,14 @@ class BaseAgent(RewardMixin):
     @property
     def device(self):
         """Get device for training network"""
-        if torch.cuda.is_available():
-            return torch.device('cuda:0')
-        elif torch.backends.mps.is_available():
-            return torch.device('mps:0')
-        else:
-            return torch.device('cpu')
+        if self._device is None:
+            if torch.cuda.is_available():
+                self._device = torch.device('cuda:0')
+            elif torch.backends.mps.is_available():
+                self._device = torch.device('mps:0')
+            else:
+                self._device = torch.device('cpu')
+        return self._device
 
     def choose_optimal_action(self, state):
         """
@@ -111,6 +114,13 @@ class BaseAgent(RewardMixin):
             return self.choose_optimal_action(state)
         else:
             return self.choose_random_action()
+
+    def compute_loss(self, state_action_values, expected_state_action_values):
+        """Compute Huber loss"""
+        criterion = nn.SmoothL1Loss()
+        loss = criterion(state_action_values,
+                         expected_state_action_values.unsqueeze(1))
+        return loss
 
     def choose_random_action(self):
         """Choose random action rather than the optimal action"""
@@ -158,10 +168,8 @@ class BaseAgent(RewardMixin):
         value = reward_batch + (Config.GAMMA * next_state_values)
         expected_state_action_values = value
 
-        # Compute Huber loss
-        criterion = nn.SmoothL1Loss()
-        loss = criterion(state_action_values,
-                         expected_state_action_values.unsqueeze(1))
+        loss = self.compute_loss(state_action_values,
+                                 expected_state_action_values)
 
         # optimize the model
         self.optimizer.zero_grad()
@@ -290,9 +298,9 @@ class BaseAgent(RewardMixin):
 
         return action, next_state, done, info
 
-    def find_loss(self, state):
+    def expression_complexity(self, state):
         """
-        Compute loss for the given state
+        Compute graph / expression complexity for the given state
 
         Parameters
         ----------
@@ -358,7 +366,7 @@ class BaseAgent(RewardMixin):
             done = True
 
         # If loss is zero, you have solved the problem
-        loss = self.find_loss(new_state_string)
+        loss = self.expression_complexity(new_state_string)
         if loss == 0:
             done = True
 
@@ -405,7 +413,7 @@ class BaseAgent(RewardMixin):
         losses = []
         while not done:
             _, _, _, done = self.step(state, training=False)
-            loss = self.find_loss(self.env.state_string)
+            loss = self.expression_complexity(self.env.state_string)
             losses.append(loss)
             t += 1
 

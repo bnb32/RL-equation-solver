@@ -40,33 +40,24 @@ class Node:
 class GraphEmbedding:
     """Graph embedding class for embedding adjacency matrix and node features
     in matrices of fixed sizes"""
-    def __init__(self, graph, n_observations, n_actions, n_features,
-                 device):
-        self._x = from_networkx(graph).x
-        self._adj = nx.adjacency_matrix(graph).todense()
-        self.n_observations = n_observations
-        self.n_actions = n_actions
-        self.n_features = n_features
+    def __init__(self, graph, n_observations, n_features, device):
+        G = from_networkx(graph)
+        self._x = G.x.to(device)
+        self.adj = G.edge_index.to(device)
 
-        self.x = np.zeros((n_observations))
-        self.adj = np.zeros((n_actions, n_actions), dtype=np.int32)
-
-        # add identity matrix
-        self._adj += np.identity(self._adj.shape[0], dtype=np.int32)
+        self._x, self.onehot_values = encode_onehot(np.array(self._x))
+        self.onehot_values = np.array(list(self.onehot_values.keys()))
+        self.onehot_values = pad_array(self.onehot_values, n_features)
+        self.x = np.zeros((n_observations, n_features))
 
         # embed in larger constant size matricies
         max_i = min(self._x.shape[0], n_observations)
-        self.x[:max_i] = self._x[:max_i]
+        max_j = min(self._x.shape[1], n_features)
+        self.x[:max_i, :max_j] = self._x[:max_i:, :max_j]
 
-        max_i = min(self._adj.shape[0], n_actions)
-        max_j = min(self._adj.shape[1], n_actions)
-        self.adj[:max_i, :max_j] = self._adj[:max_i, :max_j]
-
-        self.adj = self.adj / np.linalg.norm(self.adj)
-        self.x = self.x / np.linalg.norm(self.x)
-
-        self.adj = torch.tensor(self.adj, device=device, dtype=torch.float32)
         self.x = torch.tensor(self.x, device=device, dtype=torch.float32)
+        self.onehot_values = torch.tensor(self.onehot_values, device=device,
+                                          dtype=torch.float32).unsqueeze(0)
 
 
 def graph_walk(parent, expr, node_list, link_list):
@@ -100,6 +91,18 @@ def graph_walk(parent, expr, node_list, link_list):
             graph_walk(node, arg, node_list, link_list)
 
 
+def pad_array(arr, length):
+    """
+    Pad array with zeros according the given length
+    """
+    if len(arr) < length:
+        padded_arr = np.zeros(length)
+        padded_arr[:len(arr)] = arr
+        return padded_arr
+    else:
+        return arr
+
+
 def to_vec(expr, feature_dict, state_dim=4096):
     """
     Get state vector for given expression
@@ -118,17 +121,6 @@ def to_vec(expr, feature_dict, state_dim=4096):
     np.ndarray
         State vector array
     """
-    def pad_array(arr, length):
-        """
-        Pad array with zeros according the given length
-        """
-        if len(arr) < length:
-            padded_arr = np.zeros(length)
-            padded_arr[:len(arr)] = arr
-            return padded_arr
-        else:
-            return arr
-
     graph = get_json_graph(expr)
     node_features = get_node_features(graph, feature_dict)
     node_features = pad_array(node_features, int(0.25 * state_dim))
@@ -276,4 +268,4 @@ def encode_onehot(labels):
                     enumerate(classes)}
     labels_onehot = np.array(list(map(classes_dict.get, labels)),
                              dtype=np.int32)
-    return labels_onehot
+    return labels_onehot, classes_dict
