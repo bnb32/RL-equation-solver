@@ -9,7 +9,7 @@ def div(a, b):
 
 def root(a, b):
     """Define root function"""
-    return pow(a, 1 / b)
+    return pow(a, pow(b, -1))
 
 
 # pylint: disable=unused-argument
@@ -22,3 +22,12 @@ def sqrt(a, b):
 def square(a, b):
     """Define square function"""
     return a * a
+
+
+def fraction(a):
+    """Return float from fraction"""
+    if "/" in a:
+        a, b = a.split("/")
+        return int(a) / int(b)
+    else:
+        return float(a)

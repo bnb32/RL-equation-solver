@@ -8,6 +8,8 @@ import networkx as nx
 from networkx.readwrite import json_graph
 from networkx.drawing.nx_pydot import graphviz_layout
 
+from rl_equation_solver.utilities.operators import fraction
+
 
 Experience = namedtuple('Experience',
                         ('state', 'action', 'next_state', 'reward'))
@@ -90,7 +92,7 @@ class GraphEmbedding:
         self._x = G.x.to(device)
         self.adj = G.edge_index.to(device)
 
-        self._x, self.onehot_values = encode_onehot(np.array(self._x))
+        self._x, self.onehot_values = encode_onehot(np.array(self._x.cpu()))
         self.onehot_values = np.array(list(self.onehot_values.keys()))
         self.onehot_values = pad_array(self.onehot_values, n_features)
         self.x = np.zeros((n_observations, n_features))
@@ -231,14 +233,23 @@ def to_graph(expr, feature_dict):
     return graph
 
 
+def parse_node_features(node_features, feature_dict):
+    """Parse node features. Includes string to fraction parsing"""
+    parsed_features = []
+    for key in node_features:
+        if key in feature_dict:
+            parsed_features.append(int(feature_dict[key]))
+        else:
+            parsed_features.append(fraction(key))
+    return parsed_features
+
+
 def get_node_features(graph, feature_dict):
     """Get node features from feature dictionary. e.g. we can map the
     operations and terms to integeters: {add: 0, sub: 1, .. }"""
     node_labels = get_node_labels(graph)
     node_features = list(node_labels.values())
-    node_features = np.array([int(feature_dict[key]) if key
-                              in feature_dict else int(float(key))
-                              for key in node_features])
+    node_features = np.array(parse_node_features(node_features, feature_dict))
     return node_features
 
 

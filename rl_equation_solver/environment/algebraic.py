@@ -1,7 +1,7 @@
 """Environment for linear equation solver"""
 
 from gym import spaces
-from sympy import symbols
+from sympy import symbols, nsimplify
 from operator import add, sub, truediv, pow
 import logging
 
@@ -56,13 +56,13 @@ class Env:
         ----------
         order : int
             Order of alegraic equation. e.g. if order = 2 then the equation
-            to solve will be a1 * x + a0 = 0
+            to solve will be a0 * x + a1 = 0
         """
 
         # Initialize the state
         self.order = order
-        self.state_string = None
-        self.operations = [add, sub, truediv, pow]
+        self._state_string = None
+        self._operations = None
         self._actions = None
         self._terms = None
         self._feature_dict = None
@@ -78,6 +78,23 @@ class Env:
         self.action_dim = len(self.actions)
         self.action_space = spaces.Discrete(self.action_dim)
         self.observation_space = spaces.Discrete(self.state_dim)
+
+    @property
+    def state_string(self):
+        """Get string representation of the solution state"""
+        return nsimplify(self._state_string)
+
+    @state_string.setter
+    def state_string(self, value):
+        """Set string representation of solution state"""
+        self._state_string = value
+
+    @property
+    def operations(self):
+        """Get list of valid operations"""
+        if self._operations is None:
+            self._operations = [add, sub, truediv, pow]
+        return self._operations
 
     @property
     def feature_dict(self):
@@ -128,13 +145,16 @@ class Env:
         symbols
         """
         symbol_list = 'x '
-        symbol_list += ' '.join([f'a{i}' for i in range(self.order)[::-1]])
+        symbol_list += ' '.join([f'a{i}' for i in range(self.order)])
         return symbols(symbol_list)
 
     def _get_terms(self):
         """Get terms for quadratic equation"""
         _, *coeffs = self._get_symbols()
-        return [*coeffs, 1]
+        terms = [*coeffs, 1]
+        if self.order > 2:
+            terms.append(1 / (self.order - 1))
+        return terms
 
     @property
     def state_vec(self):

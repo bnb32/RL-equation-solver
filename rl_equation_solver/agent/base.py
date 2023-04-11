@@ -4,9 +4,10 @@ import random
 from collections import deque
 from itertools import count
 import torch
+from torch import optim
 import logging
 from abc import abstractmethod
-from sympy import simplify, expand
+from sympy import simplify, expand, nsimplify
 import numpy as np
 
 from rl_equation_solver.config import Config
@@ -51,6 +52,8 @@ class BaseAgent(RewardMixin, LossMixin):
         """
         self.env = env
         self.hidden_size = hidden_size
+        self.n_actions = env.action_space.n
+        self.n_observations = env.observation_space.n
         self.steps_done = 0
         self.memory = None
         self.policy_network = None
@@ -75,6 +78,11 @@ class BaseAgent(RewardMixin, LossMixin):
     @abstractmethod
     def batch_states(self, states):
         """Convert states into a batch"""
+
+    def init_optimizer(self):
+        """Initialize optimizer"""
+        self.optimizer = optim.AdamW(self.policy_network.parameters(),
+                                     lr=Config.LR, amsgrad=True)
 
     @property
     def device(self):
@@ -134,7 +142,9 @@ class BaseAgent(RewardMixin, LossMixin):
 
     def optimize_model(self):
         """
-        function that performs a single step of the optimization
+        Perform one step of the optimization (on the policy network). The agent
+        performs an optimization step on the Policy Network using the stored
+        memory
         """
 
         if len(self.memory) < Config.BATCH_SIZE:
@@ -143,25 +153,12 @@ class BaseAgent(RewardMixin, LossMixin):
         transition = self.memory.sample(Config.BATCH_SIZE)
         batch = self.batch_states(transition, device=self.device)
 
-        # Compute Q(s_t, a)
-        # These are the actions which would've been taken
-        # for each batch state according to policy_net
-        state_action_values = self.policy_network(batch.state_batch) \
-            .gather(1, batch.action_batch)
+        state_action_values = self.compute_Q(batch)
 
-        # Compute V(s_{t+1}) for all next states.
-        # Expected values of actions for non_final_next_states are computed
-        # based on the "older" target_net; selecting their best reward with
-        # max(1)[0].
-        next_state_values = torch.zeros(Config.BATCH_SIZE, device=self.device)
+        next_state_values = self.compute_V(batch)
 
-        with torch.no_grad():
-            next_state_values[batch.non_final_mask] = \
-                self.target_network(batch.non_final_next_states).max(1)[0]
-
-        # Compute the expected Q values
-        value = batch.reward_batch + (Config.GAMMA * next_state_values)
-        expected_state_action_values = value
+        expected_state_action_values = self.compute_expected_Q(
+            batch, next_state_values)
 
         loss = self.compute_loss(state_action_values,
                                  expected_state_action_values)
@@ -173,8 +170,37 @@ class BaseAgent(RewardMixin, LossMixin):
         loss.backward()
 
         # In-place gradient clipping
-        torch.nn.utils.clip_grad_value_(self.policy_network.parameters(), 100)
+        torch.nn.utils.clip_grad_value_(self.policy_network.parameters(),
+                                        Config.GRAD_CLIP)
         self.optimizer.step()
+
+    def compute_expected_Q(self, batch, next_state_values):
+        """
+        Compute the expected Q values
+        """
+        return batch.reward_batch + (Config.GAMMA * next_state_values)
+
+    def compute_V(self, batch):
+        """
+        Compute V(s_{t+1}) for all next states. Expected values of actions for
+        non_final_next_states are computed based on the "older" target_net;
+        selecting their best reward with max(1)[0].
+        """
+        next_state_values = torch.zeros(Config.BATCH_SIZE, device=self.device)
+
+        with torch.no_grad():
+            next_state_values[batch.non_final_mask] = \
+                self.target_network(batch.non_final_next_states).max(1)[0]
+
+        return next_state_values
+
+    def compute_Q(self, batch):
+        """
+        Compute Q(s_t, a). These are the actions which would've been taken
+        for each batch state according to policy_net
+        """
+        return self.policy_network(batch.state_batch) \
+            .gather(1, batch.action_batch)
 
     def log_info(self, episode):
         """Write info to logger"""
@@ -217,24 +243,11 @@ class BaseAgent(RewardMixin, LossMixin):
                 if check:
                     break
 
-                # Perform one step of the optimization (on the policy network)
-                # The agent  performs an optimization step on the Policy
-                # Network using the stored memory
                 self.optimize_model()
 
                 self.log_info(self.current_episode)
-                # Soft update of the target network's weights
-                # θ′ ← τθ + (1 − τ)θ′
-                # policy_network.state_dict() returns the parameters of the
-                # policy network target_network.load_state_dict() loads these
-                # parameters into the target network.
-                target_net_state_dict = self.target_network.state_dict()
-                policy_net_state_dict = self.policy_network.state_dict()
-                for key in policy_net_state_dict:
-                    value = policy_net_state_dict[key] * Config.TAU
-                    value += target_net_state_dict[key] * (1 - Config.TAU)
-                    target_net_state_dict[key] = value
-                self.target_network.load_state_dict(target_net_state_dict)
+
+                self.update_networks()
                 total_reward += info['reward']
                 if done:
                     episode_duration.append(t + 1)
@@ -244,6 +257,21 @@ class BaseAgent(RewardMixin, LossMixin):
                                 f"{self.state_string}")
                     break
             self.current_episode += 1
+
+    def update_networks(self):
+        """
+        Soft update of the target network's weights θ′ ← τθ + (1 - τ)θ′
+        policy_network.state_dict() returns the parameters of the
+        policy network target_network.load_state_dict() loads these parameters
+        into the target network.
+        """
+        target_net_state_dict = self.target_network.state_dict()
+        policy_net_state_dict = self.policy_network.state_dict()
+        for key in policy_net_state_dict:
+            value = policy_net_state_dict[key] * Config.TAU
+            value += target_net_state_dict[key] * (1 - Config.TAU)
+            target_net_state_dict[key] = value
+        self.target_network.load_state_dict(target_net_state_dict)
 
     @property
     def history(self):
@@ -318,7 +346,8 @@ class BaseAgent(RewardMixin, LossMixin):
             expression_tree of the current solution approximation
         """
         x, *_ = self.env._get_symbols()
-        solution_approx = simplify(expand(self.env.equation.replace(x, state)))
+        replaced = self.env.equation.replace(x, state)
+        solution_approx = simplify(expand(nsimplify(replaced)))
         if solution_approx == 0:
             complexity = 0
         else:

@@ -76,3 +76,25 @@ class GCN(nn.Module):
             return torch.cat([self._forward(G) for G in graph])
         else:
             return self._forward(graph)
+
+
+class LSTM(nn.Module):
+    """LSTM network"""
+
+    def __init__(self, n_observations, n_actions, hidden_size, n_features):
+
+        super().__init__()
+        self.n_actions = n_actions
+        self.n_features = n_features
+        self.n_observations = n_observations
+        self.hidden_size = hidden_size
+
+        self.lstm = nn.LSTM(input_size=n_observations, hidden_size=hidden_size,
+                            num_layers=n_features, batch_first=True)
+        self.linear = nn.Linear(hidden_size, n_actions)
+
+    def forward(self, x):
+        """Forward pass on state x"""
+        x, _ = self.lstm(x)
+        x = self.linear(x)
+        return x

@@ -16,16 +16,18 @@ class Config:
     # means a slower decay
     EPSILON_DECAY = 100
     # TAU is the update rate of the target network
-    TAU = 0.05
+    TAU = 0.01
     # LR is the learning rate of the AdamW optimizer
     LR = 5e-5
     # the hidden layers in the DQN
-    HIDDEN_SIZE = 256
+    HIDDEN_SIZE = 64
     # memory capacity
     MEM_CAP = 10000
     # reset after this many steps with constant loss
     RESET_STEPS = 100
     # state vec max size
-    VEC_DIM = 4096
+    VEC_DIM = 512
     # max number of node features
     FEATURE_NUM = 100
+    # gradient clipping value
+    GRAD_CLIP = 100

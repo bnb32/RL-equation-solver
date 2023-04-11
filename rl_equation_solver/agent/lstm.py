@@ -3,7 +3,7 @@ import torch
 import logging
 
 from rl_equation_solver.agent.base import BaseAgent, Config, ReplayMemory
-from rl_equation_solver.agent.networks import DQN
+from rl_equation_solver.agent.networks import LSTM
 from rl_equation_solver.utilities import utilities
 
 
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Agent(BaseAgent):
-    """Agent with DQN target and policy networks"""
+    """Agent with LSTM target and policy networks"""
 
     def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
         """
@@ -25,13 +25,14 @@ class Agent(BaseAgent):
         """
         super().__init__(env, hidden_size, device=device)
         self.memory = ReplayMemory(Config.MEM_CAP)
-        self.policy_network = DQN(self.n_observations, self.n_actions,
-                                  hidden_size).to(self.device)
-        self.target_network = DQN(self.n_observations, self.n_actions,
-                                  hidden_size).to(self.device)
+        self.policy_network = LSTM(self.n_observations, self.n_actions,
+                                   hidden_size,
+                                   Config.FEATURE_NUM).to(self.device)
+        self.target_network = LSTM(self.n_observations, self.n_actions,
+                                   hidden_size,
+                                   Config.FEATURE_NUM).to(self.device)
         self.target_network.load_state_dict(self.policy_network.state_dict())
         self.init_optimizer()
-
         logger.info(f'Initialized Agent with device {self.device}')
 
     def init_state(self):
@@ -57,3 +58,9 @@ class Agent(BaseAgent):
         batch.non_final_next_states = torch.cat(batch.non_final_next_states)
         batch.state_batch = torch.cat(batch.state_batch)
         return batch
+
+    def compute_loss(self, state_action_values, expected_state_action_values):
+        """Compute L2 loss"""
+        loss = self.l2_loss(state_action_values,
+                            expected_state_action_values.unsqueeze(1))
+        return loss

@@ -1,5 +1,4 @@
 """Agent with GCN based policy"""
-from torch import optim
 import logging
 
 from rl_equation_solver.agent.base import BaseAgent, Config, ReplayMemory
@@ -25,17 +24,13 @@ class Agent(BaseAgent):
             size of hidden layers
         """
         super().__init__(env, hidden_size, device=device)
-        self.n_observations = env.observation_space.n
-        self.n_actions = env.action_space.n
         self.memory = ReplayMemory(Config.MEM_CAP)
         self.policy_network = GCN(self.n_observations, self.n_actions,
                                   hidden_size).to(self.device)
         self.target_network = GCN(self.n_observations, self.n_actions,
                                   hidden_size).to(self.device)
         self.target_network.load_state_dict(self.policy_network.state_dict())
-
-        self.optimizer = optim.AdamW(self.policy_network.parameters(),
-                                     lr=Config.LR, amsgrad=True)
+        self.init_optimizer()
 
         logger.info(f'Initialized Agent with device {self.device}')
 
