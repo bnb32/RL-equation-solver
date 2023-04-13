@@ -14,9 +14,9 @@ class Config:
     EPSILON_END = 0.05
     # EPSILON_DECAY controls the rate of exponential decay of epsilon, higher
     # means a slower decay
-    EPSILON_DECAY = 100
+    EPSILON_DECAY = 1000
     # TAU is the update rate of the target network
-    TAU = 0.01
+    TAU = 0.005
     # LR is the learning rate of the AdamW optimizer
     LR = 5e-5
     # the hidden layers in the DQN
@@ -26,7 +26,7 @@ class Config:
     # reset after this many steps with constant loss
     RESET_STEPS = 100
     # state vec max size
-    VEC_DIM = 512
+    VEC_DIM = 1024
     # max number of node features
     FEATURE_NUM = 100
     # gradient clipping value

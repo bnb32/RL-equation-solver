@@ -50,13 +50,17 @@ class Env:
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, order=2):
+    def __init__(self, order=2, init_state=None):
         """
         Parameters
         ----------
         order : int
             Order of alegraic equation. e.g. if order = 2 then the equation
             to solve will be a0 * x + a1 = 0
+        init_state : sympy.Equation | None
+            Optional initial guess for equation solution. e.g. -b/a, using
+            symbols from sympy.symbols('x a b'). If None then initial guess
+            will be (-1) * constant_term.
         """
 
         # Initialize the state
@@ -72,7 +76,8 @@ class Env:
 
         self.max_loss = 50
         self.state_dim = Config.VEC_DIM
-        self.state = self._init_state()
+        self._initial_state = init_state
+        self.state_string = init_state or self._init_state()
 
         # Gym compatibility
         self.action_dim = len(self.actions)
@@ -124,18 +129,6 @@ class Env:
             self._equation = self._get_equation()
         return self._equation
 
-    def reset(self):
-        """
-        Reset the environment state
-
-        Returns
-        -------
-        state_vec : np.ndarray
-            Vector representing initial state
-        """
-        _ = self._init_state()
-        return self.state_vec
-
     def _get_symbols(self):
         """
         Get equation symbols. e.g. symbols('x a b')
@@ -151,9 +144,9 @@ class Env:
     def _get_terms(self):
         """Get terms for quadratic equation"""
         _, *coeffs = self._get_symbols()
-        terms = [*coeffs, 1]
-        if self.order > 2:
-            terms.append(1 / (self.order - 1))
+        terms = [*coeffs, 0]
+        for n in range(1, self.order):
+            terms.append(1 / n)
         return terms
 
     @property
@@ -195,8 +188,10 @@ class Env:
         state_string : str
             State string representing environment state
         """
-        *_, init = self._get_symbols()
-        self.state_string = -init
+        if self._initial_state is None:
+            *_, init = self._get_symbols()
+            self._initial_state = -init
+        self.state_string = self._initial_state
         return self.state_string
 
     def _get_equation(self):
@@ -232,6 +227,7 @@ class Env:
         """Return feature dict representing features at each node"""
         keys = ['Add', 'Mul', 'Pow']
         keys += [str(sym) for sym in self._get_symbols()]
+        keys += ['I']
         return {key: -(i + 2) for i, key in enumerate(keys)}
 
     # pylint: disable=unused-argument
@@ -239,4 +235,4 @@ class Env:
         """
         Print the state string representation
         """
-        print(self.state)
+        print(self.state_string)

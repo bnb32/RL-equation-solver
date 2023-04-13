@@ -9,6 +9,7 @@ import logging
 from abc import abstractmethod
 from sympy import simplify, expand, nsimplify
 import numpy as np
+import pprint
 
 from rl_equation_solver.config import Config
 from rl_equation_solver.utilities.reward import RewardMixin
@@ -206,7 +207,8 @@ class BaseAgent(RewardMixin, LossMixin):
         """Write info to logger"""
         out = self.info.copy()
         out['reward'] = '{:.3e}'.format(out['reward'])
-        logger.info(f'episode {episode}, {out}')
+        logger.info(pprint.pformat(f'episode {episode}, steps_done '
+                                   f'{self.steps_done}, {out}', indent=4))
 
     def train(self, num_episodes):
         r"""Train the model for the given number of episodes.

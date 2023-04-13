@@ -85,8 +85,8 @@ class VectorEmbedding:
 
 
 class GraphEmbedding:
-    """Graph embedding class for embedding adjacency matrix and node features
-    in matrices of fixed sizes"""
+    """Graph embedding class for embedding node features in matrix of fixed
+    sizes"""
     def __init__(self, graph, n_observations, n_features, device):
         G = from_networkx(graph)
         self._x = G.x.to(device)
