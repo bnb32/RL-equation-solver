@@ -36,9 +36,8 @@ class Agent(BaseAgent):
 
     def init_state(self):
         """Initialize state as a graph"""
-        state_string = self.env._init_state()
-        self.env.state_string = state_string
-        self.env.graph = utilities.to_graph(state_string,
+        self.env._init_state()
+        self.env.graph = utilities.to_graph(self.env.state_string,
                                             self.env.feature_dict)
         return GraphEmbedding(self.env.graph,
                               n_observations=self.n_observations,

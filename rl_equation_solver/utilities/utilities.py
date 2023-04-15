@@ -142,9 +142,10 @@ def pad_array(arr, length):
     """
     Pad array with zeros according the given length
     """
+    max_i = min((length, len(arr)))
+    padded_arr = np.zeros(length)
+    padded_arr[:max_i] = arr[:max_i]
     if len(arr) < length:
-        padded_arr = np.zeros(length)
-        padded_arr[:len(arr)] = arr
         return padded_arr
     else:
         return arr
@@ -173,7 +174,7 @@ def to_vec(expr, feature_dict, state_dim=4096):
     node_features = pad_array(node_features, int(0.25 * state_dim))
     edge_vector = nx.to_numpy_array(graph).flatten()
     edge_vector = pad_array(edge_vector, int(0.75 * state_dim))
-    state_vec = np.concatenate([node_features, edge_vector])
+    state_vec = np.concatenate([node_features, edge_vector], dtype=np.float32)
 
     return state_vec
 

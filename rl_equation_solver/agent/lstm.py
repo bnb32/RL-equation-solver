@@ -37,9 +37,8 @@ class Agent(BaseAgent):
 
     def init_state(self):
         """Initialize state as a vector"""
-        state_string = self.env._init_state()
-        self.env.state_string = state_string
-        self.env.state_vec = utilities.to_vec(state_string,
+        self.env._init_state()
+        self.env.state_vec = utilities.to_vec(self.env.state_string,
                                               self.env.feature_dict,
                                               self.env.state_dim)
         return torch.tensor(self.env.state_vec, dtype=torch.float32,

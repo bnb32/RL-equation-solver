@@ -1,18 +1,21 @@
 """Environment for linear equation solver"""
-
+import gym
+import pygame
 from gym import spaces
-from sympy import symbols, nsimplify
+from sympy import symbols, nsimplify, simplify, expand
 from operator import add, sub, truediv, pow
 import logging
+import numpy as np
 
 from rl_equation_solver.config import Config
 from rl_equation_solver.utilities import utilities
+from rl_equation_solver.utilities.reward import RewardMixin
 
 
 logger = logging.getLogger(__name__)
 
 
-class Env:
+class Env(gym.Env, RewardMixin):
     """
     Environment for solving algebraic equations using RL.
 
@@ -73,6 +76,8 @@ class Env:
         self._state_vec = None
         self._state_graph = None
         self._equation = None
+        self.info = None
+        self.step_number = 0
 
         self.max_loss = 50
         self.state_dim = Config.VEC_DIM
@@ -82,7 +87,17 @@ class Env:
         # Gym compatibility
         self.action_dim = len(self.actions)
         self.action_space = spaces.Discrete(self.action_dim)
-        self.observation_space = spaces.Discrete(self.state_dim)
+        min_val = min(self.feature_dict.values())
+        self.observation_space = spaces.Box(min_val,
+                                            min_val + self.state_dim,
+                                            shape=(self.state_dim,),
+                                            dtype=np.float32)
+        self.n_actions = self.action_space.n
+        self.n_obs = self.observation_space.shape[0]
+
+        logger.info(f'Initializing environment with order={order}, |S| = '
+                    f'{self.n_actions} x {self.n_obs} = '
+                    f'{self.n_actions * self.n_obs}')
 
     @property
     def state_string(self):
@@ -181,18 +196,27 @@ class Env:
 
     def _init_state(self):
         """
-        Get environment state
-
-        Returns
-        -------
-        state_string : str
-            State string representing environment state
+        Initialize environment state
         """
         if self._initial_state is None:
             *_, init = self._get_symbols()
             self._initial_state = -init
         self.state_string = self._initial_state
-        return self.state_string
+
+    # pylint: disable=unused-argument
+    def reset(self, seed=None, options=None):
+        """
+        Reset environment state
+
+        Returns
+        -------
+        state_vec : np.ndarray
+            State vector representing environment state
+        info : dict
+            Dictionary with training info
+        """
+        self._init_state()
+        return self.state_vec
 
     def _get_equation(self):
         """
@@ -230,9 +254,137 @@ class Env:
         keys += ['I']
         return {key: -(i + 2) for i, key in enumerate(keys)}
 
+    def find_reward(self, state_old, state_new):
+        """
+        Parameters
+        ----------
+        state_old : str
+            String representation of last state
+        state_new : str
+            String representation of new state
+
+        Returns
+        -------
+        reward : int
+            Difference between loss for state_new and state_old
+        """
+        return self.diff_loss_reward(state_old, state_new)
+
+    def too_long(self, state):
+        """
+        Check if state dimension is too large
+
+        Parameters
+        ----------
+        state : str
+            State string representation
+
+        Returns
+        -------
+        bool
+        """
+        return len(state) > self.state_dim
+
+    def expression_complexity(self, state):
+        """
+        Compute graph / expression complexity for the given state
+
+        Parameters
+        ----------
+        state : str
+            String representation of the current state
+
+        Returns
+        -------
+        complexity : int
+            Number of edges plus number of nodes in graph representation /
+            expression_tree of the current solution approximation
+        """
+        x, *_ = self._get_symbols()
+        replaced = self.equation.replace(x, state)
+        solution_approx = simplify(expand(nsimplify(replaced)))
+        if solution_approx == 0:
+            complexity = 0
+        else:
+            state_graph = utilities.to_graph(solution_approx,
+                                             self.feature_dict)
+            complexity = state_graph.number_of_nodes()
+            complexity += state_graph.number_of_edges()
+
+        return complexity
+
+    def step(self, action: int):
+        """
+        Take step corresponding to the given action
+
+        Parameters
+        ----------
+        action : int
+            Action index corresponding to the entry in the action list
+            constructed in _make_physical_actions
+        step_number : int
+            Number of steps taken so far.
+
+        Returns
+        -------
+        new_state : Tensor | GraphEmbedding
+            New state after action. Represented as a pytorch Tensor or
+            GraphEmbedding
+        reward : float
+            Reward from taking this step
+        done : bool
+            Whether problem is solved or if maximum state dimension is reached
+        info : dict
+            Additional information
+        """
+        # action is 0,1,2,3, ...,  get the physical actions it indexes
+        [operation, term] = self.actions[action]
+        new_state_string = operation(self.state_string, term)
+        new_state_string = simplify(new_state_string)
+        new_state_vec = utilities.to_vec(new_state_string,
+                                         self.feature_dict,
+                                         self.state_dim)
+
+        # Reward
+        reward = self.find_reward(self.state_string, new_state_string)
+
+        # Done
+        done = False
+        if self.too_long(new_state_vec):
+            done = True
+
+        # If complexity is zero, you have solved the problem
+        complexity = self.expression_complexity(new_state_string)
+        if complexity == 0:
+            done = True
+
+        # Update
+        if not done or complexity == 0:
+            self.state_string = new_state_string
+
+        if complexity == 0:
+            logger.info(f'solution is: {self.state_string}')
+
+            # reward finding solution in fewer steps
+            reward += 10 / (1 + self.step_number)
+
+        # Extra info
+        self.info = {'complexity': complexity, 'loss': np.nan,
+                     'reward': reward, 'state': self.state_string}
+        if done:
+            logger.info(f'info: {self.info}')
+
+        return self.state_vec, reward, done, self.info
+
     # pylint: disable=unused-argument
     def render(self, mode='human'):
         """
         Print the state string representation
         """
         print(self.state_string)
+
+    def close(self):
+        """Close resources"""
+        if self.window is not None:
+            pygame.display.quit()
+            pygame.quit()

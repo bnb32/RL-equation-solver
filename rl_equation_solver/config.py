@@ -16,7 +16,7 @@ class Config:
     # means a slower decay
     EPSILON_DECAY = 1000
     # TAU is the update rate of the target network
-    TAU = 0.005
+    TAU = 1
     # LR is the learning rate of the AdamW optimizer
     LR = 5e-5
     # the hidden layers in the DQN
