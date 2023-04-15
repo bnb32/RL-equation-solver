@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 project = 'rl_equation_solver'
 copyright = '2023'
-author = "Brandon Benton, Kevin O'Keefe"
+author = "Brandon Benton, Kevin O'Keeffe"
 
 pkg = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 pkg = os.path.dirname(pkg)

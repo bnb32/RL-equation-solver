@@ -8,7 +8,8 @@ class RewardMixin:
 
     @abstractmethod
     def expression_complexity(self, state):
-        """Get the graph / expression complexity for a given state"""
+        """Get the graph / expression complexity for a given state. This is
+        equal to number_of_nodes + number_of_edges"""
 
     def diff_loss_reward(self, state_old, state_new):
         """

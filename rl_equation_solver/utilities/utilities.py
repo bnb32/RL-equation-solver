@@ -232,7 +232,8 @@ def to_graph(expr, feature_dict):
 
 
 def get_node_features(graph, feature_dict):
-    """Get node features from feature dictionary"""
+    """Get node features from feature dictionary. e.g. we can map the
+    operations and terms to integeters: {add: 0, sub: 1, .. }"""
     node_labels = get_node_labels(graph)
     node_features = list(node_labels.values())
     node_features = np.array([int(feature_dict[key]) if key
