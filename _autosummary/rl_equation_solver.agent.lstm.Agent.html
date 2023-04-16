@@ -516,9 +516,9 @@ been exceeded.</p></li>
 <span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.lstm.Agent.train" title="Permalink to this definition"></a></dt>
 <dd><p>Train the model for the given number of episodes.</p>
 <p>The agent will perform a soft update of the Target Network’s weights,
-with the equation <span class="math notranslate nohighlight">\(\tau \text{ policy_net_state_dict} + (1 - \tau)
-\text{ target_net_state_dict}\)</span>, this helps to make the Target Network’s
-weights converge to the Policy Network’s weights.</p>
+with the equation <span class="math notranslate nohighlight">\(\tau \text{ policy_net_state_dict} +
+(1 - \tau) \text{ target_net_state_dict}\)</span>, this helps to make the
+Target Network’s weights converge to the Policy Network’s weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
