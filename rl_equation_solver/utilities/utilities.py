@@ -8,6 +8,8 @@ import networkx as nx
 from networkx.readwrite import json_graph
 from networkx.drawing.nx_pydot import graphviz_layout
 
+from rl_equation_solver.utilities.operators import fraction
+
 
 Experience = namedtuple('Experience',
                         ('state', 'action', 'next_state', 'reward'))
@@ -83,14 +85,14 @@ class VectorEmbedding:
 
 
 class GraphEmbedding:
-    """Graph embedding class for embedding adjacency matrix and node features
-    in matrices of fixed sizes"""
+    """Graph embedding class for embedding node features in matrix of fixed
+    sizes"""
     def __init__(self, graph, n_observations, n_features, device):
         G = from_networkx(graph)
         self._x = G.x.to(device)
         self.adj = G.edge_index.to(device)
 
-        self._x, self.onehot_values = encode_onehot(np.array(self._x))
+        self._x, self.onehot_values = encode_onehot(np.array(self._x.cpu()))
         self.onehot_values = np.array(list(self.onehot_values.keys()))
         self.onehot_values = pad_array(self.onehot_values, n_features)
         self.x = np.zeros((n_observations, n_features))
@@ -140,9 +142,10 @@ def pad_array(arr, length):
     """
     Pad array with zeros according the given length
     """
+    max_i = min((length, len(arr)))
+    padded_arr = np.zeros(length)
+    padded_arr[:max_i] = arr[:max_i]
     if len(arr) < length:
-        padded_arr = np.zeros(length)
-        padded_arr[:len(arr)] = arr
         return padded_arr
     else:
         return arr
@@ -171,7 +174,7 @@ def to_vec(expr, feature_dict, state_dim=4096):
     node_features = pad_array(node_features, int(0.25 * state_dim))
     edge_vector = nx.to_numpy_array(graph).flatten()
     edge_vector = pad_array(edge_vector, int(0.75 * state_dim))
-    state_vec = np.concatenate([node_features, edge_vector])
+    state_vec = np.concatenate([node_features, edge_vector], dtype=np.float32)
 
     return state_vec
 
@@ -231,14 +234,23 @@ def to_graph(expr, feature_dict):
     return graph
 
 
+def parse_node_features(node_features, feature_dict):
+    """Parse node features. Includes string to fraction parsing"""
+    parsed_features = []
+    for key in node_features:
+        if key in feature_dict:
+            parsed_features.append(int(feature_dict[key]))
+        else:
+            parsed_features.append(fraction(key))
+    return parsed_features
+
+
 def get_node_features(graph, feature_dict):
     """Get node features from feature dictionary. e.g. we can map the
     operations and terms to integeters: {add: 0, sub: 1, .. }"""
     node_labels = get_node_labels(graph)
     node_features = list(node_labels.values())
-    node_features = np.array([int(feature_dict[key]) if key
-                              in feature_dict else int(float(key))
-                              for key in node_features])
+    node_features = np.array(parse_node_features(node_features, feature_dict))
     return node_features
 
 

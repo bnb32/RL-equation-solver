@@ -1,4 +1,8 @@
-"""Run linear solver with DQN based agent: solve a*x + b = 0"""
+"""
+Run linear solver with DQN based agent:
+.. math::
+    solve a*x + b = 0
+"""
 from rex import init_logger
 from rl_equation_solver.environment.algebraic import Env
 from rl_equation_solver.agent.dqn import Agent

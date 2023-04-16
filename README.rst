@@ -38,3 +38,7 @@ Option 1: Clone repo (recommended for developers)
     5) Install ``rl_solver`` and its dependencies by running:
        ``pip install .`` (or ``pip install -e .`` if running a dev branch
        or working on the source code)
+
+3. To use pytorch with cuda make sure you have cuda installed and then run the following command:
+
+    ``pip install torch==2.0.0+cu117 torchvision==0.15.1+cu117 torchaudio==2.0.0+cu117 -f https://download.pytorch.org/whl/torch_stable.html``
