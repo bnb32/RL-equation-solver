@@ -18,13 +18,13 @@ class LossMixin:
 
             \[
             L(y, f(x)) =
-                \begin{cases}
-                    \begin{split}
-                        \frac{1}{2} (y - f(x))^2 & |y - f(x)| \leq \delta \\
-                        \delta |y - f(x)| - \frac{1}{2} \delta^2 & |y - f(x)|
-                        \gt \delta
-                    \end{split}
-                \end{cases}
+              \begin{cases}
+                \begin{split}
+                  \frac{1}{2} (y - f(x))^2, & \text{ if } |y - f(x)| \leq
+                  \delta \\
+                  \delta |y - f(x)| - \frac{1}{2} \delta^2, & \text{ otherwise}
+                \end{split}
+              \end{cases}
             \]
         """
         return torch.nn.HuberLoss(delta=delta)(x, y)

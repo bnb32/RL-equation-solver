@@ -189,7 +189,7 @@ class BaseAgent(LossMixin):
 
     def choose_optimal_action(self, state):
         """
-        Choose action with max expected reward := max_a Q(s, a)
+        Choose action with max expected reward :math:`:= max_a Q(s, a)`
 
         max(1) will return largest column value of each row. second column on
         max result is index of where max element was found so we pick action
@@ -273,9 +273,9 @@ class BaseAgent(LossMixin):
 
     def compute_V(self, batch):
         """
-        Compute V(s_{t+1}) for all next states. Expected values of actions for
-        non_final_next_states are computed based on the "older" target_net;
-        selecting their best reward with max(1)[0].
+        Compute :math:`V(s_{t+1})` for all next states. Expected values of
+        actions for non_final_next_states are computed based on the "older"
+        target_net; selecting their best reward with max(1)[0].
         """
         next_state_values = torch.zeros(self.batch_size, device=self.device)
 
@@ -287,8 +287,8 @@ class BaseAgent(LossMixin):
 
     def compute_Q(self, batch):
         """
-        Compute Q(s_t, a). These are the actions which would've been taken
-        for each batch state according to policy_net
+        Compute :math:`Q(s_t, a)`. These are the actions which would've been
+        taken for each batch state according to policy_net
         """
         return self.policy_network(batch.state_batch) \
             .gather(1, batch.action_batch)
@@ -297,9 +297,9 @@ class BaseAgent(LossMixin):
         r"""Train the model for the given number of episodes.
 
         The agent will perform a soft update of the Target Network's weights,
-        with the equation :math:`\tau * policy_net_state_dict + (1 - \tau)
-        target_net_state_dict`, this helps to make the Target Network's weights
-        converge to the Policy Network's weights.
+        with the equation :math:`\tau \text{ policy_net_state_dict} +
+        (1 - \tau) \text{ target_net_state_dict}`, this helps to make the
+        Target Network's weights converge to the Policy Network's weights.
 
         Parameters
         ----------
@@ -368,11 +368,12 @@ class BaseAgent(LossMixin):
             self.env.log_info()
 
     def update_networks(self):
-        """
-        Soft update of the target network's weights θ′ ← τθ + (1 - τ)θ′
-        policy_network.state_dict() returns the parameters of the
-        policy network target_network.load_state_dict() loads these parameters
-        into the target network.
+        r"""
+        Soft update of the target network's weights :math:`\theta^{'}
+        \leftarrow \tau \theta + (1 - \tau) \theta^{'}`
+        policy_network.state_dict() returns the parameters of the policy
+        network target_network.load_state_dict() loads these parameters into
+        the target network.
         """
         target_net_state_dict = self.target_network.state_dict()
         policy_net_state_dict = self.policy_network.state_dict()
