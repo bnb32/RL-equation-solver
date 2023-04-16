@@ -130,6 +130,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.version.html">rl_equation_solver.version</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/examples.run_linear_solver_dqn.html">examples.run_linear_solver_dqn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/examples.run_linear_solver_gcn.html">examples.run_linear_solver_gcn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/examples.run_quadratic_solver_dqn.html">examples.run_quadratic_solver_dqn</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -342,10 +348,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;episode </span><span class="si">{</span><span class="n">episode</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseAgent.train"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_episodes</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model for the given number of episodes.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Train the model for the given number of episodes.</span>
 
 <span class="sd">        The agent will perform a soft update of the Target Network&#39;s weights,</span>
-<span class="sd">        with the equation :math: `\tau * policy_net_state_dict + (1 - \tau)</span>
+<span class="sd">        with the equation :math:`\tau * policy_net_state_dict + (1 - \tau)</span>
 <span class="sd">        target_net_state_dict`, this helps to make the Target Network&#39;s weights</span>
 <span class="sd">        converge to the Policy Network&#39;s weights.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

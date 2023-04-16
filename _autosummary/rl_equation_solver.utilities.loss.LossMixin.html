@@ -134,6 +134,12 @@
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.version.html">rl_equation_solver.version</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.run_linear_solver_dqn.html">examples.run_linear_solver_dqn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.run_linear_solver_gcn.html">examples.run_linear_solver_gcn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.run_quadratic_solver_dqn.html">examples.run_quadratic_solver_dqn</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -174,7 +180,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.loss.LossMixin.huber_loss" title="rl_equation_solver.utilities.loss.LossMixin.huber_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">huber_loss</span></code></a>(x, y[, delta])</p></td>
-<td><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is</p></td>
+<td><p>Huber loss.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.loss.LossMixin.l2_loss" title="rl_equation_solver.utilities.loss.LossMixin.l2_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l2_loss</span></code></a>(x, y)</p></td>
 <td><p>L2 Loss</p></td>
@@ -187,24 +193,17 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.utilities.loss.LossMixin.huber_loss">
 <span class="sig-name descname"><span class="pre">huber_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/utilities/loss.html#LossMixin.huber_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.utilities.loss.LossMixin.huber_loss" title="Permalink to this definition"></a></dt>
-<dd><blockquote>
-<div><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is
+<dd><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is
 a loss function used in various machine learning and optimization
 problems, particularly in regression tasks. It combines the properties
 of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
 functions, providing a balance between the two.</p>
 <div class="math notranslate nohighlight">
-L(y, f(x)) = \begin{cases}</div></div></blockquote>
-<dl>
-<dt>rac{1}{2} (y - f(x))^2 &amp; <a href="#id1"><span class="problematic" id="id2">|y - f(x)|</span></a> leq delta </dt><dd><p>delta <a href="#id3"><span class="problematic" id="id4">|y - f(x)|</span></a> -</p>
-</dd>
-<dt>rac{1}{2} delta^2 &amp; <a href="#id5"><span class="problematic" id="id6">|y - f(x)|</span></a></dt><dd><blockquote>
-<div><p>gt delta</p>
-</div></blockquote>
-<p>end{cases}</p>
-</dd>
-</dl>
-</dd></dl>
+L(y, f(x)) = \begin{cases}
+    \frac{1}{2} (y - f(x))^2 &amp; |y - f(x)| \leq \delta \\
+    \delta |y - f(x)| - \frac{1}{2} \delta^2 &amp; |y - f(x)|
+    \gt \delta
+\end{cases}</div></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.utilities.loss.LossMixin.smooth_l1_loss">

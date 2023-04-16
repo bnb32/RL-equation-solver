@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rl_equation_solver &mdash; rl_equation_solver 0.0.0 documentation</title>
+  <title>examples.run_quadratic_solver_dqn &mdash; rl_equation_solver 0.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,11 +16,11 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="rl_equation_solver.agent" href="rl_equation_solver.agent.html" />
-    <link rel="prev" title="Installation" href="../misc/installation.html" /> 
+    <link rel="prev" title="examples.run_linear_solver_gcn" href="examples.run_linear_solver_gcn.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,7 +54,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="rl_equation_solver.html">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
@@ -133,10 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.version.html">rl_equation_solver.version</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="examples.run_linear_solver_dqn.html">examples.run_linear_solver_dqn</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.run_linear_solver_gcn.html">examples.run_linear_solver_gcn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.run_quadratic_solver_dqn.html">examples.run_quadratic_solver_dqn</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">examples.run_quadratic_solver_dqn</a></li>
 </ul>
 </li>
 </ul>
@@ -155,9 +155,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">rl_equation_solver</li>
+          <li class="breadcrumb-item"><a href="examples.html">examples</a></li>
+      <li class="breadcrumb-item active">examples.run_quadratic_solver_dqn</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/rl_equation_solver.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/examples.run_quadratic_solver_dqn.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -165,36 +166,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-rl_equation_solver">
-<span id="rl-equation-solver"></span><h1>rl_equation_solver<a class="headerlink" href="#module-rl_equation_solver" title="Permalink to this heading"></a></h1>
-<p>Reinforcement Learning based equation solver package</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.agent.html#module-rl_equation_solver.agent" title="rl_equation_solver.agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.agent</span></code></a></p></td>
-<td><p>Agent module</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="rl_equation_solver.config.html#module-rl_equation_solver.config" title="rl_equation_solver.config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.config</span></code></a></p></td>
-<td><p>Model configuration class</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.environment.html#module-rl_equation_solver.environment" title="rl_equation_solver.environment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.environment</span></code></a></p></td>
-<td><p>Environment module</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="rl_equation_solver.utilities.html#module-rl_equation_solver.utilities" title="rl_equation_solver.utilities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.utilities</span></code></a></p></td>
-<td><p>Utilities module with loss/reward functions, operators, and misc fuinctions</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.version.html#module-rl_equation_solver.version" title="rl_equation_solver.version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rl_equation_solver.version</span></code></a></p></td>
-<td><p>Package version</p></td>
-</tr>
-</tbody>
-</table>
+  <section id="module-examples.run_quadratic_solver_dqn">
+<span id="examples-run-quadratic-solver-dqn"></span><h1>examples.run_quadratic_solver_dqn<a class="headerlink" href="#module-examples.run_quadratic_solver_dqn" title="Permalink to this heading"></a></h1>
+<p>Run quadratic solver with DQN based agent: solve <span class="math notranslate nohighlight">\(ax^2 + bx + c = 0\)</span></p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../misc/installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="rl_equation_solver.agent.html" class="btn btn-neutral float-right" title="rl_equation_solver.agent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples.run_linear_solver_gcn.html" class="btn btn-neutral float-left" title="examples.run_linear_solver_gcn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
