@@ -470,9 +470,9 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Train the model for the given number of episodes.</span>
 
 <span class="sd">        The agent will perform a soft update of the Target Network&#39;s weights,</span>
-<span class="sd">        with the equation :math:`\tau * policy_net_state_dict + (1 - \tau)</span>
-<span class="sd">        target_net_state_dict`, this helps to make the Target Network&#39;s weights</span>
-<span class="sd">        converge to the Policy Network&#39;s weights.</span>
+<span class="sd">        with the equation :math:`\tau \text{policy_net_state_dict} + (1 - \tau)</span>
+<span class="sd">        \text{target_net_state_dict}`, this helps to make the Target Network&#39;s</span>
+<span class="sd">        weights converge to the Policy Network&#39;s weights.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -542,10 +542,10 @@
 
 <div class="viewcode-block" id="BaseAgent.update_networks"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.update_networks">[docs]</a>    <span class="k">def</span> <span class="nf">update_networks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Soft update of the target network&#39;s weights θ′ ← τθ + (1 - τ)θ′</span>
-<span class="sd">        policy_network.state_dict() returns the parameters of the</span>
-<span class="sd">        policy network target_network.load_state_dict() loads these parameters</span>
-<span class="sd">        into the target network.</span>
+<span class="sd">        Soft update of the target network&#39;s weights :math:`\theta^&#39; \leftarrow</span>
+<span class="sd">        \tau \theta + (1 - \tau)\theta^&#39;` policy_network.state_dict() returns</span>
+<span class="sd">        the parameters of the policy network target_network.load_state_dict()</span>
+<span class="sd">        loads these parameters into the target network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target_net_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
         <span class="n">policy_net_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>

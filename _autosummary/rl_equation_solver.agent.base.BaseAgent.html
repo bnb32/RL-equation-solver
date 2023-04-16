@@ -274,7 +274,7 @@ in rl_equation_solver.config will be used.</p></li>
 <td><p>Update history info with given value for the given key</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.update_networks" title="rl_equation_solver.agent.base.BaseAgent.update_networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_networks</span></code></a>()</p></td>
-<td><p>Soft update of the target network's weights θ′ ← τθ + (1 - τ)θ′ policy_network.state_dict() returns the parameters of the policy network target_network.load_state_dict() loads these parameters into the target network.</p></td>
+<td><p>Soft update of the target network's weights :math:`     heta^' leftarrow</p></td>
 </tr>
 </tbody>
 </table>
@@ -456,9 +456,9 @@ for each batch state according to policy_net</p>
 <span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.train" title="Permalink to this definition"></a></dt>
 <dd><p>Train the model for the given number of episodes.</p>
 <p>The agent will perform a soft update of the Target Network’s weights,
-with the equation <span class="math notranslate nohighlight">\(\tau * policy_net_state_dict + (1 - \tau)
-target_net_state_dict\)</span>, this helps to make the Target Network’s weights
-converge to the Policy Network’s weights.</p>
+with the equation <span class="math notranslate nohighlight">\(\tau \text{policy_net_state_dict} + (1 - \tau)
+\text{target_net_state_dict}\)</span>, this helps to make the Target Network’s
+weights converge to the Policy Network’s weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -472,10 +472,12 @@ converge to the Policy Network’s weights.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.update_networks">
 <span class="sig-name descname"><span class="pre">update_networks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.update_networks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.update_networks" title="Permalink to this definition"></a></dt>
-<dd><p>Soft update of the target network’s weights θ′ ← τθ + (1 - τ)θ′
-policy_network.state_dict() returns the parameters of the
-policy network target_network.load_state_dict() loads these parameters
-into the target network.</p>
+<dd><dl class="simple">
+<dt>Soft update of the target network’s weights :math:`     heta^’ leftarrow</dt><dd><p>au      heta + (1 -     au)     heta^’` policy_network.state_dict() returns</p>
+</dd>
+</dl>
+<p>the parameters of the policy network target_network.load_state_dict()
+loads these parameters into the target network.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -517,16 +519,13 @@ problems, particularly in regression tasks. It combines the properties
 of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
 functions, providing a balance between the two.</p>
 <div class="math notranslate nohighlight">
-\[
-L(y, f(x)) =
-    \begin{cases}
-        \begin{split}
-            \frac{1}{2} (y - f(x))^2 &amp; |y - f(x)| \leq \delta \\
-            \delta |y - f(x)| - \frac{1}{2} \delta^2 &amp; |y - f(x)|
-            \gt \delta
-        \end{split}
+\[\begin{split}\[
+L(y, f(x)) = \begin{cases}
+    \frac{1}{2} (y - f(x))^2, &amp; \text{if} |y - f(x)| \leq \delta \\
+    \delta |y - f(x)| - \frac{1}{2} \delta^2, &amp; \text{otherwise}
     \end{cases}
-\]</div></dd></dl>
+\]\end{split}\]</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.l2_loss">
