@@ -4,4 +4,4 @@
    :recursive:
 
 
-   .. include:: ../../../README.rst
+   examples

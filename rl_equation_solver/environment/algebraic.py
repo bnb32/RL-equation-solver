@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 
 
 class Env(gym.Env, RewardMixin):
-    """
+    r"""
     Environment for solving algebraic equations using RL.
 
     Example
     -------
-    a x + b = 0
+    :math:`a x + b = 0`
 
     The agent starts at state = 1 and chooses
     an action by combing operations and terms:
@@ -33,11 +33,11 @@ class Env(gym.Env, RewardMixin):
 
     So taking action[0][0] = (add, a) in state 1 would result in
 
-    new_state = a + 1
+    new_state = :math:`a + 1`
 
     Followed by an action (div, b) would result in
 
-    new_state = (a + 1) / b
+    new_state = :math:`(a + 1) / b`
 
     The states are represented using sympy and can be mapped onto a directed
     acyclic graph (dag). These state representation is what we will feed the
