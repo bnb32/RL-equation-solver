@@ -408,11 +408,12 @@ class Env(gym.Env, RewardMixin):
         self.info = {'episode_number': self.episode_number,
                      'step_number': self.steps_done,
                      'complexity': complexity, 'loss': np.nan,
-                     'reward': reward, 'state': nsimplify(self.state_string)}
+                     'reward': reward,
+                     'state': nsimplify(self.state_string)}
         self.steps_done += 1
         self.loop_step_number += 1
         if done:
-            logger.info(f'info: {self.info}')
+            self.log_info()
 
         self.append_history(self.episode_number, self.info)
 

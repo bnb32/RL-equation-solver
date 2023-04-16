@@ -258,12 +258,12 @@ class BaseAgent(RewardMixin, LossMixin):
         return self.policy_network(batch.state_batch) \
             .gather(1, batch.action_batch)
 
-    def log_info(self, episode):
+    def log_info(self):
         """Write info to logger"""
         out = self.info.copy()
         out['reward'] = '{:.3e}'.format(out['reward'])
-        logger.info(pprint.pformat(f'episode {episode}, steps_done '
-                                   f'{self.steps_done}, {out}', indent=4))
+        out['loss'] = '{:.3e}'.format(out['loss'])
+        logger.info(out)
 
     def train(self, num_episodes):
         r"""Train the model for the given number of episodes.
