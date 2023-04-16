@@ -387,16 +387,10 @@ problems, particularly in regression tasks. It combines the properties
 of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
 functions, providing a balance between the two.</p>
 <div class="math notranslate nohighlight">
-\[\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Nowrap<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<dl class="simple">
-<dt>L(y, f(x)) =</dt><dd><p>0.5 * (y - f(x))^2 if <a href="#id1"><span class="problematic" id="id2">|y - f(x)|</span></a> &lt;= delta delta * <a href="#id3"><span class="problematic" id="id4">|y - f(x)|</span></a> - 0.5 * delta^2 otherwise</p>
-</dd>
-</dl>
-</dd></dl>
+egin{eqnarray}
+    L(y, f(x)) &amp; = &amp; 0.5 (y - f(x))^2 if |y - f(x)| &lt;= \delta \
+    L(y, f(x)) &amp; = &amp; \delta |y - f(x)| - 0.5 \delta^2 otherwise
+\end{eqnarray}</div></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.inv_loss_reward">
