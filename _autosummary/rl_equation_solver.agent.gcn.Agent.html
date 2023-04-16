@@ -134,12 +134,6 @@
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.version.html">rl_equation_solver.version</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples.run_linear_solver_dqn.html">examples.run_linear_solver_dqn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.run_linear_solver_gcn.html">examples.run_linear_solver_gcn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.run_quadratic_solver_dqn.html">examples.run_quadratic_solver_dqn</a></li>
-</ul>
-</li>
 </ul>
 
         </div>
@@ -433,11 +427,11 @@ problems, particularly in regression tasks. It combines the properties
 of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
 functions, providing a balance between the two.</p>
 <div class="math notranslate nohighlight">
-L(y, f(x)) = \begin{cases}
+L(y, f(x)) = \begin{eqnarray}
     \frac{1}{2} (y - f(x))^2 &amp; |y - f(x)| \leq \delta \\
     \delta |y - f(x)| - \frac{1}{2} \delta^2 &amp; |y - f(x)|
     \gt \delta
-\end{cases}</div></dd></dl>
+\end{eqnarray}</div></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.gcn.Agent.inv_loss_reward">
