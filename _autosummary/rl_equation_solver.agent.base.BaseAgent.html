@@ -205,16 +205,16 @@ in rl_equation_solver.config will be used.</p></li>
 <td><p>Choose action based on given state.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.choose_optimal_action" title="rl_equation_solver.agent.base.BaseAgent.choose_optimal_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_optimal_action</span></code></a>(state)</p></td>
-<td><p>Choose action with max expected reward := max_a Q(s, a)</p></td>
+<td><p>Choose action with max expected reward <span class="math notranslate nohighlight">\(:= max_a Q(s, a)\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.choose_random_action" title="rl_equation_solver.agent.base.BaseAgent.choose_random_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose_random_action</span></code></a>()</p></td>
 <td><p>Choose random action rather than the optimal action</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.compute_Q" title="rl_equation_solver.agent.base.BaseAgent.compute_Q"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_Q</span></code></a>(batch)</p></td>
-<td><p>Compute Q(s_t, a).</p></td>
+<td><p>Compute <span class="math notranslate nohighlight">\(Q(s_t, a)\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.compute_V" title="rl_equation_solver.agent.base.BaseAgent.compute_V"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_V</span></code></a>(batch)</p></td>
-<td><p>Compute V(s_{t+1}) for all next states.</p></td>
+<td><p>Compute <span class="math notranslate nohighlight">\(V(s_{t+1})\)</span> for all next states.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.compute_batch_loss" title="rl_equation_solver.agent.base.BaseAgent.compute_batch_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_batch_loss</span></code></a>()</p></td>
 <td><p>Compute loss for batch using the stored memory.</p></td>
@@ -274,7 +274,7 @@ in rl_equation_solver.config will be used.</p></li>
 <td><p>Update history info with given value for the given key</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.update_networks" title="rl_equation_solver.agent.base.BaseAgent.update_networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_networks</span></code></a>()</p></td>
-<td><p>Soft update of the target network's weights <span class="math notranslate nohighlight">\(\theta^' \leftarrow \tau \theta + (1 - \tau)\theta^'\)</span> policy_network.state_dict() returns the parameters of the policy network target_network.load_state_dict() loads these parameters into the target network.</p></td>
+<td><p>Soft update of the target network's weights <span class="math notranslate nohighlight">\(\theta^{'} \leftarrow \tau \theta + (1 - \tau) \theta^{'}\)</span> policy_network.state_dict() returns the parameters of the policy network target_network.load_state_dict() loads these parameters into the target network.</p></td>
 </tr>
 </tbody>
 </table>
@@ -387,7 +387,7 @@ been exceeded.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.choose_optimal_action">
 <span class="sig-name descname"><span class="pre">choose_optimal_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_optimal_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_optimal_action" title="Permalink to this definition"></a></dt>
-<dd><p>Choose action with max expected reward := max_a Q(s, a)</p>
+<dd><p>Choose action with max expected reward <span class="math notranslate nohighlight">\(:= max_a Q(s, a)\)</span></p>
 <p>max(1) will return largest column value of each row. second column on
 max result is index of where max element was found so we pick action
 with the larger expected reward.</p>
@@ -439,16 +439,16 @@ random action depending on training step.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.compute_V">
 <span class="sig-name descname"><span class="pre">compute_V</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.compute_V"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.compute_V" title="Permalink to this definition"></a></dt>
-<dd><p>Compute V(s_{t+1}) for all next states. Expected values of actions for
-non_final_next_states are computed based on the “older” target_net;
-selecting their best reward with max(1)[0].</p>
+<dd><p>Compute <span class="math notranslate nohighlight">\(V(s_{t+1})\)</span> for all next states. Expected values of
+actions for non_final_next_states are computed based on the “older”
+target_net; selecting their best reward with max(1)[0].</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.compute_Q">
 <span class="sig-name descname"><span class="pre">compute_Q</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.compute_Q"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.compute_Q" title="Permalink to this definition"></a></dt>
-<dd><p>Compute Q(s_t, a). These are the actions which would’ve been taken
-for each batch state according to policy_net</p>
+<dd><p>Compute <span class="math notranslate nohighlight">\(Q(s_t, a)\)</span>. These are the actions which would’ve been
+taken for each batch state according to policy_net</p>
 </dd></dl>
 
 <dl class="py method">
@@ -456,8 +456,8 @@ for each batch state according to policy_net</p>
 <span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.train" title="Permalink to this definition"></a></dt>
 <dd><p>Train the model for the given number of episodes.</p>
 <p>The agent will perform a soft update of the Target Network’s weights,
-with the equation <span class="math notranslate nohighlight">\(\tau \text{policy_net_state_dict} + (1 - \tau)
-\text{target_net_state_dict}\)</span>, this helps to make the Target Network’s
+with the equation <span class="math notranslate nohighlight">\(\tau \text{ policy_net_state_dict} + (1 - \tau)
+\text{ target_net_state_dict}\)</span>, this helps to make the Target Network’s
 weights converge to the Policy Network’s weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -472,10 +472,11 @@ weights converge to the Policy Network’s weights.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.update_networks">
 <span class="sig-name descname"><span class="pre">update_networks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.update_networks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.update_networks" title="Permalink to this definition"></a></dt>
-<dd><p>Soft update of the target network’s weights <span class="math notranslate nohighlight">\(\theta^' \leftarrow
-\tau \theta + (1 - \tau)\theta^'\)</span> policy_network.state_dict() returns
-the parameters of the policy network target_network.load_state_dict()
-loads these parameters into the target network.</p>
+<dd><p>Soft update of the target network’s weights <span class="math notranslate nohighlight">\(\theta^{'}
+\leftarrow \tau \theta + (1 - \tau) \theta^{'}\)</span>
+policy_network.state_dict() returns the parameters of the policy
+network target_network.load_state_dict() loads these parameters into
+the target network.</p>
 </dd></dl>
 
 <dl class="py property">

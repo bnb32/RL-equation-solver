@@ -362,7 +362,7 @@
 
 <div class="viewcode-block" id="BaseAgent.choose_optimal_action"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.choose_optimal_action">[docs]</a>    <span class="k">def</span> <span class="nf">choose_optimal_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Choose action with max expected reward := max_a Q(s, a)</span>
+<span class="sd">        Choose action with max expected reward :math:`:= max_a Q(s, a)`</span>
 
 <span class="sd">        max(1) will return largest column value of each row. second column on</span>
 <span class="sd">        max result is index of where max element was found so we pick action</span>
@@ -446,9 +446,9 @@
 
 <div class="viewcode-block" id="BaseAgent.compute_V"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.compute_V">[docs]</a>    <span class="k">def</span> <span class="nf">compute_V</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute V(s_{t+1}) for all next states. Expected values of actions for</span>
-<span class="sd">        non_final_next_states are computed based on the &quot;older&quot; target_net;</span>
-<span class="sd">        selecting their best reward with max(1)[0].</span>
+<span class="sd">        Compute :math:`V(s_{t+1})` for all next states. Expected values of</span>
+<span class="sd">        actions for non_final_next_states are computed based on the &quot;older&quot;</span>
+<span class="sd">        target_net; selecting their best reward with max(1)[0].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">next_state_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
@@ -460,8 +460,8 @@
 
 <div class="viewcode-block" id="BaseAgent.compute_Q"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.compute_Q">[docs]</a>    <span class="k">def</span> <span class="nf">compute_Q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute Q(s_t, a). These are the actions which would&#39;ve been taken</span>
-<span class="sd">        for each batch state according to policy_net</span>
+<span class="sd">        Compute :math:`Q(s_t, a)`. These are the actions which would&#39;ve been</span>
+<span class="sd">        taken for each batch state according to policy_net</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state_batch</span><span class="p">)</span> \
             <span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">action_batch</span><span class="p">)</span></div>
@@ -470,8 +470,8 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Train the model for the given number of episodes.</span>
 
 <span class="sd">        The agent will perform a soft update of the Target Network&#39;s weights,</span>
-<span class="sd">        with the equation :math:`\tau \text{policy_net_state_dict} + (1 - \tau)</span>
-<span class="sd">        \text{target_net_state_dict}`, this helps to make the Target Network&#39;s</span>
+<span class="sd">        with the equation :math:`\tau \text{ policy_net_state_dict} + (1 - \tau)</span>
+<span class="sd">        \text{ target_net_state_dict}`, this helps to make the Target Network&#39;s</span>
 <span class="sd">        weights converge to the Policy Network&#39;s weights.</span>
 
 <span class="sd">        Parameters</span>
@@ -542,10 +542,11 @@
 
 <div class="viewcode-block" id="BaseAgent.update_networks"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.update_networks">[docs]</a>    <span class="k">def</span> <span class="nf">update_networks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Soft update of the target network&#39;s weights :math:`\theta^&#39; \leftarrow</span>
-<span class="sd">        \tau \theta + (1 - \tau)\theta^&#39;` policy_network.state_dict() returns</span>
-<span class="sd">        the parameters of the policy network target_network.load_state_dict()</span>
-<span class="sd">        loads these parameters into the target network.</span>
+<span class="sd">        Soft update of the target network&#39;s weights :math:`\theta^{&#39;}</span>
+<span class="sd">        \leftarrow \tau \theta + (1 - \tau) \theta^{&#39;}`</span>
+<span class="sd">        policy_network.state_dict() returns the parameters of the policy</span>
+<span class="sd">        network target_network.load_state_dict() loads these parameters into</span>
+<span class="sd">        the target network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target_net_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
         <span class="n">policy_net_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_network</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
