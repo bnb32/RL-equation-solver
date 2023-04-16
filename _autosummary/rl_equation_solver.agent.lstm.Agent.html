@@ -274,7 +274,7 @@ in rl_equation_solver.config will be used.</p></li>
 <td><p>Update history info with given value for the given key</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.lstm.Agent.update_networks" title="rl_equation_solver.agent.lstm.Agent.update_networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_networks</span></code></a>()</p></td>
-<td><p>Soft update of the target network's weights :math:`     heta^' leftarrow</p></td>
+<td><p>Soft update of the target network's weights <span class="math notranslate nohighlight">\(\theta^' \leftarrow \tau \theta + (1 - \tau)\theta^'\)</span> policy_network.state_dict() returns the parameters of the policy network target_network.load_state_dict() loads these parameters into the target network.</p></td>
 </tr>
 </tbody>
 </table>
@@ -401,15 +401,16 @@ problems, particularly in regression tasks. It combines the properties
 of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
 functions, providing a balance between the two.</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\[
-L(y, f(x)) = \begin{cases}
+\[
+L(y, f(x)) =
+  \begin{cases}
     \begin{split}
-    \frac{1}{2} (y - f(x))^2, &amp; \text{if} |y - f(x)| \leq \delta \\
-    \delta |y - f(x)| - \frac{1}{2} \delta^2, &amp; \text{otherwise}
+      \frac{1}{2} (y - f(x))^2, &amp; \text{ if } |y - f(x)| \leq
+      \delta \\
+      \delta |y - f(x)| - \frac{1}{2} \delta^2, &amp; \text{ otherwise}
     \end{split}
-    \end{cases}
-\]\end{split}\]</div>
-</dd></dl>
+  \end{cases}
+\]</div></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.lstm.Agent.info">
@@ -543,11 +544,9 @@ weights converge to the Policy Network’s weights.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.lstm.Agent.update_networks">
 <span class="sig-name descname"><span class="pre">update_networks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.lstm.Agent.update_networks" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Soft update of the target network’s weights :math:`     heta^’ leftarrow</dt><dd><p>au      heta + (1 -     au)     heta^’` policy_network.state_dict() returns</p>
-</dd>
-</dl>
-<p>the parameters of the policy network target_network.load_state_dict()
+<dd><p>Soft update of the target network’s weights <span class="math notranslate nohighlight">\(\theta^' \leftarrow
+\tau \theta + (1 - \tau)\theta^'\)</span> policy_network.state_dict() returns
+the parameters of the policy network target_network.load_state_dict()
 loads these parameters into the target network.</p>
 </dd></dl>
 
