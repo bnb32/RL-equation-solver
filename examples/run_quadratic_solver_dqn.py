@@ -1,4 +1,5 @@
-"""Run quadratic solver with DQN based agent: solve a*x^2 + b*x + c = 0"""
+"""Run quadratic solver with DQN based agent: solve :math:`ax^2 + bx + c = 0`
+"""
 from rex import init_logger
 from rl_equation_solver.environment.algebraic import Env
 from rl_equation_solver.agent.dqn import Agent

@@ -183,11 +183,11 @@ class BaseAgent(RewardMixin, LossMixin):
         logger.info(f'episode {episode}, {out}')
 
     def train(self, num_episodes):
-        """Train the model for the given number of episodes.
+        r"""Train the model for the given number of episodes.
 
         The agent will perform a soft update of the Target Network's weights,
-        with the equation TAU * policy_net_state_dict + (1-TAU) *
-        target_net_state_dict, this helps to make the Target Network's weights
+        with the equation :math:`\tau * policy_net_state_dict + (1 - \tau)
+        target_net_state_dict`, this helps to make the Target Network's weights
         converge to the Policy Network's weights.
         """
 

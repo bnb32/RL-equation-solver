@@ -6,7 +6,7 @@ class LossMixin:
     """Mixin class with collection of loss functions"""
 
     def huber_loss(self, x, y, delta=1.0):
-        """
+        r"""
         Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is
         a loss function used in various machine learning and optimization
         problems, particularly in regression tasks. It combines the properties
@@ -16,9 +16,10 @@ class LossMixin:
         .. math::
             :nowrap:
 
-            \begin{eqnarray}
-                L(y, f(x)) & = & 0.5 (y - f(x))^2 if |y - f(x)| <= \delta \\
-                L(y, f(x)) & = & \delta |y - f(x)| - 0.5 \delta^2 otherwise
+            L(y, f(x)) = \begin{eqnarray}
+                \frac{1}{2} (y - f(x))^2 & |y - f(x)| \leq \delta \\
+                \delta |y - f(x)| - \frac{1}{2} \delta^2 & |y - f(x)|
+                \gt \delta
             \end{eqnarray}
         """
         return torch.nn.HuberLoss(delta=delta)(x, y)
