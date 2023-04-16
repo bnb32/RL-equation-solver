@@ -45,9 +45,11 @@ rl\_equation\_solver.agent.networks.DQN
       ~DQN.register_forward_hook
       ~DQN.register_forward_pre_hook
       ~DQN.register_full_backward_hook
+      ~DQN.register_full_backward_pre_hook
       ~DQN.register_load_state_dict_post_hook
       ~DQN.register_module
       ~DQN.register_parameter
+      ~DQN.register_state_dict_pre_hook
       ~DQN.requires_grad_
       ~DQN.set_extra_state
       ~DQN.share_memory
@@ -68,6 +70,7 @@ rl\_equation\_solver.agent.networks.DQN
    .. autosummary::
    
       ~DQN.T_destination
+      ~DQN.call_super_init
       ~DQN.dump_patches
       ~DQN.training
    

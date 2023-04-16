@@ -1,93 +1,51 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>rl_equation_solver.agent.base.BaseAgent &mdash; rl_equation_solver 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="rl_equation_solver.agent.base.ReplayMemory" href="rl_equation_solver.agent.base.ReplayMemory.html" />
     <link rel="prev" title="rl_equation_solver.agent.base" href="rl_equation_solver.agent.base.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> rl_equation_solver
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            rl_equation_solver
           </a>
-
-          
-            
-            
               <div class="version">
                 0.0.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home page</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../misc/installation_usage.html">Installation and Usage</a><ul>
@@ -120,7 +78,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.config.html">rl_equation_solver.config</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.config.Config.html#rl_equation_solver.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
@@ -135,81 +96,38 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">rl_equation_solver</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="rl_equation_solver.html">rl_equation_solver</a> &raquo;</li>
-        
-          <li><a href="rl_equation_solver.agent.html">rl_equation_solver.agent</a> &raquo;</li>
-        
-          <li><a href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a> &raquo;</li>
-        
-      <li>rl_equation_solver.agent.base.BaseAgent</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="rl_equation_solver.html">rl_equation_solver</a></li>
+          <li class="breadcrumb-item"><a href="rl_equation_solver.agent.html">rl_equation_solver.agent</a></li>
+          <li class="breadcrumb-item"><a href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a></li>
+      <li class="breadcrumb-item active">rl_equation_solver.agent.base.BaseAgent</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            
               <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/rl_equation_solver.agent.base.BaseAgent.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="rl-equation-solver-agent-base-baseagent">
-<h1>rl_equation_solver.agent.base.BaseAgent<a class="headerlink" href="#rl-equation-solver-agent-base-baseagent" title="Permalink to this heading">¶</a></h1>
+<h1>rl_equation_solver.agent.base.BaseAgent<a class="headerlink" href="#rl-equation-solver-agent-base-baseagent" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RewardMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">LossMixin</span></code></p>
 <p>Agent with DQN target and policy networks</p>
 <dl class="field-list simple">
@@ -265,7 +183,7 @@ e.g. rl_equation_solver.env_linear_equation.Env()</p></li>
 </p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.huber_loss" title="rl_equation_solver.agent.base.BaseAgent.huber_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">huber_loss</span></code></a>(x, y[, delta])</p></td>
-<td><p>Huber loss</p></td>
+<td><p>Huber loss.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.BaseAgent.init_state" title="rl_equation_solver.agent.base.BaseAgent.init_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_state</span></code></a>()</p></td>
 <td><p>Initialize state from the environment.</p></td>
@@ -333,33 +251,33 @@ e.g. rl_equation_solver.env_linear_equation.Env()</p></li>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.init_state">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.init_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.init_state" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.init_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.init_state" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize state from the environment. This can be a vector
 representation or graph representation</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.convert_state">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.convert_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.convert_state" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.convert_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.convert_state" title="Permalink to this definition"></a></dt>
 <dd><p>Convert state string to appropriate representation. This can be a
 vector representation or graph representation</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.batch_states">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.batch_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.batch_states" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.batch_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.batch_states" title="Permalink to this definition"></a></dt>
 <dd><p>Convert states into a batch</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.device">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.device" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.device" title="Permalink to this definition"></a></dt>
 <dd><p>Get device for training network</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.choose_optimal_action">
-<span class="sig-name descname"><span class="pre">choose_optimal_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_optimal_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_optimal_action" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">choose_optimal_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_optimal_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_optimal_action" title="Permalink to this definition"></a></dt>
 <dd><p>Choose action with max expected reward := max_a Q(s, a)</p>
 <p>max(1) will return largest column value of each row. second column on
 max result is index of where max element was found so we pick action
@@ -368,44 +286,44 @@ with the larger expected reward.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.choose_action">
-<span class="sig-name descname"><span class="pre">choose_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_action" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">choose_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_action" title="Permalink to this definition"></a></dt>
 <dd><p>Choose action based on given state. Either choose optimal action or
 random action depending on training step.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.compute_loss">
-<span class="sig-name descname"><span class="pre">compute_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_action_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_state_action_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.compute_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.compute_loss" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_action_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_state_action_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.compute_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.compute_loss" title="Permalink to this definition"></a></dt>
 <dd><p>Compute Huber loss</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.update_info">
-<span class="sig-name descname"><span class="pre">update_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.update_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.update_info" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.update_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.update_info" title="Permalink to this definition"></a></dt>
 <dd><p>Update history info with given value for the given key</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.choose_random_action">
-<span class="sig-name descname"><span class="pre">choose_random_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_random_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_random_action" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">choose_random_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.choose_random_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.choose_random_action" title="Permalink to this definition"></a></dt>
 <dd><p>Choose random action rather than the optimal action</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.optimize_model">
-<span class="sig-name descname"><span class="pre">optimize_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.optimize_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.optimize_model" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">optimize_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.optimize_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.optimize_model" title="Permalink to this definition"></a></dt>
 <dd><p>function that performs a single step of the optimization</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.log_info">
-<span class="sig-name descname"><span class="pre">log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">episode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.log_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.log_info" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">episode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.log_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.log_info" title="Permalink to this definition"></a></dt>
 <dd><p>Write info to logger</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.train" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.train" title="Permalink to this definition"></a></dt>
 <dd><p>Train the model for the given number of episodes.</p>
 <p>The agent will perform a soft update of the Target Network’s weights,
 with the equation TAU * policy_net_state_dict + (1-TAU) *
@@ -415,25 +333,25 @@ converge to the Policy Network’s weights.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.history">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.history" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.history" title="Permalink to this definition"></a></dt>
 <dd><p>Get training history of policy_network</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.append_history">
-<span class="sig-name descname"><span class="pre">append_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">episode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.append_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.append_history" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">episode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.append_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.append_history" title="Permalink to this definition"></a></dt>
 <dd><p>Append latest step for training history of policy_network</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.update_history">
-<span class="sig-name descname"><span class="pre">update_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.update_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.update_history" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.update_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.update_history" title="Permalink to this definition"></a></dt>
 <dd><p>Update latest step for training history of policy_network</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.step" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.step" title="Permalink to this definition"></a></dt>
 <dd><p>Take next step from current state</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -461,7 +379,7 @@ been exceeded.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.expression_complexity">
-<span class="sig-name descname"><span class="pre">expression_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.expression_complexity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.expression_complexity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">expression_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.expression_complexity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.expression_complexity" title="Permalink to this definition"></a></dt>
 <dd><p>Compute graph / expression complexity for the given state</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -476,7 +394,7 @@ expression_tree of the current solution approximation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.find_reward">
-<span class="sig-name descname"><span class="pre">find_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.find_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.find_reward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">find_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.find_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.find_reward" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -492,31 +410,31 @@ expression_tree of the current solution approximation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.predict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.predict" title="Permalink to this definition"></a></dt>
 <dd><p>Predict the solution from the given state_string.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.is_constant_complexity">
-<span class="sig-name descname"><span class="pre">is_constant_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">complexities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.is_constant_complexity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.is_constant_complexity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_constant_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">complexities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.is_constant_complexity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.is_constant_complexity" title="Permalink to this definition"></a></dt>
 <dd><p>Check for constant loss over a long number of steps</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.save" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.save" title="Permalink to this definition"></a></dt>
 <dd><p>Save the policy_network</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.load" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.load" title="Permalink to this definition"></a></dt>
 <dd><p>Load policy_network from model_file</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.too_long">
-<span class="sig-name descname"><span class="pre">too_long</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.too_long"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.too_long" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">too_long</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#BaseAgent.too_long"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.too_long" title="Permalink to this definition"></a></dt>
 <dd><p>Check if state dimension is too large</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -530,7 +448,7 @@ expression_tree of the current solution approximation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.diff_loss_reward">
-<span class="sig-name descname"><span class="pre">diff_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.diff_loss_reward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">diff_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.diff_loss_reward" title="Permalink to this definition"></a></dt>
 <dd><p>Reward is decrease in complexity</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -547,7 +465,7 @@ expression_tree of the current solution approximation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.exp_loss_reward">
-<span class="sig-name descname"><span class="pre">exp_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.exp_loss_reward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">exp_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.exp_loss_reward" title="Permalink to this definition"></a></dt>
 <dd><p>Reward is decrease in complexity</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -564,13 +482,27 @@ expression_tree of the current solution approximation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.huber_loss">
-<span class="sig-name descname"><span class="pre">huber_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.huber_loss" title="Permalink to this definition">¶</a></dt>
-<dd><p>Huber loss</p>
+<span class="sig-name descname"><span class="pre">huber_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.huber_loss" title="Permalink to this definition"></a></dt>
+<dd><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is
+a loss function used in various machine learning and optimization
+problems, particularly in regression tasks. It combines the properties
+of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
+functions, providing a balance between the two.</p>
+<div class="math notranslate nohighlight">
+\[\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Nowrap<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<dl class="simple">
+<dt>L(y, f(x)) =</dt><dd><p>0.5 * (y - f(x))^2 if <a href="#id1"><span class="problematic" id="id2">|y - f(x)|</span></a> &lt;= delta delta * <a href="#id3"><span class="problematic" id="id4">|y - f(x)|</span></a> - 0.5 * delta^2 otherwise</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.inv_loss_reward">
-<span class="sig-name descname"><span class="pre">inv_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.inv_loss_reward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">inv_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.inv_loss_reward" title="Permalink to this definition"></a></dt>
 <dd><p>Reward is decrease in complexity</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -587,25 +519,25 @@ expression_tree of the current solution approximation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.l2_loss">
-<span class="sig-name descname"><span class="pre">l2_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.l2_loss" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">l2_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.l2_loss" title="Permalink to this definition"></a></dt>
 <dd><p>L2 Loss</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.smooth_l1_loss">
-<span class="sig-name descname"><span class="pre">smooth_l1_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.smooth_l1_loss" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">smooth_l1_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.smooth_l1_loss" title="Permalink to this definition"></a></dt>
 <dd><p>Smooth L1 Loss</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.state_string">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_string</span></span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.state_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_string</span></span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.state_string" title="Permalink to this definition"></a></dt>
 <dd><p>Get state string representation</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.base.BaseAgent.sub_loss_reward">
-<span class="sig-name descname"><span class="pre">sub_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.sub_loss_reward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sub_loss_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.base.BaseAgent.sub_loss_reward" title="Permalink to this definition"></a></dt>
 <dd><p>Reward is decrease in complexity</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -626,51 +558,33 @@ expression_tree of the current solution approximation</p>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="rl_equation_solver.agent.base.ReplayMemory.html" class="btn btn-neutral float-right" title="rl_equation_solver.agent.base.ReplayMemory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="rl_equation_solver.agent.base.html" class="btn btn-neutral float-left" title="rl_equation_solver.agent.base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rl_equation_solver.agent.base.html" class="btn btn-neutral float-left" title="rl_equation_solver.agent.base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rl_equation_solver.agent.base.ReplayMemory.html" class="btn btn-neutral float-right" title="rl_equation_solver.agent.base.ReplayMemory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023
-
-    </p>
+    <p>&#169; Copyright 2023.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
