@@ -223,7 +223,7 @@ e.g. rl_equation_solver.env_linear_equation.Env()</p></li>
 </p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.huber_loss" title="rl_equation_solver.agent.dqn.Agent.huber_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">huber_loss</span></code></a>(x, y[, delta])</p></td>
-<td><p>Huber loss.</p></td>
+<td><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_state" title="rl_equation_solver.agent.dqn.Agent.init_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_state</span></code></a>()</p></td>
 <td><p>Initialize state as a vector</p></td>
@@ -421,16 +421,24 @@ expression_tree of the current solution approximation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.huber_loss">
 <span class="sig-name descname"><span class="pre">huber_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.huber_loss" title="Permalink to this definition"></a></dt>
-<dd><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is
+<dd><blockquote>
+<div><p>Huber loss. Huber loss, also known as Smooth Mean Absolute Error, is
 a loss function used in various machine learning and optimization
 problems, particularly in regression tasks. It combines the properties
 of both Mean Squared Error (MSE) and Mean Absolute Error (MAE) loss
 functions, providing a balance between the two.</p>
 <div class="math notranslate nohighlight">
-\begin{eqnarray}
-    L(y, f(x)) &amp; = &amp; 0.5 (y - f(x))^2 if |y - f(x)| &lt;= \delta \
-    L(y, f(x)) &amp; = &amp; \delta |y - f(x)| - 0.5 \delta^2 otherwise
-\end{eqnarray}</div></dd></dl>
+L(y, f(x)) = \begin{cases}</div></div></blockquote>
+<dl>
+<dt>rac{1}{2} (y - f(x))^2 &amp; <a href="#id1"><span class="problematic" id="id2">|y - f(x)|</span></a> leq delta </dt><dd><p>delta <a href="#id3"><span class="problematic" id="id4">|y - f(x)|</span></a> -</p>
+</dd>
+<dt>rac{1}{2} delta^2 &amp; <a href="#id5"><span class="problematic" id="id6">|y - f(x)|</span></a></dt><dd><blockquote>
+<div><p>gt delta</p>
+</div></blockquote>
+<p>end{cases}</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.inv_loss_reward">

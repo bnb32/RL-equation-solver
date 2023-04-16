@@ -175,10 +175,11 @@
 <span class="sd">        .. math::</span>
 <span class="sd">            :nowrap:</span>
 
-<span class="sd">            \\begin{eqnarray}</span>
-<span class="sd">                L(y, f(x)) &amp; = &amp; 0.5 (y - f(x))^2 if |y - f(x)| &lt;= \delta \\</span>
-<span class="sd">                L(y, f(x)) &amp; = &amp; \delta |y - f(x)| - 0.5 \delta^2 otherwise</span>
-<span class="sd">            \\end{eqnarray}</span>
+<span class="sd">            L(y, f(x)) = \\begin{cases}</span>
+<span class="sd">                \frac{1}{2} (y - f(x))^2 &amp; |y - f(x)| \leq \delta \\</span>
+<span class="sd">                \delta |y - f(x)| - \frac{1}{2} \delta^2 &amp; |y - f(x)|</span>
+<span class="sd">                \gt \delta</span>
+<span class="sd">            \\end{cases}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">HuberLoss</span><span class="p">(</span><span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">)(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
