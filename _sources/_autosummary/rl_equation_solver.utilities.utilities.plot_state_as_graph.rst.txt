@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.utilities.plot\_state\_as\_graph
+===============================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autofunction:: plot_state_as_graph

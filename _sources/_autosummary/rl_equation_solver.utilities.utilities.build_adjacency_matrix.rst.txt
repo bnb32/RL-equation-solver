@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.utilities.build\_adjacency\_matrix
+=================================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autofunction:: build_adjacency_matrix

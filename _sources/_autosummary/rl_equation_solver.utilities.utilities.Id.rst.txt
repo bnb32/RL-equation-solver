@@ -1,0 +1,31 @@
+rl\_equation\_solver.utilities.utilities.Id
+===========================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autoclass:: Id
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Id.get
+      ~Id.reset
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Id.counter
+   
+   

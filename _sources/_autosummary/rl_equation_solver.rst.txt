@@ -29,5 +29,6 @@
    rl_equation_solver.agent
    rl_equation_solver.config
    rl_equation_solver.environment
+   rl_equation_solver.utilities
    rl_equation_solver.version
 

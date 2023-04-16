@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rl_equation_solver.utilities.utilities &mdash; rl_equation_solver 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rl_equation_solver
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Home page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc/installation_usage.html">Installation and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../misc/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../misc/installation.html#option-1-clone-repo-recommended-for-developers">Option 1: Clone repo (recommended for developers)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.Agent.html">rl_equation_solver.agent.dqn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.gcn.Agent.html">rl_equation_solver.agent.gcn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.html">rl_equation_solver.agent.networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.DQN.html">rl_equation_solver.agent.networks.DQN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.networks.GCN.html">rl_equation_solver.agent.networks.GCN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.html">rl_equation_solver.config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.Config.html">rl_equation_solver.config.Config</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.config.Config.html#rl_equation_solver.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.algebraic.html">rl_equation_solver.environment.algebraic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html">rl_equation_solver.environment.algebraic.Env</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.html">rl_equation_solver.utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.loss.html">rl_equation_solver.utilities.loss</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.loss.LossMixin.html">rl_equation_solver.utilities.loss.LossMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.operators.html">rl_equation_solver.utilities.operators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.operators.div.html">rl_equation_solver.utilities.operators.div</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.operators.root.html">rl_equation_solver.utilities.operators.root</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.operators.sqrt.html">rl_equation_solver.utilities.operators.sqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.operators.square.html">rl_equation_solver.utilities.operators.square</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.reward.html">rl_equation_solver.utilities.reward</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.reward.RewardMixin.html">rl_equation_solver.utilities.reward.RewardMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.html">rl_equation_solver.utilities.utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.build_adjacency_matrix.html">rl_equation_solver.utilities.utilities.build_adjacency_matrix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom.html">rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.encode_onehot.html">rl_equation_solver.utilities.utilities.encode_onehot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.get_json_graph.html">rl_equation_solver.utilities.utilities.get_json_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.get_node_features.html">rl_equation_solver.utilities.utilities.get_node_features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.get_node_labels.html">rl_equation_solver.utilities.utilities.get_node_labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.graph_walk.html">rl_equation_solver.utilities.utilities.graph_walk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.normalize.html">rl_equation_solver.utilities.utilities.normalize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.pad_array.html">rl_equation_solver.utilities.utilities.pad_array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.plot_state_as_graph.html">rl_equation_solver.utilities.utilities.plot_state_as_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.sparse_mx_to_torch_sparse_tensor.html">rl_equation_solver.utilities.utilities.sparse_mx_to_torch_sparse_tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.to_graph.html">rl_equation_solver.utilities.utilities.to_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.to_vec.html">rl_equation_solver.utilities.utilities.to_vec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Batch.html">rl_equation_solver.utilities.utilities.Batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Experience.html">rl_equation_solver.utilities.utilities.Experience</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.version.html">rl_equation_solver.version</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rl_equation_solver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rl_equation_solver.utilities.utilities</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rl_equation_solver.utilities.utilities</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of useful functions&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.utils.convert</span> <span class="kn">import</span> <span class="n">from_networkx</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.readwrite</span> <span class="kn">import</span> <span class="n">json_graph</span>
+<span class="kn">from</span> <span class="nn">networkx.drawing.nx_pydot</span> <span class="kn">import</span> <span class="n">graphviz_layout</span>
+
+
+<span class="n">Experience</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Experience&#39;</span><span class="p">,</span>
+                        <span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="s1">&#39;next_state&#39;</span><span class="p">,</span> <span class="s1">&#39;reward&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Batch"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Batch.html#rl_equation_solver.utilities.utilities.Batch">[docs]</a><span class="k">class</span> <span class="nc">Batch</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graph Embedding or state vector Batch&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the batch&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experience</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_final_mask</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_final_next_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_final_next_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_batch</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_batch</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_batch</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Batch.__call__"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Batch.html#rl_equation_solver.utilities.utilities.Batch.__call__">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Batch states for given set of states and send to device. States</span>
+<span class="sd">        can be either instances of GraphEmbedding or np.ndarray&quot;&quot;&quot;</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">experience</span> <span class="o">=</span> <span class="n">Experience</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">states</span><span class="p">))</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">non_final_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">next_state</span><span class="p">)),</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">non_final_next_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">next_state</span>
+                                       <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">state_batch</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">state</span>
+                             <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">action_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">reward_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">experience</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">batch</span></div></div>
+
+
+<div class="viewcode-block" id="Id"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Id.html#rl_equation_solver.utilities.utilities.Id">[docs]</a><span class="k">class</span> <span class="nc">Id</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A helper class for autoincrementing node numbers.&quot;&quot;&quot;</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<div class="viewcode-block" id="Id.get"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Id.html#rl_equation_solver.utilities.utilities.Id.get">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the node number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">counter</span></div>
+
+<div class="viewcode-block" id="Id.reset"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Id.html#rl_equation_solver.utilities.utilities.Id.reset">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset counter&quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Node.html#rl_equation_solver.utilities.utilities.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a single operation or atomic argument.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">expr_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">expr_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="VectorEmbedding"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.VectorEmbedding.html#rl_equation_solver.utilities.utilities.VectorEmbedding">[docs]</a><span class="k">class</span> <span class="nc">VectorEmbedding</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Vector embedding class for embedding feature vector in vector of</span>
+<span class="sd">    fixed size&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">n_observations</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vector</span> <span class="o">=</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">n_observations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                   <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GraphEmbedding"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.GraphEmbedding.html#rl_equation_solver.utilities.utilities.GraphEmbedding">[docs]</a><span class="k">class</span> <span class="nc">GraphEmbedding</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graph embedding class for embedding adjacency matrix and node features</span>
+<span class="sd">    in matrices of fixed sizes&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">n_observations</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">from_networkx</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adj</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span> <span class="o">=</span> <span class="n">encode_onehot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span> <span class="o">=</span> <span class="n">pad_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_observations</span><span class="p">,</span> <span class="n">n_features</span><span class="p">))</span>
+
+        <span class="c1"># embed in larger constant size matricies</span>
+        <span class="n">max_i</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_observations</span><span class="p">)</span>
+        <span class="n">max_j</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[:</span><span class="n">max_i</span><span class="p">,</span> <span class="p">:</span><span class="n">max_j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">[:</span><span class="n">max_i</span><span class="p">:,</span> <span class="p">:</span><span class="n">max_j</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onehot_values</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                          <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_walk"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.graph_walk.html#rl_equation_solver.utilities.utilities.graph_walk">[docs]</a><span class="k">def</span> <span class="nf">graph_walk</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">node_list</span><span class="p">,</span> <span class="n">link_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walk over the expression tree recursively creating nodes and links.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : Node</span>
+<span class="sd">        Parent node</span>
+<span class="sd">    expr : str</span>
+<span class="sd">        State string</span>
+<span class="sd">    node_list : list</span>
+<span class="sd">        List of node dictionaries with &#39;id&#39; and &#39;name&#39; keys</span>
+<span class="sd">    link_list : list</span>
+<span class="sd">        List of link dictionaries with &#39;source&#39; and &#39;target&#39; keys</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Root&#39;</span><span class="p">:</span>
+        <span class="n">Id</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">expr</span><span class="o">.</span><span class="n">is_Atom</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">expr</span><span class="p">),</span> <span class="n">Id</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+        <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+        <span class="n">link_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">parent</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="n">Id</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+        <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+        <span class="n">link_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">parent</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">expr</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">graph_walk</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">node_list</span><span class="p">,</span> <span class="n">link_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pad_array"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.pad_array.html#rl_equation_solver.utilities.utilities.pad_array">[docs]</a><span class="k">def</span> <span class="nf">pad_array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pad array with zeros according the given length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
+        <span class="n">padded_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+        <span class="n">padded_arr</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)]</span> <span class="o">=</span> <span class="n">arr</span>
+        <span class="k">return</span> <span class="n">padded_arr</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span></div>
+
+
+<div class="viewcode-block" id="to_vec"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.to_vec.html#rl_equation_solver.utilities.utilities.to_vec">[docs]</a><span class="k">def</span> <span class="nf">to_vec</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">feature_dict</span><span class="p">,</span> <span class="n">state_dim</span><span class="o">=</span><span class="mi">4096</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get state vector for given expression</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    expr : str</span>
+<span class="sd">        State string representation</span>
+<span class="sd">    feature_dict : dict</span>
+<span class="sd">        Dictionary mapping feature names to values</span>
+<span class="sd">    state_dim : int</span>
+<span class="sd">        Max length of state vector</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        State vector array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">get_json_graph</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+    <span class="n">node_features</span> <span class="o">=</span> <span class="n">get_node_features</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feature_dict</span><span class="p">)</span>
+    <span class="n">node_features</span> <span class="o">=</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">node_features</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.25</span> <span class="o">*</span> <span class="n">state_dim</span><span class="p">))</span>
+    <span class="n">edge_vector</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">edge_vector</span> <span class="o">=</span> <span class="n">pad_array</span><span class="p">(</span><span class="n">edge_vector</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.75</span> <span class="o">*</span> <span class="n">state_dim</span><span class="p">))</span>
+    <span class="n">state_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">node_features</span><span class="p">,</span> <span class="n">edge_vector</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">state_vec</span></div>
+
+
+<div class="viewcode-block" id="get_json_graph"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.get_json_graph.html#rl_equation_solver.utilities.utilities.get_json_graph">[docs]</a><span class="k">def</span> <span class="nf">get_json_graph</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a graph plot of the internal representation of SymPy expression. Don&#39;t</span>
+<span class="sd">    add meta data yet.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    expr : str</span>
+<span class="sd">        State string representation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    networkx.Graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">node_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">link_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">graph_walk</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="s2">&quot;Root&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">expr</span><span class="p">,</span> <span class="n">node_list</span><span class="p">,</span> <span class="n">link_list</span><span class="p">)</span>
+
+    <span class="c1"># Create the graph from the lists of nodes and links:</span>
+    <span class="n">graph_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="n">node_list</span><span class="p">,</span> <span class="s2">&quot;links&quot;</span><span class="p">:</span> <span class="n">link_list</span><span class="p">}</span>
+    <span class="n">node_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span>
+                   <span class="ow">in</span> <span class="n">graph_json</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph_json</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]:</span>
+        <span class="k">del</span> <span class="n">n</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">json_graph</span><span class="o">.</span><span class="n">node_link_graph</span><span class="p">(</span><span class="n">graph_json</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                       <span class="n">multigraph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;Root&#39;</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="to_graph"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.to_graph.html#rl_equation_solver.utilities.utilities.to_graph">[docs]</a><span class="k">def</span> <span class="nf">to_graph</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">feature_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a graph plot of the internal representation of SymPy expression.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    expr : str</span>
+<span class="sd">        State string representation</span>
+<span class="sd">    feature_dict : dict</span>
+<span class="sd">        Dictionary mapping feature names to values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    networkx.Graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">get_json_graph</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+    <span class="n">node_features</span> <span class="o">=</span> <span class="n">get_node_features</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feature_dict</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)):</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_features</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="get_node_features"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.get_node_features.html#rl_equation_solver.utilities.utilities.get_node_features">[docs]</a><span class="k">def</span> <span class="nf">get_node_features</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">feature_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get node features from feature dictionary. e.g. we can map the</span>
+<span class="sd">    operations and terms to integeters: {add: 0, sub: 1, .. }&quot;&quot;&quot;</span>
+    <span class="n">node_labels</span> <span class="o">=</span> <span class="n">get_node_labels</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">node_features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_labels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">node_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">feature_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">if</span> <span class="n">key</span>
+                              <span class="ow">in</span> <span class="n">feature_dict</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                              <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">node_features</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">node_features</span></div>
+
+
+<div class="viewcode-block" id="get_node_labels"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.get_node_labels.html#rl_equation_solver.utilities.utilities.get_node_labels">[docs]</a><span class="k">def</span> <span class="nf">get_node_labels</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get node labels from graph. Must be stored as node attributes as</span>
+<span class="sd">    graph.nodes[index][&#39;name&#39;]. Includes None for nodes with no name</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : networkx.graph</span>
+<span class="sd">        Networkx graph object with node[&#39;name&#39;] attributes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">node_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">node_labels</span></div>
+
+
+<div class="viewcode-block" id="plot_state_as_graph"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.plot_state_as_graph.html#rl_equation_solver.utilities.utilities.plot_state_as_graph">[docs]</a><span class="k">def</span> <span class="nf">plot_state_as_graph</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a graph plot of the internal representation of SymPy expression.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">get_node_labels</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">graphviz_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">to_directed</span><span class="p">(),</span> <span class="n">pos</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">node_shape</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="n">bbox</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;facecolor&#39;</span><span class="p">:</span> <span class="s1">&#39;skyblue&#39;</span><span class="p">,</span> <span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;boxstyle&#39;</span><span class="p">:</span> <span class="s1">&#39;round,pad=0.2&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.normalize.html#rl_equation_solver.utilities.utilities.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">mx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Row-normalize sparse matrix&quot;&quot;&quot;</span>
+    <span class="n">rowsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mx</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">r_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">rowsum</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">r_inv</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">r_inv</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">r_mat_inv</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">diags</span><span class="p">(</span><span class="n">r_inv</span><span class="p">)</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="n">r_mat_inv</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mx</span></div>
+
+
+<div class="viewcode-block" id="sparse_mx_to_torch_sparse_tensor"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.sparse_mx_to_torch_sparse_tensor.html#rl_equation_solver.utilities.utilities.sparse_mx_to_torch_sparse_tensor">[docs]</a><span class="k">def</span> <span class="nf">sparse_mx_to_torch_sparse_tensor</span><span class="p">(</span><span class="n">sparse_mx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a scipy sparse matrix to a torch sparse tensor.&quot;&quot;&quot;</span>
+    <span class="n">sparse_mx</span> <span class="o">=</span> <span class="n">sparse_mx</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">sparse_mx</span><span class="o">.</span><span class="n">col</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_adjacency_matrix_custom"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom.html#rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom">[docs]</a><span class="k">def</span> <span class="nf">build_adjacency_matrix_custom</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build adjacency matrix from graph edges and labels&quot;&quot;&quot;</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">edges</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">edges</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">edges</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])),</span>
+                        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">adj</span> <span class="o">+</span> <span class="n">adj</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;</span> <span class="n">adj</span><span class="p">)</span> <span class="o">-</span> <span class="n">adj</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;</span> <span class="n">adj</span><span class="p">)</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">adj</span> <span class="o">+</span> <span class="n">sp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">sparse_mx_to_torch_sparse_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">adj</span></div>
+
+
+<div class="viewcode-block" id="build_adjacency_matrix"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.build_adjacency_matrix.html#rl_equation_solver.utilities.utilities.build_adjacency_matrix">[docs]</a><span class="k">def</span> <span class="nf">build_adjacency_matrix</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build adjacency matrix from graph edges and labels&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">adjacency_matrix</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="encode_onehot"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.encode_onehot.html#rl_equation_solver.utilities.utilities.encode_onehot">[docs]</a><span class="k">def</span> <span class="nf">encode_onehot</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Onehot encoding&quot;&quot;&quot;</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">classes_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">))[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span>
+                    <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">)}</span>
+    <span class="n">labels_onehot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">classes_dict</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">labels</span><span class="p">)),</span>
+                             <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">labels_onehot</span><span class="p">,</span> <span class="n">classes_dict</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

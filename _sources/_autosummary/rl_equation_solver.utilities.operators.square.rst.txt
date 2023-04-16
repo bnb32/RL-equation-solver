@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.operators.square
+===============================================
+
+.. currentmodule:: rl_equation_solver.utilities.operators
+
+.. autofunction:: square

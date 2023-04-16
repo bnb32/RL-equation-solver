@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.utilities.normalize
+==================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autofunction:: normalize

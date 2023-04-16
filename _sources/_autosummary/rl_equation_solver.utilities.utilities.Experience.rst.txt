@@ -1,0 +1,34 @@
+rl\_equation\_solver.utilities.utilities.Experience
+===================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autoclass:: Experience
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Experience.count
+      ~Experience.index
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Experience.action
+      ~Experience.next_state
+      ~Experience.reward
+      ~Experience.state
+   
+   

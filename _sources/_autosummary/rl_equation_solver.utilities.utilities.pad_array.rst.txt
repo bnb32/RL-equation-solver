@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.utilities.pad\_array
+===================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autofunction:: pad_array

@@ -1,0 +1,23 @@
+rl\_equation\_solver.utilities.utilities.GraphEmbedding
+=======================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autoclass:: GraphEmbedding
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

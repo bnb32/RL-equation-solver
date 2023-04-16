@@ -1,0 +1,28 @@
+rl\_equation\_solver.utilities.reward.RewardMixin
+=================================================
+
+.. currentmodule:: rl_equation_solver.utilities.reward
+
+.. autoclass:: RewardMixin
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RewardMixin.diff_loss_reward
+      ~RewardMixin.exp_loss_reward
+      ~RewardMixin.expression_complexity
+      ~RewardMixin.inv_loss_reward
+      ~RewardMixin.sub_loss_reward
+   
+   
+
+   
+   
+   

@@ -1,0 +1,26 @@
+rl\_equation\_solver.utilities.loss.LossMixin
+=============================================
+
+.. currentmodule:: rl_equation_solver.utilities.loss
+
+.. autoclass:: LossMixin
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LossMixin.huber_loss
+      ~LossMixin.l2_loss
+      ~LossMixin.smooth_l1_loss
+   
+   
+
+   
+   
+   

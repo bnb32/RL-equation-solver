@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.utilities.graph\_walk
+====================================================
+
+.. currentmodule:: rl_equation_solver.utilities.utilities
+
+.. autofunction:: graph_walk

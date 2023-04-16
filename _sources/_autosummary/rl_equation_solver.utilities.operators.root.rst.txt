@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.operators.root
+=============================================
+
+.. currentmodule:: rl_equation_solver.utilities.operators
+
+.. autofunction:: root
