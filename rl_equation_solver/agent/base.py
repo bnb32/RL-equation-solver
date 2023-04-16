@@ -7,8 +7,6 @@ import torch
 from torch import optim
 import logging
 from abc import abstractmethod
-import numpy as np
-import pprint
 
 from rl_equation_solver.config import Config
 from rl_equation_solver.utilities.reward import RewardMixin
@@ -54,16 +52,14 @@ class BaseAgent(RewardMixin, LossMixin):
         self.hidden_size = hidden_size
         self.n_actions = env.n_actions
         self.n_observations = env.n_obs
-        self.steps_done = 0
         self.memory = None
         self.policy_network = None
         self.target_network = None
         self.optimizer = None
         self._history = {}
         self.max_loss = 50
-        self.current_episode = 0
-        self.info = None
         self._device = device
+        self._eps_decay = Config.EPS_DECAY
 
     @abstractmethod
     def init_state(self):
@@ -85,6 +81,30 @@ class BaseAgent(RewardMixin, LossMixin):
                                      lr=Config.LR, amsgrad=True)
 
     @property
+    def eps_decay(self):
+        """Get epsilon decay for current number of steps"""
+        decay = 0
+        if self._eps_decay is None:
+            decay = Config.EPSILON_START - Config.EPSILON_END
+            decay *= math.exp(-1. * self.steps_done / Config.EPS_DECAY_STEPS)
+        return decay
+
+    @property
+    def steps_done(self):
+        """Get total number of steps done across all episodes"""
+        return self.env.steps_done
+
+    @property
+    def current_episode(self):
+        """Get current episode"""
+        return self.env.episode_number
+
+    @current_episode.setter
+    def current_episode(self, value):
+        """Set current episode"""
+        self.env.episode_number = value
+
+    @property
     def device(self):
         """Get device for training network"""
         if self._device is None:
@@ -98,7 +118,7 @@ class BaseAgent(RewardMixin, LossMixin):
             self._device = torch.device(self._device)
         return self._device
 
-    def step(self, state, episode=0, training=False):
+    def step(self, state, training=False):
         """Take next step from current state
 
         Parameters
@@ -127,8 +147,6 @@ class BaseAgent(RewardMixin, LossMixin):
         action = self.choose_action(state, training=training)
         _, _, done, info = self.env.step(action.item())
 
-        self.append_history(episode, info)
-
         if done:
             next_state = None
         else:
@@ -153,14 +171,11 @@ class BaseAgent(RewardMixin, LossMixin):
         random action depending on training step.
         """
         random_float = random.random()
-        decay = Config.EPSILON_START - Config.EPSILON_END
-        decay *= math.exp(-1. * self.steps_done / Config.EPSILON_DECAY)
-        epsilon_threshold = Config.EPSILON_END + decay
+        epsilon_threshold = Config.EPSILON_END + self.eps_decay
 
         if not training:
             epsilon_threshold = Config.EPSILON_END
 
-        self.steps_done += 1
         if random_float > epsilon_threshold:
             return self.choose_optimal_action(state)
         else:
@@ -204,7 +219,7 @@ class BaseAgent(RewardMixin, LossMixin):
         loss = self.compute_loss(state_action_values,
                                  expected_state_action_values)
         self.update_info('loss', loss.item())
-        self.update_history('loss', loss.item())
+        self.env.update_history(self.current_episode, 'loss', loss.item())
 
         # optimize the model
         self.optimizer.zero_grad()
@@ -271,10 +286,9 @@ class BaseAgent(RewardMixin, LossMixin):
         for i in range(start, end):
             state = self.init_state()
             total_reward = 0
-            self.env.step_number = 0
             for t in count():
                 # sample an action
-                action, next_state, done, info = self.step(state, episode=i,
+                action, next_state, done, info = self.step(state,
                                                            training=training)
                 reward = torch.tensor([info['reward']], device=self.device)
 
@@ -296,8 +310,6 @@ class BaseAgent(RewardMixin, LossMixin):
                 if not eval:
                     self.update_networks()
 
-                self.log_info(self.current_episode)
-
                 total_reward += info['reward']
                 if done:
                     episode_duration.append(t + 1)
@@ -306,8 +318,8 @@ class BaseAgent(RewardMixin, LossMixin):
                                 f"{total_reward}. Final state = "
                                 f"{self.state_string}")
                     break
-                self.env.step_number += 1
-            self.current_episode += 1
+
+            self.env.log_info()
 
     def update_networks(self):
         """
@@ -327,26 +339,12 @@ class BaseAgent(RewardMixin, LossMixin):
     @property
     def history(self):
         """Get training history of policy_network"""
-        return self._history
+        return self.env.history
 
     @history.setter
     def history(self, value):
         """Set training history of policy_network"""
-        self._history = value
-
-    def append_history(self, episode, entry):
-        """Append latest step for training history of policy_network"""
-        if episode not in self._history:
-            self._history[episode] = {'complexity': [], 'loss': [],
-                                      'reward': [], 'state': []}
-        self._history[episode]['complexity'].append(entry['complexity'])
-        self._history[episode]['loss'].append(entry.get('loss', np.nan))
-        self._history[episode]['reward'].append(entry['reward'])
-        self._history[episode]['state'].append(entry['state'])
-
-    def update_history(self, key, value):
-        """Update latest step for training history of policy_network"""
-        self._history[self.current_episode][key][-1] = value
+        self.env.history = value
 
     def predict(self, state_string):
         """

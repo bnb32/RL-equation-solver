@@ -76,8 +76,12 @@ class Env(gym.Env, RewardMixin):
         self._state_vec = None
         self._state_graph = None
         self._equation = None
+        self._history = {}
         self.info = None
-        self.step_number = 0
+        self.loop_step_number = 0
+        self.steps_done = 0
+        self.episode_number = 0
+        self.window = None
 
         self.max_loss = 50
         self.state_dim = Config.VEC_DIM
@@ -198,6 +202,7 @@ class Env(gym.Env, RewardMixin):
         """
         Initialize environment state
         """
+        self.loop_step_number = 0
         if self._initial_state is None:
             *_, init = self._get_symbols()
             self._initial_state = -init
@@ -253,6 +258,37 @@ class Env(gym.Env, RewardMixin):
         keys += [str(sym) for sym in self._get_symbols()]
         keys += ['I']
         return {key: -(i + 2) for i, key in enumerate(keys)}
+
+    @property
+    def history(self):
+        """Get training history of policy_network"""
+        return self._history
+
+    @history.setter
+    def history(self, value):
+        """Set training history of policy_network"""
+        self._history = value
+
+    def append_history(self, episode, entry):
+        """Append latest step for training history of policy_network"""
+        if episode not in self._history:
+            self._history[episode] = {'complexity': [], 'loss': [],
+                                      'reward': [], 'state': []}
+        self._history[episode]['complexity'].append(entry['complexity'])
+        self._history[episode]['loss'].append(entry.get('loss', np.nan))
+        self._history[episode]['reward'].append(entry['reward'])
+        self._history[episode]['state'].append(entry['state'])
+
+    def update_history(self, episode, key, value):
+        """Update latest step for training history of policy_network"""
+        self._history[episode][key][-1] = value
+
+    def log_info(self):
+        """Write info to logger"""
+        out = self.info.copy()
+        out['reward'] = '{:.3e}'.format(out['reward'])
+        out['loss'] = '{:.3e}'.format(out['loss'])
+        logger.info(out)
 
     def find_reward(self, state_old, state_new):
         """
@@ -366,13 +402,22 @@ class Env(gym.Env, RewardMixin):
             logger.info(f'solution is: {self.state_string}')
 
             # reward finding solution in fewer steps
-            reward += 10 / (1 + self.step_number)
+            reward += 10 / (1 + self.loop_step_number)
 
         # Extra info
-        self.info = {'complexity': complexity, 'loss': np.nan,
-                     'reward': reward, 'state': self.state_string}
+        self.info = {'episode_number': self.episode_number,
+                     'step_number': self.steps_done,
+                     'complexity': complexity, 'loss': np.nan,
+                     'reward': reward, 'state': nsimplify(self.state_string)}
+        self.steps_done += 1
+        self.loop_step_number += 1
         if done:
             logger.info(f'info: {self.info}')
+
+        self.append_history(self.episode_number, self.info)
+
+        if done:
+            self.episode_number += 1
 
         return self.state_vec, reward, done, self.info
 
