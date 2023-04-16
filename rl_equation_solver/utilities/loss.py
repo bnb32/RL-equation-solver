@@ -14,12 +14,12 @@ class LossMixin:
         functions, providing a balance between the two.
 
         .. math::
-        :nowrap:
+            :nowrap:
 
-        L(y, f(x)) =
-            0.5 * (y - f(x))^2 if |y - f(x)| <= delta \\
-            delta * |y - f(x)| - 0.5 * delta^2 otherwise
-
+            \begin{eqnarray}
+                L(y, f(x)) & = & 0.5 (y - f(x))^2 if |y - f(x)| <= \delta \\
+                L(y, f(x)) & = & \delta |y - f(x)| - 0.5 \delta^2 otherwise
+            \end{eqnarray}
         """
         return torch.nn.HuberLoss(delta=delta)(x, y)
 
