@@ -2,7 +2,7 @@
 import torch
 import logging
 
-from rl_equation_solver.agent.base import BaseAgent, Config, ReplayMemory
+from rl_equation_solver.agent.base import BaseAgent, ReplayMemory
 from rl_equation_solver.agent.networks import DQN
 from rl_equation_solver.utilities import utilities
 
@@ -13,22 +13,25 @@ logger = logging.getLogger(__name__)
 class Agent(BaseAgent):
     """Agent with DQN target and policy networks"""
 
-    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
+    def __init__(self, env, config=None, device='cpu'):
         """
         Parameters
         ----------
         env : Object
             Environment instance.
             e.g. rl_equation_solver.env_linear_equation.Env()
-        hidden_size : int
-            size of hidden layers
+        config : dict | None
+            Model configuration. If None then the default model configuration
+            in rl_equation_solver.config will be used.
+        device : str
+            Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
-        super().__init__(env, hidden_size, device=device)
-        self.memory = ReplayMemory(Config.MEM_CAP)
+        super().__init__(env, config, device=device)
+        self.memory = ReplayMemory(self.memory_cap)
         self.policy_network = DQN(self.n_observations, self.n_actions,
-                                  hidden_size).to(self.device)
+                                  self.hidden_size).to(self.device)
         self.target_network = DQN(self.n_observations, self.n_actions,
-                                  hidden_size).to(self.device)
+                                  self.hidden_size).to(self.device)
         self.target_network.load_state_dict(self.policy_network.state_dict())
         self.init_optimizer()
 

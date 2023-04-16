@@ -7,9 +7,10 @@ import torch
 from torch import optim
 import logging
 from abc import abstractmethod
+from sympy import nsimplify
+import numpy as np
 
-from rl_equation_solver.config import Config
-from rl_equation_solver.utilities.reward import RewardMixin
+from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities.loss import LossMixin
 from rl_equation_solver.utilities import utilities
 
@@ -35,21 +36,23 @@ class ReplayMemory:
 
 
 # pylint: disable=not-callable
-class BaseAgent(RewardMixin, LossMixin):
+class BaseAgent(LossMixin):
     """Agent with DQN target and policy networks"""
 
-    def __init__(self, env, hidden_size=Config.HIDDEN_SIZE, device='cpu'):
+    def __init__(self, env, config=None, device='cpu'):
         """
         Parameters
         ----------
         env : Object
             Environment instance.
             e.g. rl_equation_solver.env_linear_equation.Env()
-        hidden_size : int
-            size of hidden layers
+        config : dict | None
+            Model configuration. If None then the default model configuration
+            in rl_equation_solver.config will be used.
+        device : str
+            Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
         self.env = env
-        self.hidden_size = hidden_size
         self.n_actions = env.n_actions
         self.n_observations = env.n_obs
         self.memory = None
@@ -57,9 +60,40 @@ class BaseAgent(RewardMixin, LossMixin):
         self.target_network = None
         self.optimizer = None
         self._history = {}
-        self.max_loss = 50
         self._device = device
-        self._eps_decay = Config.EPS_DECAY
+        self.config = config
+
+        # Configuration properties
+        self.batch_size = None
+        self.gamma = None
+        self.eps_start = None
+        self.eps_end = None
+        self.hidden_size = None
+        self.eps_decay = None
+        self.eps_decay_steps = None
+        self.tau = None
+        self.learning_rate = None
+        self.memory_cap = None
+        self.reset_steps = None
+        self.vec_dim = None
+        self.feature_num = None
+        self.grad_clip = None
+
+        self.init_config()
+
+    def init_config(self):
+        """Initialize model configuration"""
+        config = DefaultConfig
+        if self.config is not None:
+            config.update(self.config)
+        for key, val in config.items():
+            if hasattr(self, key):
+                setattr(self, key, val)
+
+    def update_config(self, config):
+        """Update configuration"""
+        self.config = config
+        self.init_config()
 
     @abstractmethod
     def init_state(self):
@@ -78,15 +112,14 @@ class BaseAgent(RewardMixin, LossMixin):
     def init_optimizer(self):
         """Initialize optimizer"""
         self.optimizer = optim.AdamW(self.policy_network.parameters(),
-                                     lr=Config.LR, amsgrad=True)
+                                     lr=self.learning_rate, amsgrad=True)
 
-    @property
-    def eps_decay(self):
+    def _get_eps_decay(self):
         """Get epsilon decay for current number of steps"""
         decay = 0
-        if self._eps_decay is None:
-            decay = Config.EPSILON_START - Config.EPSILON_END
-            decay *= math.exp(-1. * self.steps_done / Config.EPS_DECAY_STEPS)
+        if self.eps_decay is None:
+            decay = self.eps_start - self.eps_end
+            decay *= math.exp(-1. * self.steps_done / self.eps_decay_steps)
         return decay
 
     @property
@@ -97,12 +130,12 @@ class BaseAgent(RewardMixin, LossMixin):
     @property
     def current_episode(self):
         """Get current episode"""
-        return self.env.episode_number
+        return self.env.current_episode
 
     @current_episode.setter
     def current_episode(self, value):
         """Set current episode"""
-        self.env.episode_number = value
+        self.env.current_episode = value
 
     @property
     def device(self):
@@ -171,10 +204,10 @@ class BaseAgent(RewardMixin, LossMixin):
         random action depending on training step.
         """
         random_float = random.random()
-        epsilon_threshold = Config.EPSILON_END + self.eps_decay
+        epsilon_threshold = self.eps_end + self._get_eps_decay()
 
         if not training:
-            epsilon_threshold = Config.EPSILON_END
+            epsilon_threshold = self.eps_end
 
         if random_float > epsilon_threshold:
             return self.choose_optimal_action(state)
@@ -183,30 +216,17 @@ class BaseAgent(RewardMixin, LossMixin):
 
     def compute_loss(self, state_action_values, expected_state_action_values):
         """Compute Huber loss"""
-        loss = self.huber_loss(state_action_values,
-                               expected_state_action_values.unsqueeze(1))
+        loss = self.smooth_l1_loss(state_action_values,
+                                   expected_state_action_values.unsqueeze(1))
         return loss
 
-    def update_info(self, key, value):
-        """Update history info with given value for the given key"""
-        self.info[key] = value
+    def compute_batch_loss(self):
+        """Compute loss for batch using the stored memory."""
 
-    def choose_random_action(self):
-        """Choose random action rather than the optimal action"""
-        return torch.tensor([[self.env.action_space.sample()]],
-                            device=self.device, dtype=torch.long)
+        if len(self.memory) < self.batch_size:
+            return None
 
-    def optimize_model(self):
-        """
-        Perform one step of the optimization (on the policy network). The agent
-        performs an optimization step on the Policy Network using the stored
-        memory
-        """
-
-        if len(self.memory) < Config.BATCH_SIZE:
-            return
-
-        transition = self.memory.sample(Config.BATCH_SIZE)
+        transition = self.memory.sample(self.batch_size)
         batch = self.batch_states(transition, device=self.device)
 
         state_action_values = self.compute_Q(batch)
@@ -218,8 +238,23 @@ class BaseAgent(RewardMixin, LossMixin):
 
         loss = self.compute_loss(state_action_values,
                                  expected_state_action_values)
-        self.update_info('loss', loss.item())
-        self.env.update_history(self.current_episode, 'loss', loss.item())
+        return loss
+
+    def update_info(self, key, value):
+        """Update history info with given value for the given key"""
+        self.info[key] = value
+
+    def choose_random_action(self):
+        """Choose random action rather than the optimal action"""
+        return torch.tensor([[self.env.action_space.sample()]],
+                            device=self.device, dtype=torch.long)
+
+    def optimize_model(self, loss=None):
+        """
+        Perform one step of the optimization (on the policy network).
+        """
+        if loss is None:
+            return
 
         # optimize the model
         self.optimizer.zero_grad()
@@ -227,14 +262,14 @@ class BaseAgent(RewardMixin, LossMixin):
 
         # In-place gradient clipping
         torch.nn.utils.clip_grad_value_(self.policy_network.parameters(),
-                                        Config.GRAD_CLIP)
+                                        self.grad_clip)
         self.optimizer.step()
 
     def compute_expected_Q(self, batch, next_state_values):
         """
         Compute the expected Q values
         """
-        return batch.reward_batch + (Config.GAMMA * next_state_values)
+        return batch.reward_batch + (self.gamma * next_state_values)
 
     def compute_V(self, batch):
         """
@@ -242,7 +277,7 @@ class BaseAgent(RewardMixin, LossMixin):
         non_final_next_states are computed based on the "older" target_net;
         selecting their best reward with max(1)[0].
         """
-        next_state_values = torch.zeros(Config.BATCH_SIZE, device=self.device)
+        next_state_values = torch.zeros(self.batch_size, device=self.device)
 
         with torch.no_grad():
             next_state_values[batch.non_final_mask] = \
@@ -258,20 +293,20 @@ class BaseAgent(RewardMixin, LossMixin):
         return self.policy_network(batch.state_batch) \
             .gather(1, batch.action_batch)
 
-    def log_info(self):
-        """Write info to logger"""
-        out = self.info.copy()
-        out['reward'] = '{:.3e}'.format(out['reward'])
-        out['loss'] = '{:.3e}'.format(out['loss'])
-        logger.info(out)
-
-    def train(self, num_episodes):
+    def train(self, num_episodes, eval=False):
         r"""Train the model for the given number of episodes.
 
         The agent will perform a soft update of the Target Network's weights,
         with the equation :math:`\tau * policy_net_state_dict + (1 - \tau)
         target_net_state_dict`, this helps to make the Target Network's weights
         converge to the Policy Network's weights.
+
+        Parameters
+        ----------
+        num_episodes : int
+            Number of episodes to train for
+        eval : bool
+            Whether to run in eval mode - without updating model weights
         """
         logger.info(f'Running training routine for {num_episodes} episodes in '
                     f'eval={eval} mode.')
@@ -285,7 +320,8 @@ class BaseAgent(RewardMixin, LossMixin):
         end = start + num_episodes
         for i in range(start, end):
             state = self.init_state()
-            total_reward = 0
+            total_reward = []
+            total_loss = []
             for t in count():
                 # sample an action
                 action, next_state, done, info = self.step(state,
@@ -304,19 +340,29 @@ class BaseAgent(RewardMixin, LossMixin):
                 if check:
                     break
 
+                loss = self.compute_batch_loss()
+
+                if loss is not None:
+                    self.update_info('loss', loss.item())
+                    self.env.update_history('loss', loss.item())
+
+                self.env.log_info()
+
                 if not done:
-                    self.optimize_model()
+                    self.optimize_model(loss)
 
                 if not eval:
                     self.update_networks()
 
-                total_reward += info['reward']
+                total_reward.append(info['reward'])
+                total_loss.append(info['loss'])
                 if done:
                     episode_duration.append(t + 1)
-                    logger.info(f"Episode {self.current_episode}, Solver "
-                                f"terminated after {t} steps with reward "
-                                f"{total_reward}. Final state = "
-                                f"{self.state_string}")
+                    msg = (f"Solver terminated after {t} steps with reward "
+                           f"{np.nansum(total_reward):.3e} and mean loss "
+                           f"{np.nanmean(total_loss):.3e}. Final state = "
+                           f"{nsimplify(self.state_string)}")
+                    logger.info(msg)
                     break
 
             self.env.log_info()
@@ -331,8 +377,8 @@ class BaseAgent(RewardMixin, LossMixin):
         target_net_state_dict = self.target_network.state_dict()
         policy_net_state_dict = self.policy_network.state_dict()
         for key in policy_net_state_dict:
-            value = policy_net_state_dict[key] * Config.TAU
-            value += target_net_state_dict[key] * (1 - Config.TAU)
+            value = policy_net_state_dict[key] * self.tau
+            value += target_net_state_dict[key] * (1 - self.tau)
             target_net_state_dict[key] = value
         self.target_network.load_state_dict(target_net_state_dict)
 
@@ -356,7 +402,7 @@ class BaseAgent(RewardMixin, LossMixin):
         complexities = []
         while not done:
             _, _, _, done = self.step(state, training=False)
-            complexity = self.expression_complexity(self.env.state_string)
+            complexity = self.env.expression_complexity(self.env.state_string)
             complexities.append(complexity)
             t += 1
 
@@ -367,13 +413,14 @@ class BaseAgent(RewardMixin, LossMixin):
                     f"state = {self.env.state_string} with complexity = "
                     f"{complexity}.")
 
+    # pylint: disable=invalid-unary-operand-type
     def is_constant_complexity(self, complexities):
         """Check for constant loss over a long number of steps"""
-        check = (len(complexities) >= Config.RESET_STEPS
-                 and len(set(complexities[-Config.RESET_STEPS:])) <= 1)
+        check = (len(complexities) >= self.reset_steps
+                 and len(set(complexities[-self.reset_steps:])) <= 1)
         if check:
             logger.info(f'Loss has been constant ({list(complexities)[-1]}) '
-                        f'for {Config.RESET_STEPS} steps. Reseting.')
+                        f'for {self.reset_steps} steps. Reseting.')
         return check
 
     def save(self, output_file):

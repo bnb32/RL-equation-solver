@@ -1,21 +1,21 @@
 """Environment for linear equation solver"""
 import gym
-import pygame
 from gym import spaces
 from sympy import symbols, nsimplify, simplify, expand
 from operator import add, sub, truediv, pow
 import logging
 import numpy as np
 
-from rl_equation_solver.config import Config
+from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities import utilities
 from rl_equation_solver.utilities.reward import RewardMixin
+from rl_equation_solver.utilities.history import HistoryMixin
 
 
 logger = logging.getLogger(__name__)
 
 
-class Env(gym.Env, RewardMixin):
+class Env(gym.Env, RewardMixin, HistoryMixin):
     r"""
     Environment for solving algebraic equations using RL.
 
@@ -53,7 +53,7 @@ class Env(gym.Env, RewardMixin):
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, order=2, init_state=None):
+    def __init__(self, order=2, init_state=None, config=None):
         """
         Parameters
         ----------
@@ -64,7 +64,12 @@ class Env(gym.Env, RewardMixin):
             Optional initial guess for equation solution. e.g. -b/a, using
             symbols from sympy.symbols('x a b'). If None then initial guess
             will be (-1) * constant_term.
+        config : dict | None
+            Model configuration. If None then the default model configuration
+            in rl_equation_solver.config will be used.
         """
+
+        HistoryMixin.__init__(self)
 
         # Initialize the state
         self.order = order
@@ -76,16 +81,18 @@ class Env(gym.Env, RewardMixin):
         self._state_vec = None
         self._state_graph = None
         self._equation = None
-        self._history = {}
         self.info = None
         self.loop_step_number = 0
         self.steps_done = 0
-        self.episode_number = 0
+        self.current_episode = 0
         self.window = None
+        self.config = config
 
-        self.max_loss = 50
-        self.state_dim = Config.VEC_DIM
+        self.state_dim = None
         self._initial_state = init_state
+
+        self.init_config()
+
         self.state_string = init_state or self._init_state()
 
         # Gym compatibility
@@ -102,6 +109,20 @@ class Env(gym.Env, RewardMixin):
         logger.info(f'Initializing environment with order={order}, |S| = '
                     f'{self.n_actions} x {self.n_obs} = '
                     f'{self.n_actions * self.n_obs}')
+
+    def init_config(self):
+        """Initialize model configuration"""
+        config = DefaultConfig
+        if self.config is not None:
+            config.update(self.config)
+        for key, val in config.items():
+            if hasattr(self, key):
+                setattr(self, key, val)
+
+    def update_config(self, config):
+        """Update configuration"""
+        self.config = config
+        self.init_config()
 
     @property
     def state_string(self):
@@ -259,37 +280,6 @@ class Env(gym.Env, RewardMixin):
         keys += ['I']
         return {key: -(i + 2) for i, key in enumerate(keys)}
 
-    @property
-    def history(self):
-        """Get training history of policy_network"""
-        return self._history
-
-    @history.setter
-    def history(self, value):
-        """Set training history of policy_network"""
-        self._history = value
-
-    def append_history(self, episode, entry):
-        """Append latest step for training history of policy_network"""
-        if episode not in self._history:
-            self._history[episode] = {'complexity': [], 'loss': [],
-                                      'reward': [], 'state': []}
-        self._history[episode]['complexity'].append(entry['complexity'])
-        self._history[episode]['loss'].append(entry.get('loss', np.nan))
-        self._history[episode]['reward'].append(entry['reward'])
-        self._history[episode]['state'].append(entry['state'])
-
-    def update_history(self, episode, key, value):
-        """Update latest step for training history of policy_network"""
-        self._history[episode][key][-1] = value
-
-    def log_info(self):
-        """Write info to logger"""
-        out = self.info.copy()
-        out['reward'] = '{:.3e}'.format(out['reward'])
-        out['loss'] = '{:.3e}'.format(out['loss'])
-        logger.info(out)
-
     def find_reward(self, state_old, state_new):
         """
         Parameters
@@ -405,9 +395,10 @@ class Env(gym.Env, RewardMixin):
             reward += 10 / (1 + self.loop_step_number)
 
         # Extra info
-        self.info = {'episode_number': self.episode_number,
-                     'step_number': self.steps_done,
-                     'complexity': complexity, 'loss': np.nan,
+        self.info = {'ep': self.current_episode,
+                     'step': self.steps_done,
+                     'complexity': complexity,
+                     'loss': np.nan,
                      'reward': reward,
                      'state': nsimplify(self.state_string)}
         self.steps_done += 1
@@ -415,10 +406,10 @@ class Env(gym.Env, RewardMixin):
         if done:
             self.log_info()
 
-        self.append_history(self.episode_number, self.info)
+        self.append_history(self.info)
 
         if done:
-            self.episode_number += 1
+            self.current_episode += 1
 
         return self.state_vec, reward, done, self.info
 
@@ -428,9 +419,3 @@ class Env(gym.Env, RewardMixin):
         Print the state string representation
         """
         print(self.state_string)
-
-    def close(self):
-        """Close resources"""
-        if self.window is not None:
-            pygame.display.quit()
-            pygame.quit()
