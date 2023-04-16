@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>examples &mdash; rl_equation_solver 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="examples.run_linear_solver_dqn" href="examples.run_linear_solver_dqn.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="../examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            rl_equation_solver
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home page</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation_usage.html">Installation and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation.html#option-1-clone-repo-recommended-for-developers">Option 1: Clone repo (recommended for developers)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/rl_equation_solver.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.dqn.Agent.html">rl_equation_solver.agent.dqn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.gcn.html">rl_equation_solver.agent.gcn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.gcn.Agent.html">rl_equation_solver.agent.gcn.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.lstm.html">rl_equation_solver.agent.lstm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.lstm.Agent.html">rl_equation_solver.agent.lstm.Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.networks.html">rl_equation_solver.agent.networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.networks.DQN.html">rl_equation_solver.agent.networks.DQN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.networks.GCN.html">rl_equation_solver.agent.networks.GCN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.agent.networks.LSTM.html">rl_equation_solver.agent.networks.LSTM</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/rl_equation_solver.config.html">rl_equation_solver.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/rl_equation_solver.environment.html">rl_equation_solver.environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.environment.algebraic.html">rl_equation_solver.environment.algebraic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.environment.algebraic.Env.html">rl_equation_solver.environment.algebraic.Env</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.html">rl_equation_solver.utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.history.html">rl_equation_solver.utilities.history</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.history.HistoryMixin.html">rl_equation_solver.utilities.history.HistoryMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.loss.html">rl_equation_solver.utilities.loss</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.loss.LossMixin.html">rl_equation_solver.utilities.loss.LossMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.operators.html">rl_equation_solver.utilities.operators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.operators.div.html">rl_equation_solver.utilities.operators.div</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.operators.fraction.html">rl_equation_solver.utilities.operators.fraction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.operators.root.html">rl_equation_solver.utilities.operators.root</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.operators.sqrt.html">rl_equation_solver.utilities.operators.sqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.operators.square.html">rl_equation_solver.utilities.operators.square</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.reward.html">rl_equation_solver.utilities.reward</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.reward.RewardMixin.html">rl_equation_solver.utilities.reward.RewardMixin</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.html">rl_equation_solver.utilities.utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.build_adjacency_matrix.html">rl_equation_solver.utilities.utilities.build_adjacency_matrix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom.html">rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.encode_onehot.html">rl_equation_solver.utilities.utilities.encode_onehot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.get_json_graph.html">rl_equation_solver.utilities.utilities.get_json_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.get_node_features.html">rl_equation_solver.utilities.utilities.get_node_features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.get_node_labels.html">rl_equation_solver.utilities.utilities.get_node_labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.graph_walk.html">rl_equation_solver.utilities.utilities.graph_walk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.normalize.html">rl_equation_solver.utilities.utilities.normalize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.pad_array.html">rl_equation_solver.utilities.utilities.pad_array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.parse_node_features.html">rl_equation_solver.utilities.utilities.parse_node_features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.plot_state_as_graph.html">rl_equation_solver.utilities.utilities.plot_state_as_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.sparse_mx_to_torch_sparse_tensor.html">rl_equation_solver.utilities.utilities.sparse_mx_to_torch_sparse_tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.to_graph.html">rl_equation_solver.utilities.utilities.to_graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.to_vec.html">rl_equation_solver.utilities.utilities.to_vec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.Batch.html">rl_equation_solver.utilities.utilities.Batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.Experience.html">rl_equation_solver.utilities.utilities.Experience</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/rl_equation_solver.version.html">rl_equation_solver.version</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples_usage.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.run_linear_solver_dqn.html">examples.run_linear_solver_dqn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.run_linear_solver_gcn.html">examples.run_linear_solver_gcn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.run_quadratic_solver_dqn.html">examples.run_quadratic_solver_dqn</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">rl_equation_solver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../examples_usage.html">Examples and Usage</a></li>
+          <li class="breadcrumb-item"><a href="../examples.html">&lt;no title&gt;</a></li>
+      <li class="breadcrumb-item active">examples</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/misc/_autosummary/examples.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-examples">
+<span id="examples"></span><h1>examples<a class="headerlink" href="#module-examples" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="examples.run_linear_solver_dqn.html#module-examples.run_linear_solver_dqn" title="examples.run_linear_solver_dqn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">examples.run_linear_solver_dqn</span></code></a></p></td>
+<td><p>Run linear solver with DQN based agent: .. math::     solve a*x + b = 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="examples.run_linear_solver_gcn.html#module-examples.run_linear_solver_gcn" title="examples.run_linear_solver_gcn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">examples.run_linear_solver_gcn</span></code></a></p></td>
+<td><p>Run linear solver with GCN based agent: .. math::     solve a*x + b = 0.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="examples.run_quadratic_solver_dqn.html#module-examples.run_quadratic_solver_dqn" title="examples.run_quadratic_solver_dqn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">examples.run_quadratic_solver_dqn</span></code></a></p></td>
+<td><p>Run quadratic solver with DQN based agent: solve <span class="math notranslate nohighlight">\(ax^2 + bx + c = 0\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../examples.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.run_linear_solver_dqn.html" class="btn btn-neutral float-right" title="examples.run_linear_solver_dqn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

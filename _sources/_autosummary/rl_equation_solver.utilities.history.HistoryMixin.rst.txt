@@ -1,0 +1,33 @@
+rl\_equation\_solver.utilities.history.HistoryMixin
+===================================================
+
+.. currentmodule:: rl_equation_solver.utilities.history
+
+.. autoclass:: HistoryMixin
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~HistoryMixin.append_history
+      ~HistoryMixin.log_info
+      ~HistoryMixin.update_history
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~HistoryMixin.avg_history
+      ~HistoryMixin.history
+   
+   

@@ -15,6 +15,7 @@ rl\_equation\_solver.utilities.operators
       :toctree:
    
       div
+      fraction
       root
       sqrt
       square

@@ -26,6 +26,7 @@ rl\_equation\_solver.utilities
    :template: custom-module-template.rst
    :recursive:
 
+   rl_equation_solver.utilities.history
    rl_equation_solver.utilities.loss
    rl_equation_solver.utilities.operators
    rl_equation_solver.utilities.reward

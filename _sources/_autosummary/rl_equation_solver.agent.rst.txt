@@ -29,5 +29,6 @@ rl\_equation\_solver.agent
    rl_equation_solver.agent.base
    rl_equation_solver.agent.dqn
    rl_equation_solver.agent.gcn
+   rl_equation_solver.agent.lstm
    rl_equation_solver.agent.networks
 

@@ -15,34 +15,32 @@ rl\_equation\_solver.agent.base.BaseAgent
 
    .. autosummary::
    
-      ~BaseAgent.append_history
       ~BaseAgent.batch_states
       ~BaseAgent.choose_action
       ~BaseAgent.choose_optimal_action
       ~BaseAgent.choose_random_action
+      ~BaseAgent.compute_Q
+      ~BaseAgent.compute_V
+      ~BaseAgent.compute_batch_loss
+      ~BaseAgent.compute_expected_Q
       ~BaseAgent.compute_loss
       ~BaseAgent.convert_state
-      ~BaseAgent.diff_loss_reward
-      ~BaseAgent.exp_loss_reward
-      ~BaseAgent.expression_complexity
-      ~BaseAgent.find_reward
       ~BaseAgent.huber_loss
+      ~BaseAgent.init_config
+      ~BaseAgent.init_optimizer
       ~BaseAgent.init_state
-      ~BaseAgent.inv_loss_reward
       ~BaseAgent.is_constant_complexity
       ~BaseAgent.l2_loss
       ~BaseAgent.load
-      ~BaseAgent.log_info
       ~BaseAgent.optimize_model
       ~BaseAgent.predict
       ~BaseAgent.save
       ~BaseAgent.smooth_l1_loss
       ~BaseAgent.step
-      ~BaseAgent.sub_loss_reward
-      ~BaseAgent.too_long
       ~BaseAgent.train
-      ~BaseAgent.update_history
+      ~BaseAgent.update_config
       ~BaseAgent.update_info
+      ~BaseAgent.update_networks
    
    
 
@@ -52,8 +50,11 @@ rl\_equation\_solver.agent.base.BaseAgent
 
    .. autosummary::
    
+      ~BaseAgent.current_episode
       ~BaseAgent.device
       ~BaseAgent.history
+      ~BaseAgent.info
       ~BaseAgent.state_string
+      ~BaseAgent.steps_done
    
    

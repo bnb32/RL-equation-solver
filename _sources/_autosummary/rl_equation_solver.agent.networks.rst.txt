@@ -21,6 +21,7 @@ rl\_equation\_solver.agent.networks
    
       DQN
       GCN
+      LSTM
    
    
 

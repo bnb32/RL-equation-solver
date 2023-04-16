@@ -1,0 +1,23 @@
+examples.run\_linear\_solver\_gcn
+=================================
+
+.. automodule:: examples.run_linear_solver_gcn
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

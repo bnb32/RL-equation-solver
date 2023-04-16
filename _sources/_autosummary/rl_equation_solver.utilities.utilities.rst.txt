@@ -23,6 +23,7 @@ rl\_equation\_solver.utilities.utilities
       graph_walk
       normalize
       pad_array
+      parse_node_features
       plot_state_as_graph
       sparse_mx_to_torch_sparse_tensor
       to_graph

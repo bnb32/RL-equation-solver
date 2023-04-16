@@ -1,0 +1,6 @@
+rl\_equation\_solver.utilities.operators.fraction
+=================================================
+
+.. currentmodule:: rl_equation_solver.utilities.operators
+
+.. autofunction:: fraction
