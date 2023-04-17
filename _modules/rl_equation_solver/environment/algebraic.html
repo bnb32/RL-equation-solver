@@ -174,7 +174,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Environment for linear equation solver&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">gym</span>
 <span class="kn">from</span> <span class="nn">gym</span> <span class="kn">import</span> <span class="n">spaces</span>
-<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">nsimplify</span><span class="p">,</span> <span class="n">simplify</span><span class="p">,</span> <span class="n">expand</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">nsimplify</span><span class="p">,</span> <span class="n">simplify</span><span class="p">,</span> <span class="n">parse_expr</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">add</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">truediv</span><span class="p">,</span> <span class="nb">pow</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -300,7 +300,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">state_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get string representation of the solution state&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_string</span>
+        <span class="k">return</span> <span class="n">nsimplify</span><span class="p">(</span><span class="n">parse_expr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state_string</span><span class="p">)))</span>
 
     <span class="nd">@state_string</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">state_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -440,7 +440,8 @@
 <span class="sd">        actions : list</span>
 <span class="sd">            List of operation, term pairs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">illegal_actions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">truediv</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">illegal_actions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">truediv</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">add</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">sub</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="nb">pow</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                           <span class="p">[</span><span class="nb">pow</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">op</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span>
                    <span class="k">if</span> <span class="p">[</span><span class="n">op</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">illegal_actions</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">actions</span>
@@ -498,9 +499,7 @@
 <span class="sd">            Number of edges plus number of nodes in graph representation /</span>
 <span class="sd">            expression_tree of the current solution approximation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_symbols</span><span class="p">()</span>
-        <span class="n">replaced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-        <span class="n">solution_approx</span> <span class="o">=</span> <span class="n">simplify</span><span class="p">(</span><span class="n">expand</span><span class="p">(</span><span class="n">nsimplify</span><span class="p">(</span><span class="n">replaced</span><span class="p">)))</span>
+        <span class="n">solution_approx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_solution_approx</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">solution_approx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">complexity</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
@@ -510,6 +509,13 @@
             <span class="n">complexity</span> <span class="o">+=</span> <span class="n">state_graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">complexity</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_solution_approx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the approximate solution from the given state&quot;&quot;&quot;</span>
+        <span class="n">replaced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">),</span>
+                                         <span class="n">nsimplify</span><span class="p">(</span><span class="n">parse_expr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">))))</span>
+        <span class="n">solution_approx</span> <span class="o">=</span> <span class="n">simplify</span><span class="p">(</span><span class="n">replaced</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">solution_approx</span>
 
 <div class="viewcode-block" id="Env.step"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -538,7 +544,7 @@
         <span class="c1"># action is 0,1,2,3, ...,  get the physical actions it indexes</span>
         <span class="p">[</span><span class="n">operation</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
         <span class="n">new_state_string</span> <span class="o">=</span> <span class="n">operation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">,</span> <span class="n">term</span><span class="p">)</span>
-        <span class="n">new_state_string</span> <span class="o">=</span> <span class="n">simplify</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">)</span>
+        <span class="n">new_state_string</span> <span class="o">=</span> <span class="n">nsimplify</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">)</span>
         <span class="n">new_state_vec</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">to_vec</span><span class="p">(</span><span class="n">new_state_string</span><span class="p">,</span>
                                          <span class="bp">self</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">,</span>
                                          <span class="bp">self</span><span class="o">.</span><span class="n">state_dim</span><span class="p">)</span>
@@ -577,10 +583,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop_step</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_vec</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span></div>
