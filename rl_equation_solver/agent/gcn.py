@@ -1,7 +1,7 @@
 """Agent with GCN based policy"""
 import logging
 
-from rl_equation_solver.agent.base import BaseAgent, ReplayMemory
+from rl_equation_solver.agent.base import BaseAgent
 from rl_equation_solver.agent.networks import GCN
 from rl_equation_solver.utilities import utilities
 from rl_equation_solver.utilities.utilities import GraphEmbedding
@@ -27,7 +27,6 @@ class Agent(BaseAgent):
             Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
         super().__init__(env, config, device=device)
-        self.memory = ReplayMemory(self.memory_cap)
         self.policy_network = GCN(self.n_observations, self.n_actions,
                                   self.hidden_size).to(self.device)
         self.target_network = GCN(self.n_observations, self.n_actions,

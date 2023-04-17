@@ -1,7 +1,7 @@
 """Environment for linear equation solver"""
 import gym
 from gym import spaces
-from sympy import symbols, nsimplify, simplify, expand
+from sympy import symbols, nsimplify, simplify, parse_expr
 from operator import add, sub, truediv, pow
 import logging
 import numpy as np
@@ -82,7 +82,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         self._state_graph = None
         self._equation = None
         self.info = None
-        self.loop_step_number = 0
+        self.loop_step = 0
         self.steps_done = 0
         self.current_episode = 0
         self.window = None
@@ -127,7 +127,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
     @property
     def state_string(self):
         """Get string representation of the solution state"""
-        return nsimplify(self._state_string)
+        return nsimplify(parse_expr(str(self._state_string)))
 
     @state_string.setter
     def state_string(self, value):
@@ -184,8 +184,8 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
     def _get_terms(self):
         """Get terms for quadratic equation"""
         _, *coeffs = self._get_symbols()
-        terms = [*coeffs, 0]
-        for n in range(1, self.order):
+        terms = [*coeffs, 0, 1]
+        for n in range(2, self.order):
             terms.append(1 / n)
         return terms
 
@@ -223,10 +223,9 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         """
         Initialize environment state
         """
-        self.loop_step_number = 0
+        self.loop_step = 0
         if self._initial_state is None:
-            *_, init = self._get_symbols()
-            self._initial_state = -init
+            self._initial_state = symbols('1')
         self.state_string = self._initial_state
 
     # pylint: disable=unused-argument
@@ -268,7 +267,8 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         actions : list
             List of operation, term pairs
         """
-        illegal_actions = [[truediv, 0]]
+        illegal_actions = [[truediv, 0], [add, 0], [sub, 0], [pow, 1],
+                           [pow, 0]]
         actions = [[op, term] for op in self.operations for term in self.terms
                    if [op, term] not in illegal_actions]
         return actions
@@ -326,9 +326,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             Number of edges plus number of nodes in graph representation /
             expression_tree of the current solution approximation
         """
-        x, *_ = self._get_symbols()
-        replaced = self.equation.replace(x, state)
-        solution_approx = simplify(expand(nsimplify(replaced)))
+        solution_approx = self._get_solution_approx(state)
         if solution_approx == 0:
             complexity = 0
         else:
@@ -338,6 +336,13 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             complexity += state_graph.number_of_edges()
 
         return complexity
+
+    def _get_solution_approx(self, state):
+        """Get the approximate solution from the given state"""
+        replaced = self.equation.replace(symbols('x'),
+                                         nsimplify(parse_expr(str(state))))
+        solution_approx = simplify(replaced)
+        return solution_approx
 
     def step(self, action: int):
         """
@@ -366,7 +371,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         # action is 0,1,2,3, ...,  get the physical actions it indexes
         [operation, term] = self.actions[action]
         new_state_string = operation(self.state_string, term)
-        new_state_string = simplify(new_state_string)
+        new_state_string = nsimplify(new_state_string)
         new_state_vec = utilities.to_vec(new_state_string,
                                          self.feature_dict,
                                          self.state_dim)
@@ -392,7 +397,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             logger.info(f'solution is: {self.state_string}')
 
             # reward finding solution in fewer steps
-            reward += 10 / (1 + self.loop_step_number)
+            reward += 10 / (1 + self.loop_step)
 
         # Extra info
         self.info = {'ep': self.current_episode,
@@ -400,15 +405,14 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
                      'complexity': complexity,
                      'loss': np.nan,
                      'reward': reward,
-                     'state': nsimplify(self.state_string)}
-        self.steps_done += 1
-        self.loop_step_number += 1
-        if done:
-            self.log_info()
-
+                     'state': self.state_string}
         self.append_history(self.info)
 
+        self.steps_done += 1
+        self.loop_step += 1
+
         if done:
+            self.log_info()
             self.current_episode += 1
 
         return self.state_vec, reward, done, self.info

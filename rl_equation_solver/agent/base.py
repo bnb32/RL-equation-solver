@@ -1,38 +1,19 @@
 """DQN module"""
 import math
 import random
-from collections import deque
 from itertools import count
 import torch
 from torch import optim
 import logging
 from abc import abstractmethod
-from sympy import nsimplify
 import numpy as np
 
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities.loss import LossMixin
-from rl_equation_solver.utilities import utilities
+from rl_equation_solver.utilities.utilities import ReplayMemory
 
 
 logger = logging.getLogger(__name__)
-
-
-class ReplayMemory:
-    """Stores the Experience Replay buffer"""
-    def __init__(self, capacity):
-        self.memory = deque([], maxlen=capacity)
-
-    def push(self, *args):
-        """Save the Experience into memory"""
-        self.memory.append(utilities.Experience(*args))
-
-    def sample(self, batch_size):
-        """select a random batch of Experience for training"""
-        return random.sample(self.memory, batch_size)
-
-    def __len__(self):
-        return len(self.memory)
 
 
 # pylint: disable=not-callable
@@ -80,6 +61,8 @@ class BaseAgent(LossMixin):
         self.grad_clip = None
 
         self.init_config()
+
+        self.memory = ReplayMemory(self.memory_cap)
 
     def init_config(self):
         """Initialize model configuration"""
@@ -238,6 +221,10 @@ class BaseAgent(LossMixin):
 
         loss = self.compute_loss(state_action_values,
                                  expected_state_action_values)
+
+        self.update_info('loss', loss.item())
+        self.env.update_history('loss', loss.item())
+
         return loss
 
     def update_info(self, key, value):
@@ -314,39 +301,20 @@ class BaseAgent(LossMixin):
         if eval:
             self.history = {}
             self.current_episode = 0
+            self.eps_decay = 0
 
-        episode_duration = []
         start = self.current_episode
         end = start + num_episodes
-        for i in range(start, end):
+        for _ in range(start, end):
             state = self.init_state()
-            total_reward = []
-            total_loss = []
-            for t in count():
-                # sample an action
+            for _ in count():
                 action, next_state, done, info = self.step(state,
                                                            training=training)
                 reward = torch.tensor([info['reward']], device=self.device)
 
-                # Store the experience in the memory
                 self.memory.push(state, action, next_state, reward)
 
-                # Move to the next state
-                state = next_state
-
-                # Kick agent out of local minima
-                check = (self.is_constant_complexity(
-                    self.history[i]['complexity']) and not done)
-                if check:
-                    break
-
                 loss = self.compute_batch_loss()
-
-                if loss is not None:
-                    self.update_info('loss', loss.item())
-                    self.env.update_history('loss', loss.item())
-
-                self.env.log_info()
 
                 if not done:
                     self.optimize_model(loss)
@@ -354,18 +322,29 @@ class BaseAgent(LossMixin):
                 if not eval:
                     self.update_networks()
 
-                total_reward.append(info['reward'])
-                total_loss.append(info['loss'])
                 if done:
-                    episode_duration.append(t + 1)
-                    msg = (f"Solver terminated after {t} steps with reward "
-                           f"{np.nansum(total_reward):.3e} and mean loss "
-                           f"{np.nanmean(total_loss):.3e}. Final state = "
-                           f"{nsimplify(self.state_string)}")
-                    logger.info(msg)
+                    self.terminate_msg()
                     break
 
-            self.env.log_info()
+                state = next_state
+
+    def terminate_msg(self):
+        """Log message about solver termination
+
+        Parameters
+        ----------
+        total_reward : list
+            List of reward
+
+        """
+        current_episode = list(self.history.keys())[-1]
+        total_reward = np.nansum(self.history[current_episode]['reward'])
+        mean_loss = np.nanmean(self.history[current_episode]['loss'])
+        msg = (f"\nSolver terminated after {self.env.loop_step + 1} steps: "
+               f"total_reward = {total_reward:.3e}, "
+               f"mean_loss = {mean_loss:.3e}, "
+               f"state = {self.state_string}")
+        logger.info(msg)
 
     def update_networks(self):
         r"""
@@ -400,28 +379,26 @@ class BaseAgent(LossMixin):
         state = self.convert_state(state_string)
         done = False
         t = 0
-        complexities = []
         while not done:
             _, _, _, done = self.step(state, training=False)
             complexity = self.env.expression_complexity(self.env.state_string)
-            complexities.append(complexity)
             t += 1
 
-            if self.is_constant_complexity(complexities):
-                done = True
-
-        logger.info(f"Solver terminated after {t} steps. Final "
+        logger.info(f"Solver terminated after {t + 1} steps. Final "
                     f"state = {self.env.state_string} with complexity = "
                     f"{complexity}.")
 
     # pylint: disable=invalid-unary-operand-type
-    def is_constant_complexity(self, complexities):
+    def is_constant_complexity(self):
         """Check for constant loss over a long number of steps"""
+        current_episode = list(self.history.keys())[-1]
+        complexities = self.history[current_episode]['complexity']
         check = (len(complexities) >= self.reset_steps
                  and len(set(complexities[-self.reset_steps:])) <= 1)
         if check:
-            logger.info(f'Loss has been constant ({list(complexities)[-1]}) '
-                        f'for {self.reset_steps} steps. Reseting.')
+            logger.info('Complexity has been constant '
+                        f'({list(complexities)[-1]}) for {self.reset_steps} '
+                        'steps. Reseting.')
         return check
 
     def save(self, output_file):
@@ -456,3 +433,11 @@ class BaseAgent(LossMixin):
     def info(self, value):
         """Set environment info"""
         self.env.info = value
+
+    def get_env(self):
+        """Get environment"""
+        return self.env
+
+    def set_env(self, env):
+        """Set the environment"""
+        self.env = env

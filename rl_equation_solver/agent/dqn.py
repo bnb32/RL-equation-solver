@@ -2,7 +2,7 @@
 import torch
 import logging
 
-from rl_equation_solver.agent.base import BaseAgent, ReplayMemory
+from rl_equation_solver.agent.base import BaseAgent
 from rl_equation_solver.agent.networks import DQN
 from rl_equation_solver.utilities import utilities
 
@@ -27,7 +27,6 @@ class Agent(BaseAgent):
             Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
         super().__init__(env, config, device=device)
-        self.memory = ReplayMemory(self.memory_cap)
         self.policy_network = DQN(self.n_observations, self.n_actions,
                                   self.hidden_size).to(self.device)
         self.target_network = DQN(self.n_observations, self.n_actions,

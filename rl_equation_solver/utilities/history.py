@@ -2,6 +2,7 @@
 import numpy as np
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -10,6 +11,8 @@ class HistoryMixin:
 
     def __init__(self):
         self._history = {}
+        self.current_episode = 0
+        self.steps_done = 0
 
     @property
     def history(self):
@@ -20,9 +23,10 @@ class HistoryMixin:
     def avg_history(self):
         """Get history averaged over each episode"""
         out = {k: [] for k in self.history[0] if k != 'state'}
-        for _, series in self.history:
+        for _, series in self.history.items():
             for k in out:
                 out[k].append(np.nanmean(series[k]))
+        return out
 
     @history.setter
     def history(self, value):
@@ -48,4 +52,10 @@ class HistoryMixin:
         out = {k: v[-1] for k, v, in out.items()}
         out['reward'] = '{:.3e}'.format(out['reward'])
         out['loss'] = '{:.3e}'.format(out['loss'])
-        logger.info(out)
+        logger.info(f'\n{out}')
+
+    def reset_history(self):
+        """Clear history"""
+        self._history = {}
+        self.current_episode = 0
+        self.steps_done = 0

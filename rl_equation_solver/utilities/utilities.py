@@ -1,7 +1,8 @@
 """Collection of useful functions"""
 import numpy as np
+import random
 import scipy.sparse as sp
-from collections import namedtuple
+from collections import namedtuple, deque
 import torch
 from torch_geometric.utils.convert import from_networkx
 import networkx as nx
@@ -13,6 +14,23 @@ from rl_equation_solver.utilities.operators import fraction
 
 Experience = namedtuple('Experience',
                         ('state', 'action', 'next_state', 'reward'))
+
+
+class ReplayMemory:
+    """Stores the Experience Replay buffer"""
+    def __init__(self, capacity):
+        self.memory = deque([], maxlen=capacity)
+
+    def push(self, *args):
+        """Save the Experience into memory"""
+        self.memory.append(Experience(*args))
+
+    def sample(self, batch_size):
+        """select a random batch of Experience for training"""
+        return random.sample(self.memory, batch_size)
+
+    def __len__(self):
+        return len(self.memory)
 
 
 class Batch:

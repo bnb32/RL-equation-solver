@@ -17,9 +17,9 @@ DefaultConfig = {
     # the EPSILON_END value as the fixed threshold. None enables the decay.
     'eps_decay': None,
     # TAU is the update rate of the target network
-    'tau': 0.005,
+    'tau': 1.0,
     # LR is the learning rate of the AdamW optimizer
-    'learning_rate': 5e-5,
+    'learning_rate': 1e-4,
     # the hidden layers in the DQN
     'hidden_size': 64,
     # memory capacity
@@ -27,7 +27,7 @@ DefaultConfig = {
     # reset after this many steps with constant loss
     'reset_steps': 100,
     # state vec max size
-    'state_dim': 256,
+    'state_dim': 64,
     # max number of node features
     'feature_num': 100,
     # gradient clipping value
