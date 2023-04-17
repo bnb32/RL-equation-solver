@@ -58,7 +58,6 @@
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
-<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
@@ -130,6 +129,7 @@
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.ReplayMemory.html">rl_equation_solver.utilities.utilities.ReplayMemory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
 </ul>
 </li>
@@ -243,7 +243,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.utilities.utilities.Node.html#rl_equation_solver.utilities.utilities.Node" title="rl_equation_solver.utilities.utilities.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(label, expr_id)</p></td>
 <td><p>Represents a single operation or atomic argument.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html#rl_equation_solver.utilities.utilities.VectorEmbedding" title="rl_equation_solver.utilities.utilities.VectorEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VectorEmbedding</span></code></a>(vector, n_observations, device)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory" title="rl_equation_solver.utilities.utilities.ReplayMemory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReplayMemory</span></code></a>(capacity)</p></td>
+<td><p>Stores the Experience Replay buffer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html#rl_equation_solver.utilities.utilities.VectorEmbedding" title="rl_equation_solver.utilities.utilities.VectorEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VectorEmbedding</span></code></a>(vector, n_observations, device)</p></td>
 <td><p>Vector embedding class for embedding feature vector in vector of fixed size</p></td>
 </tr>
 </tbody>

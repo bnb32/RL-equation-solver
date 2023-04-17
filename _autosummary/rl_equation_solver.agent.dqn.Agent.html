@@ -59,7 +59,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
-<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="reference internal" href="rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul class="current">
@@ -131,6 +130,7 @@
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.ReplayMemory.html">rl_equation_solver.utilities.utilities.ReplayMemory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
 </ul>
 </li>
@@ -228,35 +228,41 @@ in rl_equation_solver.config will be used.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.convert_state" title="rl_equation_solver.agent.dqn.Agent.convert_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_state</span></code></a>(state)</p></td>
 <td><p>Convert state string to vector representation</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.huber_loss" title="rl_equation_solver.agent.dqn.Agent.huber_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">huber_loss</span></code></a>(x, y[, delta])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.get_env" title="rl_equation_solver.agent.dqn.Agent.get_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_env</span></code></a>()</p></td>
+<td><p>Get environment</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.huber_loss" title="rl_equation_solver.agent.dqn.Agent.huber_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">huber_loss</span></code></a>(x, y[, delta])</p></td>
 <td><p>Huber loss.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_config" title="rl_equation_solver.agent.dqn.Agent.init_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_config</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_config" title="rl_equation_solver.agent.dqn.Agent.init_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_config</span></code></a>()</p></td>
 <td><p>Initialize model configuration</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_optimizer" title="rl_equation_solver.agent.dqn.Agent.init_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_optimizer</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_optimizer" title="rl_equation_solver.agent.dqn.Agent.init_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_optimizer</span></code></a>()</p></td>
 <td><p>Initialize optimizer</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_state" title="rl_equation_solver.agent.dqn.Agent.init_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_state</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.init_state" title="rl_equation_solver.agent.dqn.Agent.init_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_state</span></code></a>()</p></td>
 <td><p>Initialize state as a vector</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.is_constant_complexity" title="rl_equation_solver.agent.dqn.Agent.is_constant_complexity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_constant_complexity</span></code></a>(complexities)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.is_constant_complexity" title="rl_equation_solver.agent.dqn.Agent.is_constant_complexity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_constant_complexity</span></code></a>()</p></td>
 <td><p>Check for constant loss over a long number of steps</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.l2_loss" title="rl_equation_solver.agent.dqn.Agent.l2_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l2_loss</span></code></a>(x, y)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.l2_loss" title="rl_equation_solver.agent.dqn.Agent.l2_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l2_loss</span></code></a>(x, y)</p></td>
 <td><p>L2 Loss</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.load" title="rl_equation_solver.agent.dqn.Agent.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(env, model_file)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.load" title="rl_equation_solver.agent.dqn.Agent.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(env, model_file)</p></td>
 <td><p>Load policy_network from model_file</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.optimize_model" title="rl_equation_solver.agent.dqn.Agent.optimize_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_model</span></code></a>([loss])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.optimize_model" title="rl_equation_solver.agent.dqn.Agent.optimize_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_model</span></code></a>([loss])</p></td>
 <td><p>Perform one step of the optimization (on the policy network).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.predict" title="rl_equation_solver.agent.dqn.Agent.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(state_string)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.predict" title="rl_equation_solver.agent.dqn.Agent.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(state_string)</p></td>
 <td><p>Predict the solution from the given state_string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.save" title="rl_equation_solver.agent.dqn.Agent.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(output_file)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.save" title="rl_equation_solver.agent.dqn.Agent.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(output_file)</p></td>
 <td><p>Save the policy_network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.set_env" title="rl_equation_solver.agent.dqn.Agent.set_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_env</span></code></a>(env)</p></td>
+<td><p>Set the environment</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.smooth_l1_loss" title="rl_equation_solver.agent.dqn.Agent.smooth_l1_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth_l1_loss</span></code></a>(x, y)</p></td>
 <td><p>Smooth L1 Loss</p></td>
@@ -264,16 +270,19 @@ in rl_equation_solver.config will be used.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.step" title="rl_equation_solver.agent.dqn.Agent.step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span></code></a>(state[, training])</p></td>
 <td><p>Take next step from current state</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.train" title="rl_equation_solver.agent.dqn.Agent.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(num_episodes[, eval])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.terminate_msg" title="rl_equation_solver.agent.dqn.Agent.terminate_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">terminate_msg</span></code></a>()</p></td>
+<td><p>Log message about solver termination</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.train" title="rl_equation_solver.agent.dqn.Agent.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(num_episodes[, eval])</p></td>
 <td><p>Train the model for the given number of episodes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.update_config" title="rl_equation_solver.agent.dqn.Agent.update_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code></a>(config)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.update_config" title="rl_equation_solver.agent.dqn.Agent.update_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code></a>(config)</p></td>
 <td><p>Update configuration</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.update_info" title="rl_equation_solver.agent.dqn.Agent.update_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_info</span></code></a>(key, value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.update_info" title="rl_equation_solver.agent.dqn.Agent.update_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_info</span></code></a>(key, value)</p></td>
 <td><p>Update history info with given value for the given key</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.update_networks" title="rl_equation_solver.agent.dqn.Agent.update_networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_networks</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.dqn.Agent.update_networks" title="rl_equation_solver.agent.dqn.Agent.update_networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_networks</span></code></a>()</p></td>
 <td><p>Soft update of the target network's weights <span class="math notranslate nohighlight">\(\theta^{'} \leftarrow \tau \theta + (1 - \tau) \theta^{'}\)</span> policy_network.state_dict() returns the parameters of the policy network target_network.load_state_dict() loads these parameters into the target network.</p></td>
 </tr>
 </tbody>
@@ -386,6 +395,12 @@ target_net; selecting their best reward with max(1)[0].</p>
 <dd><p>Get device for training network</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.get_env">
+<span class="sig-name descname"><span class="pre">get_env</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.get_env" title="Permalink to this definition"></a></dt>
+<dd><p>Get environment</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.history">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.history" title="Permalink to this definition"></a></dt>
@@ -432,7 +447,7 @@ L(y, f(x)) =
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.is_constant_complexity">
-<span class="sig-name descname"><span class="pre">is_constant_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">complexities</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.is_constant_complexity" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_constant_complexity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.is_constant_complexity" title="Permalink to this definition"></a></dt>
 <dd><p>Check for constant loss over a long number of steps</p>
 </dd></dl>
 
@@ -464,6 +479,12 @@ L(y, f(x)) =
 <dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.save" title="Permalink to this definition"></a></dt>
 <dd><p>Save the policy_network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.set_env">
+<span class="sig-name descname"><span class="pre">set_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.set_env" title="Permalink to this definition"></a></dt>
+<dd><p>Set the environment</p>
 </dd></dl>
 
 <dl class="py method">
@@ -509,6 +530,17 @@ been exceeded.</p></li>
 <dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.steps_done">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">steps_done</span></span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.steps_done" title="Permalink to this definition"></a></dt>
 <dd><p>Get total number of steps done across all episodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.agent.dqn.Agent.terminate_msg">
+<span class="sig-name descname"><span class="pre">terminate_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rl_equation_solver.agent.dqn.Agent.terminate_msg" title="Permalink to this definition"></a></dt>
+<dd><p>Log message about solver termination</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>total_reward</strong> (<em>list</em>) – List of reward</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

@@ -25,6 +25,7 @@ rl\_equation\_solver.agent.gcn.Agent
       ~Agent.compute_expected_Q
       ~Agent.compute_loss
       ~Agent.convert_state
+      ~Agent.get_env
       ~Agent.huber_loss
       ~Agent.init_config
       ~Agent.init_optimizer
@@ -35,8 +36,10 @@ rl\_equation\_solver.agent.gcn.Agent
       ~Agent.optimize_model
       ~Agent.predict
       ~Agent.save
+      ~Agent.set_env
       ~Agent.smooth_l1_loss
       ~Agent.step
+      ~Agent.terminate_msg
       ~Agent.train
       ~Agent.update_config
       ~Agent.update_info

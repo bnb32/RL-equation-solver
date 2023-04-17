@@ -55,7 +55,6 @@
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
@@ -127,6 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html">rl_equation_solver.utilities.utilities.ReplayMemory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
 </ul>
 </li>
@@ -551,6 +551,12 @@
         <li><a href="_autosummary/rl_equation_solver.agent.networks.LSTM.html#rl_equation_solver.agent.networks.LSTM.get_buffer">(LSTM method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/rl_equation_solver.agent.dqn.Agent.html#rl_equation_solver.agent.dqn.Agent.get_env">get_env() (Agent method)</a>, <a href="_autosummary/rl_equation_solver.agent.gcn.Agent.html#rl_equation_solver.agent.gcn.Agent.get_env">[1]</a>, <a href="_autosummary/rl_equation_solver.agent.lstm.Agent.html#rl_equation_solver.agent.lstm.Agent.get_env">[2]</a>
+
+      <ul>
+        <li><a href="_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.get_env">(BaseAgent method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/rl_equation_solver.agent.networks.DQN.html#rl_equation_solver.agent.networks.DQN.get_extra_state">get_extra_state() (DQN method)</a>
 
       <ul>
@@ -559,10 +565,10 @@
         <li><a href="_autosummary/rl_equation_solver.agent.networks.LSTM.html#rl_equation_solver.agent.networks.LSTM.get_extra_state">(LSTM method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.get_json_graph.html#rl_equation_solver.utilities.utilities.get_json_graph">get_json_graph() (in module rl_equation_solver.utilities.utilities)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.get_json_graph.html#rl_equation_solver.utilities.utilities.get_json_graph">get_json_graph() (in module rl_equation_solver.utilities.utilities)</a>
+</li>
       <li><a href="_autosummary/rl_equation_solver.utilities.utilities.get_node_features.html#rl_equation_solver.utilities.utilities.get_node_features">get_node_features() (in module rl_equation_solver.utilities.utilities)</a>
 </li>
       <li><a href="_autosummary/rl_equation_solver.utilities.utilities.get_node_labels.html#rl_equation_solver.utilities.utilities.get_node_labels">get_node_labels() (in module rl_equation_solver.utilities.utilities)</a>
@@ -878,7 +884,7 @@
         <li><a href="_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.predict">(BaseAgent method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/rl_equation_solver.agent.base.ReplayMemory.html#rl_equation_solver.agent.base.ReplayMemory.push">push() (ReplayMemory method)</a>
+      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory.push">push() (ReplayMemory method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -968,7 +974,7 @@
       </ul></li>
       <li><a href="_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.render">render() (Env method)</a>
 </li>
-      <li><a href="_autosummary/rl_equation_solver.agent.base.ReplayMemory.html#rl_equation_solver.agent.base.ReplayMemory">ReplayMemory (class in rl_equation_solver.agent.base)</a>
+      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory">ReplayMemory (class in rl_equation_solver.utilities.utilities)</a>
 </li>
       <li><a href="_autosummary/rl_equation_solver.agent.networks.DQN.html#rl_equation_solver.agent.networks.DQN.requires_grad_">requires_grad_() (DQN method)</a>
 
@@ -982,6 +988,12 @@
 
       <ul>
         <li><a href="_autosummary/rl_equation_solver.utilities.utilities.Id.html#rl_equation_solver.utilities.utilities.Id.reset">(Id class method)</a>
+</li>
+      </ul></li>
+      <li><a href="_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.reset_history">reset_history() (Env method)</a>
+
+      <ul>
+        <li><a href="_autosummary/rl_equation_solver.utilities.history.HistoryMixin.html#rl_equation_solver.utilities.history.HistoryMixin.reset_history">(HistoryMixin method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1117,12 +1129,18 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/rl_equation_solver.agent.base.ReplayMemory.html#rl_equation_solver.agent.base.ReplayMemory.sample">sample() (ReplayMemory method)</a>
+      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory.sample">sample() (ReplayMemory method)</a>
 </li>
       <li><a href="_autosummary/rl_equation_solver.agent.dqn.Agent.html#rl_equation_solver.agent.dqn.Agent.save">save() (Agent method)</a>, <a href="_autosummary/rl_equation_solver.agent.gcn.Agent.html#rl_equation_solver.agent.gcn.Agent.save">[1]</a>, <a href="_autosummary/rl_equation_solver.agent.lstm.Agent.html#rl_equation_solver.agent.lstm.Agent.save">[2]</a>
 
       <ul>
         <li><a href="_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.save">(BaseAgent method)</a>
+</li>
+      </ul></li>
+      <li><a href="_autosummary/rl_equation_solver.agent.dqn.Agent.html#rl_equation_solver.agent.dqn.Agent.set_env">set_env() (Agent method)</a>, <a href="_autosummary/rl_equation_solver.agent.gcn.Agent.html#rl_equation_solver.agent.gcn.Agent.set_env">[1]</a>, <a href="_autosummary/rl_equation_solver.agent.lstm.Agent.html#rl_equation_solver.agent.lstm.Agent.set_env">[2]</a>
+
+      <ul>
+        <li><a href="_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.set_env">(BaseAgent method)</a>
 </li>
       </ul></li>
       <li><a href="_autosummary/rl_equation_solver.agent.networks.DQN.html#rl_equation_solver.agent.networks.DQN.set_extra_state">set_extra_state() (DQN method)</a>
@@ -1153,10 +1171,10 @@
 </li>
       <li><a href="_autosummary/rl_equation_solver.utilities.operators.sqrt.html#rl_equation_solver.utilities.operators.sqrt">sqrt() (in module rl_equation_solver.utilities.operators)</a>
 </li>
-      <li><a href="_autosummary/rl_equation_solver.utilities.operators.square.html#rl_equation_solver.utilities.operators.square">square() (in module rl_equation_solver.utilities.operators)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/rl_equation_solver.utilities.operators.square.html#rl_equation_solver.utilities.operators.square">square() (in module rl_equation_solver.utilities.operators)</a>
+</li>
       <li><a href="_autosummary/rl_equation_solver.utilities.utilities.Experience.html#rl_equation_solver.utilities.utilities.Experience.state">state (Experience attribute)</a>
 </li>
       <li><a href="_autosummary/rl_equation_solver.agent.networks.DQN.html#rl_equation_solver.agent.networks.DQN.state_dict">state_dict() (DQN method)</a>
@@ -1205,6 +1223,12 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/rl_equation_solver.agent.dqn.Agent.html#rl_equation_solver.agent.dqn.Agent.terminate_msg">terminate_msg() (Agent method)</a>, <a href="_autosummary/rl_equation_solver.agent.gcn.Agent.html#rl_equation_solver.agent.gcn.Agent.terminate_msg">[1]</a>, <a href="_autosummary/rl_equation_solver.agent.lstm.Agent.html#rl_equation_solver.agent.lstm.Agent.terminate_msg">[2]</a>
+
+      <ul>
+        <li><a href="_autosummary/rl_equation_solver.agent.base.BaseAgent.html#rl_equation_solver.agent.base.BaseAgent.terminate_msg">(BaseAgent method)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.terms">terms (Env property)</a>
 </li>
       <li><a href="_autosummary/rl_equation_solver.agent.networks.DQN.html#rl_equation_solver.agent.networks.DQN.to">to() (DQN method)</a>
@@ -1225,10 +1249,10 @@
       </ul></li>
       <li><a href="_autosummary/rl_equation_solver.utilities.utilities.to_graph.html#rl_equation_solver.utilities.utilities.to_graph">to_graph() (in module rl_equation_solver.utilities.utilities)</a>
 </li>
-      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.to_vec.html#rl_equation_solver.utilities.utilities.to_vec">to_vec() (in module rl_equation_solver.utilities.utilities)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/rl_equation_solver.utilities.utilities.to_vec.html#rl_equation_solver.utilities.utilities.to_vec">to_vec() (in module rl_equation_solver.utilities.utilities)</a>
+</li>
       <li><a href="_autosummary/rl_equation_solver.environment.algebraic.Env.html#rl_equation_solver.environment.algebraic.Env.too_long">too_long() (Env method)</a>
 </li>
       <li><a href="_autosummary/rl_equation_solver.agent.dqn.Agent.html#rl_equation_solver.agent.dqn.Agent.train">train() (Agent method)</a>, <a href="_autosummary/rl_equation_solver.agent.gcn.Agent.html#rl_equation_solver.agent.gcn.Agent.train">[1]</a>, <a href="_autosummary/rl_equation_solver.agent.lstm.Agent.html#rl_equation_solver.agent.lstm.Agent.train">[2]</a>

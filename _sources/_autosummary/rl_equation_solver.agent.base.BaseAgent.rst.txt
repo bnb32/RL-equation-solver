@@ -25,6 +25,7 @@ rl\_equation\_solver.agent.base.BaseAgent
       ~BaseAgent.compute_expected_Q
       ~BaseAgent.compute_loss
       ~BaseAgent.convert_state
+      ~BaseAgent.get_env
       ~BaseAgent.huber_loss
       ~BaseAgent.init_config
       ~BaseAgent.init_optimizer
@@ -35,8 +36,10 @@ rl\_equation\_solver.agent.base.BaseAgent
       ~BaseAgent.optimize_model
       ~BaseAgent.predict
       ~BaseAgent.save
+      ~BaseAgent.set_env
       ~BaseAgent.smooth_l1_loss
       ~BaseAgent.step
+      ~BaseAgent.terminate_msg
       ~BaseAgent.train
       ~BaseAgent.update_config
       ~BaseAgent.update_info

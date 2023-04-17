@@ -17,6 +17,7 @@ rl\_equation\_solver.utilities.history.HistoryMixin
    
       ~HistoryMixin.append_history
       ~HistoryMixin.log_info
+      ~HistoryMixin.reset_history
       ~HistoryMixin.update_history
    
    

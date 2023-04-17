@@ -20,7 +20,6 @@ rl\_equation\_solver.agent.base
       :template: custom-class-template.rst
    
       BaseAgent
-      ReplayMemory
    
    
 

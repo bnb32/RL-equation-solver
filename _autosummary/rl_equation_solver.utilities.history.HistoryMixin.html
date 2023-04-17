@@ -58,7 +58,6 @@
 <li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
-<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
@@ -130,6 +129,7 @@
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.ReplayMemory.html">rl_equation_solver.utilities.utilities.ReplayMemory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
 </ul>
 </li>
@@ -192,7 +192,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.history.HistoryMixin.log_info" title="rl_equation_solver.utilities.history.HistoryMixin.log_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_info</span></code></a>()</p></td>
 <td><p>Write info to logger</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.history.HistoryMixin.update_history" title="rl_equation_solver.utilities.history.HistoryMixin.update_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_history</span></code></a>(key, value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.history.HistoryMixin.reset_history" title="rl_equation_solver.utilities.history.HistoryMixin.reset_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_history</span></code></a>()</p></td>
+<td><p>Clear history</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.history.HistoryMixin.update_history" title="rl_equation_solver.utilities.history.HistoryMixin.update_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_history</span></code></a>(key, value)</p></td>
 <td><p>Update latest step for training history of policy_network</p></td>
 </tr>
 </tbody>
@@ -236,6 +239,12 @@
 <dt class="sig sig-object py" id="rl_equation_solver.utilities.history.HistoryMixin.log_info">
 <span class="sig-name descname"><span class="pre">log_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/utilities/history.html#HistoryMixin.log_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.utilities.history.HistoryMixin.log_info" title="Permalink to this definition"></a></dt>
 <dd><p>Write info to logger</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rl_equation_solver.utilities.history.HistoryMixin.reset_history">
+<span class="sig-name descname"><span class="pre">reset_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/utilities/history.html#HistoryMixin.reset_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.utilities.history.HistoryMixin.reset_history" title="Permalink to this definition"></a></dt>
+<dd><p>Clear history</p>
 </dd></dl>
 
 </dd></dl>

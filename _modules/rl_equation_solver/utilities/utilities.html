@@ -55,7 +55,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.base.ReplayMemory.html">rl_equation_solver.agent.base.ReplayMemory</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
@@ -127,6 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html">rl_equation_solver.utilities.utilities.ReplayMemory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
 </ul>
 </li>
@@ -173,8 +173,9 @@
   <h1>Source code for rl_equation_solver.utilities.utilities</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Collection of useful functions&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch_geometric.utils.convert</span> <span class="kn">import</span> <span class="n">from_networkx</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
@@ -186,6 +187,23 @@
 
 <span class="n">Experience</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Experience&#39;</span><span class="p">,</span>
                         <span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="s1">&#39;next_state&#39;</span><span class="p">,</span> <span class="s1">&#39;reward&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="ReplayMemory"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory">[docs]</a><span class="k">class</span> <span class="nc">ReplayMemory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores the Experience Replay buffer&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([],</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">capacity</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReplayMemory.push"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the Experience into memory&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Experience</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ReplayMemory.sample"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.html#rl_equation_solver.utilities.utilities.ReplayMemory.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;select a random batch of Experience for training&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Batch"><a class="viewcode-back" href="../../../_autosummary/rl_equation_solver.utilities.utilities.Batch.html#rl_equation_solver.utilities.utilities.Batch">[docs]</a><span class="k">class</span> <span class="nc">Batch</span><span class="p">:</span>

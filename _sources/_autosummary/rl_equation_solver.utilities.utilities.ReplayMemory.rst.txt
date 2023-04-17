@@ -1,7 +1,7 @@
-rl\_equation\_solver.agent.base.ReplayMemory
-============================================
+rl\_equation\_solver.utilities.utilities.ReplayMemory
+=====================================================
 
-.. currentmodule:: rl_equation_solver.agent.base
+.. currentmodule:: rl_equation_solver.utilities.utilities
 
 .. autoclass:: ReplayMemory
    :members:

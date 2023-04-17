@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rl_equation_solver.agent.base.ReplayMemory &mdash; rl_equation_solver 0.0.0 documentation</title>
+  <title>rl_equation_solver.utilities.utilities.ReplayMemory &mdash; rl_equation_solver 0.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="rl_equation_solver.agent.dqn" href="rl_equation_solver.agent.dqn.html" />
-    <link rel="prev" title="rl_equation_solver.agent.base.BaseAgent" href="rl_equation_solver.agent.base.BaseAgent.html" /> 
+    <link rel="next" title="rl_equation_solver.utilities.utilities.VectorEmbedding" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html" />
+    <link rel="prev" title="rl_equation_solver.utilities.utilities.Node" href="rl_equation_solver.utilities.utilities.Node.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,10 +55,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="rl_equation_solver.html">API reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.agent.html">rl_equation_solver.agent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.agent.base.BaseAgent.html">rl_equation_solver.agent.base.BaseAgent</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">rl_equation_solver.agent.base.ReplayMemory</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.agent.dqn.html">rl_equation_solver.agent.dqn</a><ul>
@@ -89,7 +88,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="rl_equation_solver.utilities.html">rl_equation_solver.utilities</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="rl_equation_solver.utilities.html">rl_equation_solver.utilities</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.utilities.history.html">rl_equation_solver.utilities.history</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.history.HistoryMixin.html">rl_equation_solver.utilities.history.HistoryMixin</a></li>
 </ul>
@@ -110,7 +109,7 @@
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.reward.RewardMixin.html">rl_equation_solver.utilities.reward.RewardMixin</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="rl_equation_solver.utilities.utilities.html">rl_equation_solver.utilities.utilities</a><ul>
+<li class="toctree-l3 current"><a class="reference internal" href="rl_equation_solver.utilities.utilities.html">rl_equation_solver.utilities.utilities</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.build_adjacency_matrix.html">rl_equation_solver.utilities.utilities.build_adjacency_matrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom.html">rl_equation_solver.utilities.utilities.build_adjacency_matrix_custom</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.encode_onehot.html">rl_equation_solver.utilities.utilities.encode_onehot</a></li>
@@ -130,6 +129,7 @@
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.GraphEmbedding.html">rl_equation_solver.utilities.utilities.GraphEmbedding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Id.html">rl_equation_solver.utilities.utilities.Id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.Node.html">rl_equation_solver.utilities.utilities.Node</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">rl_equation_solver.utilities.utilities.ReplayMemory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="rl_equation_solver.utilities.utilities.VectorEmbedding.html">rl_equation_solver.utilities.utilities.VectorEmbedding</a></li>
 </ul>
 </li>
@@ -164,11 +164,11 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="rl_equation_solver.html">rl_equation_solver</a></li>
-          <li class="breadcrumb-item"><a href="rl_equation_solver.agent.html">rl_equation_solver.agent</a></li>
-          <li class="breadcrumb-item"><a href="rl_equation_solver.agent.base.html">rl_equation_solver.agent.base</a></li>
-      <li class="breadcrumb-item active">rl_equation_solver.agent.base.ReplayMemory</li>
+          <li class="breadcrumb-item"><a href="rl_equation_solver.utilities.html">rl_equation_solver.utilities</a></li>
+          <li class="breadcrumb-item"><a href="rl_equation_solver.utilities.utilities.html">rl_equation_solver.utilities.utilities</a></li>
+      <li class="breadcrumb-item active">rl_equation_solver.utilities.utilities.ReplayMemory</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/rl_equation_solver.agent.base.ReplayMemory.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/bnb32/rl_equation_solver/blob/main/docs/source/_autosummary/rl_equation_solver.utilities.utilities.ReplayMemory.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -176,33 +176,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="rl-equation-solver-agent-base-replaymemory">
-<h1>rl_equation_solver.agent.base.ReplayMemory<a class="headerlink" href="#rl-equation-solver-agent-base-replaymemory" title="Permalink to this heading"></a></h1>
+  <section id="rl-equation-solver-utilities-utilities-replaymemory">
+<h1>rl_equation_solver.utilities.utilities.ReplayMemory<a class="headerlink" href="#rl-equation-solver-utilities-utilities-replaymemory" title="Permalink to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="rl_equation_solver.agent.base.ReplayMemory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ReplayMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capacity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#ReplayMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.ReplayMemory" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="rl_equation_solver.utilities.utilities.ReplayMemory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ReplayMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capacity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/utilities/utilities.html#ReplayMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.utilities.utilities.ReplayMemory" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Stores the Experience Replay buffer</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.ReplayMemory.push" title="rl_equation_solver.agent.base.ReplayMemory.push"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push</span></code></a>(*args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.utilities.ReplayMemory.push" title="rl_equation_solver.utilities.utilities.ReplayMemory.push"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push</span></code></a>(*args)</p></td>
 <td><p>Save the Experience into memory</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.agent.base.ReplayMemory.sample" title="rl_equation_solver.agent.base.ReplayMemory.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(batch_size)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rl_equation_solver.utilities.utilities.ReplayMemory.sample" title="rl_equation_solver.utilities.utilities.ReplayMemory.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(batch_size)</p></td>
 <td><p>select a random batch of Experience for training</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="rl_equation_solver.agent.base.ReplayMemory.push">
-<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#ReplayMemory.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.ReplayMemory.push" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="rl_equation_solver.utilities.utilities.ReplayMemory.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/utilities/utilities.html#ReplayMemory.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.utilities.utilities.ReplayMemory.push" title="Permalink to this definition"></a></dt>
 <dd><p>Save the Experience into memory</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="rl_equation_solver.agent.base.ReplayMemory.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/agent/base.html#ReplayMemory.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.agent.base.ReplayMemory.sample" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="rl_equation_solver.utilities.utilities.ReplayMemory.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rl_equation_solver/utilities/utilities.html#ReplayMemory.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rl_equation_solver.utilities.utilities.ReplayMemory.sample" title="Permalink to this definition"></a></dt>
 <dd><p>select a random batch of Experience for training</p>
 </dd></dl>
 
@@ -214,8 +214,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="rl_equation_solver.agent.base.BaseAgent.html" class="btn btn-neutral float-left" title="rl_equation_solver.agent.base.BaseAgent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="rl_equation_solver.agent.dqn.html" class="btn btn-neutral float-right" title="rl_equation_solver.agent.dqn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="rl_equation_solver.utilities.utilities.Node.html" class="btn btn-neutral float-left" title="rl_equation_solver.utilities.utilities.Node" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rl_equation_solver.utilities.utilities.VectorEmbedding.html" class="btn btn-neutral float-right" title="rl_equation_solver.utilities.utilities.VectorEmbedding" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
