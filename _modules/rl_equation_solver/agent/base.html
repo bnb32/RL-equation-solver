@@ -550,15 +550,10 @@
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_state</span><span class="p">(</span><span class="n">state_string</span><span class="p">)</span>
         <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">complexities</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">complexity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">expression_complexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span><span class="p">)</span>
-            <span class="n">complexities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">complexity</span><span class="p">)</span>
             <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_constant_complexity</span><span class="p">(</span><span class="n">complexities</span><span class="p">):</span>
-                <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solver terminated after </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> steps. Final &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;state = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span><span class="si">}</span><span class="s2"> with complexity = &quot;</span>
