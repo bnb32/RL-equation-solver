@@ -474,6 +474,7 @@
         <span class="k">if</span> <span class="nb">eval</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eps_decay</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">num_episodes</span>
@@ -555,7 +556,7 @@
             <span class="n">complexity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">expression_complexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span><span class="p">)</span>
             <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solver terminated after </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> steps. Final &quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solver terminated after </span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> steps. Final &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;state = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">state_string</span><span class="si">}</span><span class="s2"> with complexity = &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">complexity</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 

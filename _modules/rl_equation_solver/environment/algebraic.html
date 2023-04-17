@@ -573,12 +573,12 @@
                      <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
                      <span class="s1">&#39;reward&#39;</span><span class="p">:</span> <span class="n">reward</span><span class="p">,</span>
                      <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_string</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_history</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop_step</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">append_history</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_episode</span> <span class="o">+=</span> <span class="mi">1</span>
