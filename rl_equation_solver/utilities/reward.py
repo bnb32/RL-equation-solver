@@ -7,9 +7,18 @@ class RewardMixin:
     """Reward function collection"""
 
     @abstractmethod
-    def expression_complexity(self, state):
+    def solution_complexity(self, state):
         """Get the graph / expression complexity for a given state. This is
         equal to number_of_nodes + number_of_edges"""
+
+    @abstractmethod
+    def get_expression_complexity(self, expr):
+        """Get the graph / expression complexity for a given expression. This
+        is equal to number_of_nodes + number_of_edges"""
+
+    @abstractmethod
+    def get_solution_approx(self, state):
+        """Get the approximate solution for the given state."""
 
     def diff_loss_reward(self, state_old, state_new):
         """
@@ -27,8 +36,8 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_old = self.expression_complexity(state_old)
-        loss_new = self.expression_complexity(state_new)
+        loss_old = self.solution_complexity(state_old)
+        loss_new = self.solution_complexity(state_new)
         return loss_old - loss_new
 
     # pylint: disable=unused-argument
@@ -48,7 +57,7 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_new = self.expression_complexity(state_new)
+        loss_new = self.solution_complexity(state_new)
         return -1 * loss_new
 
     # pylint: disable=unused-argument
@@ -68,7 +77,7 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_new = self.expression_complexity(state_new)
+        loss_new = self.solution_complexity(state_new)
         return np.exp(-loss_new)
 
     # pylint: disable=unused-argument
@@ -88,5 +97,5 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_new = self.expression_complexity(state_new)
+        loss_new = self.solution_complexity(state_new)
         return 1 / (1 + loss_new)

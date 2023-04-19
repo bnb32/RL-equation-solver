@@ -11,6 +11,8 @@ from networkx.drawing.nx_pydot import graphviz_layout
 
 from rl_equation_solver.utilities.operators import fraction
 
+random.seed(42)
+
 
 Experience = namedtuple('Experience',
                         ('state', 'action', 'next_state', 'reward'))

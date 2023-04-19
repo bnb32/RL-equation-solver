@@ -1,23 +1,21 @@
 """DQN module"""
-import math
-import random
 from itertools import count
 import torch
-from torch import optim
 import logging
 from abc import abstractmethod
 import numpy as np
+import pickle
 
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities.loss import LossMixin
 from rl_equation_solver.utilities.utilities import ReplayMemory
+from rl_equation_solver.policy.base import MlpPolicy
 
 
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=not-callable
-class BaseAgent(LossMixin):
+class BaseAgent(LossMixin, MlpPolicy):
     """Agent with DQN target and policy networks"""
 
     def __init__(self, env, config=None, device='cpu'):
@@ -33,32 +31,29 @@ class BaseAgent(LossMixin):
         device : str
             Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
+        MlpPolicy.__init__(self, env)
+
         self.env = env
         self.n_actions = env.n_actions
         self.n_observations = env.n_obs
         self.memory = None
-        self.policy_network = None
-        self.target_network = None
         self.optimizer = None
         self._history = {}
         self._device = device
-        self.config = config
+        self._config = config
+        self.config = None
+        self.solution_steps_max = 10000
 
         # Configuration properties
         self.batch_size = None
-        self.gamma = None
         self.eps_start = None
         self.eps_end = None
         self.hidden_size = None
-        self.eps_decay = None
-        self.eps_decay_steps = None
-        self.tau = None
-        self.learning_rate = None
         self.memory_cap = None
         self.reset_steps = None
         self.vec_dim = None
         self.feature_num = None
-        self.grad_clip = None
+        self.fill_memory_steps = None
 
         self.init_config()
 
@@ -66,12 +61,13 @@ class BaseAgent(LossMixin):
 
     def init_config(self):
         """Initialize model configuration"""
-        config = DefaultConfig
-        if self.config is not None:
-            config.update(self.config)
-        for key, val in config.items():
+        self.config = DefaultConfig
+        if self._config is not None:
+            self.config.update(self._config)
+        for key, val in self.config.items():
             if hasattr(self, key):
                 setattr(self, key, val)
+        logger.info(f'Initialized Agent with config: {self.config}')
 
     def update_config(self, config):
         """Update configuration"""
@@ -92,23 +88,17 @@ class BaseAgent(LossMixin):
     def batch_states(self, states):
         """Convert states into a batch"""
 
-    def init_optimizer(self):
-        """Initialize optimizer"""
-        self.optimizer = optim.AdamW(self.policy_network.parameters(),
-                                     lr=self.learning_rate, amsgrad=True)
-
-    def _get_eps_decay(self):
-        """Get epsilon decay for current number of steps"""
-        decay = 0
-        if self.eps_decay is None:
-            decay = self.eps_start - self.eps_end
-            decay *= math.exp(-1. * self.steps_done / self.eps_decay_steps)
-        return decay
-
     @property
-    def steps_done(self):
-        """Get total number of steps done across all episodes"""
-        return self.env.steps_done
+    def solution_steps(self):
+        """Get total number of steps done across all episodes until solution
+        is found"""
+        return self.env.solution_steps
+
+    @solution_steps.setter
+    def solution_steps(self, value):
+        """Set total number of steps done across all episodes until solution
+        is found"""
+        self.env.solution_steps = value
 
     @property
     def current_episode(self):
@@ -133,6 +123,11 @@ class BaseAgent(LossMixin):
         elif isinstance(self._device, str):
             self._device = torch.device(self._device)
         return self._device
+
+    @device.setter
+    def device(self, value):
+        """Set device for training network"""
+        self._device = value
 
     def step(self, state, training=False):
         """Take next step from current state
@@ -170,33 +165,6 @@ class BaseAgent(LossMixin):
 
         return action, next_state, done, info
 
-    def choose_optimal_action(self, state):
-        """
-        Choose action with max expected reward :math:`:= max_a Q(s, a)`
-
-        max(1) will return largest column value of each row. second column on
-        max result is index of where max element was found so we pick action
-        with the larger expected reward.
-        """
-        with torch.no_grad():
-            return self.policy_network(state).max(1)[1].view(1, 1)
-
-    def choose_action(self, state, training=False):
-        """
-        Choose action based on given state. Either choose optimal action or
-        random action depending on training step.
-        """
-        random_float = random.random()
-        epsilon_threshold = self.eps_end + self._get_eps_decay()
-
-        if not training:
-            epsilon_threshold = self.eps_end
-
-        if random_float > epsilon_threshold:
-            return self.choose_optimal_action(state)
-        else:
-            return self.choose_random_action()
-
     def compute_loss(self, state_action_values, expected_state_action_values):
         """Compute Huber loss"""
         loss = self.smooth_l1_loss(state_action_values,
@@ -214,10 +182,7 @@ class BaseAgent(LossMixin):
 
         state_action_values = self.compute_Q(batch)
 
-        next_state_values = self.compute_V(batch)
-
-        expected_state_action_values = self.compute_expected_Q(
-            batch, next_state_values)
+        expected_state_action_values = self.compute_expected_Q(batch)
 
         loss = self.compute_loss(state_action_values,
                                  expected_state_action_values)
@@ -231,62 +196,51 @@ class BaseAgent(LossMixin):
         """Update history info with given value for the given key"""
         self.info[key] = value
 
-    def choose_random_action(self):
-        """Choose random action rather than the optimal action"""
-        return torch.tensor([[self.env.action_space.sample()]],
-                            device=self.device, dtype=torch.long)
+    @property
+    def run_find_solution(self):
+        """Run find_solution while this check is valid"""
+        return (np.isnan(self.solution_steps)
+                and self.steps_done < self.solution_steps_max)
 
-    def optimize_model(self, loss=None):
+    def find_solution(self):
+        r"""Run the model until the solution is found a single time. This
+        can be used for hyperparameter tuning.
         """
-        Perform one step of the optimization (on the policy network).
-        """
-        if loss is None:
-            return
+        self.history = {}
+        self.current_episode = 0
+        self.steps_done = 0
+        self.solution_steps = np.nan
 
-        # optimize the model
-        self.optimizer.zero_grad()
-        loss.backward()
+        while self.run_find_solution:
+            self.run_episode(eval=False)
 
-        # In-place gradient clipping
-        torch.nn.utils.clip_grad_value_(self.policy_network.parameters(),
-                                        self.grad_clip)
-        self.optimizer.step()
+    def fill_memory(self, eval=False):
+        """Fill memory with experiences
 
-    def compute_expected_Q(self, batch, next_state_values):
+        num_episodes : int
+            Number of episodes to fill memory for
+        eval : bool
+            Whether to run in eval mode - without updating model weights
         """
-        Compute the expected Q values
-        """
-        return batch.reward_batch + (self.gamma * next_state_values)
+        if len(self.memory) < self.fill_memory_steps:
+            logger.info(f'Filling memory for {self.fill_memory_steps} steps.')
+        training = bool(not eval)
+        steps = 0
+        while len(self.memory) < self.fill_memory_steps:
+            state = self.init_state()
+            for _ in count():
+                next_state, done = self.add_experience(state,
+                                                       training=training)
+                if done:
+                    break
 
-    def compute_V(self, batch):
-        """
-        Compute :math:`V(s_{t+1})` for all next states. Expected values of
-        actions for non_final_next_states are computed based on the "older"
-        target_net; selecting their best reward with max(1)[0].
-        """
-        next_state_values = torch.zeros(self.batch_size, device=self.device)
-
-        with torch.no_grad():
-            next_state_values[batch.non_final_mask] = \
-                self.target_network(batch.non_final_next_states).max(1)[0]
-
-        return next_state_values
-
-    def compute_Q(self, batch):
-        """
-        Compute :math:`Q(s_t, a)`. These are the actions which would've been
-        taken for each batch state according to policy_net
-        """
-        return self.policy_network(batch.state_batch) \
-            .gather(1, batch.action_batch)
+                state = next_state
+                steps += 1
+        if steps > 0:
+            self.env.reset_history()
 
     def train(self, num_episodes, eval=False):
-        r"""Train the model for the given number of episodes.
-
-        The agent will perform a soft update of the Target Network's weights,
-        with the equation :math:`\tau \text{ policy_net_state_dict} +
-        (1 - \tau) \text{ target_net_state_dict}`, this helps to make the
-        Target Network's weights converge to the Policy Network's weights.
+        """Train the model for the given number of episodes.
 
         Parameters
         ----------
@@ -297,36 +251,67 @@ class BaseAgent(LossMixin):
         """
         logger.info(f'Running training routine for {num_episodes} episodes in '
                     f'eval={eval} mode.')
-        training = bool(not eval)
         if eval:
             self.history = {}
             self.current_episode = 0
             self.eps_decay = 0
+            self.steps_done = 0
+
+        self.fill_memory()
 
         start = self.current_episode
         end = start + num_episodes
         for _ in range(start, end):
-            state = self.init_state()
-            for _ in count():
-                action, next_state, done, info = self.step(state,
-                                                           training=training)
-                reward = torch.tensor([info['reward']], device=self.device)
+            self.run_episode(eval)
 
-                self.memory.push(state, action, next_state, reward)
+    def run_episode(self, eval):
+        """Run single episode of training or evaluation
 
-                loss = self.compute_batch_loss()
+        eval : bool
+            Whether to run in eval mode - without updating model weights
+        """
+        training = bool(not eval)
+        state = self.init_state()
+        for _ in count():
+            next_state, done = self.add_experience(state,
+                                                   training=training)
 
-                if not done:
-                    self.optimize_model(loss)
+            loss = self.compute_batch_loss()
 
-                if not eval:
-                    self.update_networks()
+            if not done:
+                self.optimize_model(loss)
 
-                if done:
-                    self.terminate_msg()
-                    break
+            if not eval:
+                self.update_networks()
 
-                state = next_state
+            if done:
+                self.terminate_msg()
+                break
+
+            state = next_state
+
+    def add_experience(self, state, training=True):
+        """Add experience to the memory for a given starting state
+
+        Parameters
+        ----------
+        state : sympy.expr
+            Symbolic expression of current approximate solution
+        training : bool
+            Whether this during training or evaluation
+
+        Returns
+        -------
+        next_state : sympy.expr
+            Symbolic expression for next approximate solution
+        done : bool
+            Whether the solution is exact / state vector size exceeded limit or
+            if training / evaluation should continue
+        """
+        action, next_state, done, info = self.step(state, training=training)
+        reward = torch.tensor([info['reward']], device=self.device)
+        self.memory.push(state, action, next_state, reward)
+        return next_state, done
 
     def terminate_msg(self):
         """Log message about solver termination
@@ -340,36 +325,25 @@ class BaseAgent(LossMixin):
         current_episode = list(self.history.keys())[-1]
         total_reward = np.nansum(self.history[current_episode]['reward'])
         mean_loss = np.nanmean(self.history[current_episode]['loss'])
-        msg = (f"\nSolver terminated after {self.env.loop_step + 1} steps: "
+        msg = (f"\nEpisode: {current_episode}, steps_done: {self.steps_done}. "
+               f"loop_steps: {self.env.loop_step}, "
                f"total_reward = {total_reward:.3e}, "
                f"mean_loss = {mean_loss:.3e}, "
                f"state = {self.state_string}")
-        logger.info(msg)
-
-    def update_networks(self):
-        r"""
-        Soft update of the target network's weights :math:`\theta^{'}
-        \leftarrow \tau \theta + (1 - \tau) \theta^{'}`
-        policy_network.state_dict() returns the parameters of the policy
-        network target_network.load_state_dict() loads these parameters into
-        the target network.
-        """
-        target_net_state_dict = self.target_network.state_dict()
-        policy_net_state_dict = self.policy_network.state_dict()
-        for key in policy_net_state_dict:
-            value = policy_net_state_dict[key] * self.tau
-            value += target_net_state_dict[key] * (1 - self.tau)
-            target_net_state_dict[key] = value
-        self.target_network.load_state_dict(target_net_state_dict)
+        if not np.isnan(self.env.solution_steps):
+            msg += f", solution_steps = {self.env.solution_steps}, "
+            logger.info(msg)
+        else:
+            logger.debug(msg)
 
     @property
     def history(self):
-        """Get training history of policy_network"""
+        """Get training history of the agent"""
         return self.env.history
 
     @history.setter
     def history(self, value):
-        """Set training history of policy_network"""
+        """Set training history of the agent"""
         self.env.history = value
 
     def predict(self, state_string):
@@ -381,7 +355,7 @@ class BaseAgent(LossMixin):
         t = 0
         while not done:
             _, _, _, done = self.step(state, training=False)
-            complexity = self.env.expression_complexity(self.env.state_string)
+            complexity = self.env.solution_complexity(self.env.state_string)
             t += 1
 
         logger.info(f"Solver terminated after {t + 1} steps. Final "
@@ -402,16 +376,17 @@ class BaseAgent(LossMixin):
         return check
 
     def save(self, output_file):
-        """Save the policy_network"""
-        torch.save(self.policy_network.state_dict(), output_file)
-        logger.info(f'Saved policy_network to {output_file}')
+        """Save the agent"""
+        with open(output_file, 'wb') as f:
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        logger.info(f'Saved Agent to {output_file}')
 
     @classmethod
-    def load(cls, env, model_file):
-        """Load policy_network from model_file"""
-        agent = cls(env)
-        agent.policy_network.load_state_dict(torch.load(model_file))
-        logger.info(f'Loaded policy_network from {model_file}')
+    def load(cls, model_file):
+        """Load agent from model_file"""
+        with open(model_file, 'rb') as f:
+            agent = pickle.load(f)
+        logger.info(f'Loaded agent from {model_file}')
         return agent
 
     @property

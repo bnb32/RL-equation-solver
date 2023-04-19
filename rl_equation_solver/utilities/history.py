@@ -22,10 +22,35 @@ class HistoryMixin:
     @property
     def avg_history(self):
         """Get history averaged over each episode"""
-        out = {k: [] for k in self.history[0] if k != 'state'}
+        out = {k: [] for k in self.history[0] if k not in ('state', 'approx')}
         for _, series in self.history.items():
             for k in out:
                 out[k].append(np.nanmean(series[k]))
+        return out
+
+    @property
+    def best_history(self):
+        """Get history averaged over each episode"""
+        out = {k: [] for k in self.history[0] if k not in ('approx')}
+        for ep, series in self.history.items():
+            for k in out:
+                if k in ('state'):
+                    best_i = np.argmax(self.history[ep]['reward'])
+                    out[k].append(series[k][best_i])
+                elif k in ('loss', 'complexity'):
+                    out[k].append(np.nanmin(series[k]))
+                else:
+                    out[k].append(np.nanmax(series[k]))
+
+        return out
+
+    @property
+    def end_history(self):
+        """Get history averaged over each episode"""
+        out = {k: [] for k in self.history[0] if k not in ('state', 'approx')}
+        for _, series in self.history.items():
+            for k in out:
+                out[k].append(series[k][-1])
         return out
 
     @history.setter
@@ -52,7 +77,7 @@ class HistoryMixin:
         out = {k: v[-1] for k, v, in out.items()}
         out['reward'] = '{:.3e}'.format(out['reward'])
         out['loss'] = '{:.3e}'.format(out['loss'])
-        logger.info(f'\n{out}')
+        logger.debug(f'\n{out}')
 
     def reset_history(self):
         """Clear history"""
