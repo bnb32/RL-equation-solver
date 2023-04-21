@@ -3,19 +3,21 @@ from itertools import count
 import torch
 import logging
 from abc import abstractmethod
-import numpy as np
 import pickle
+from tqdm import tqdm
+import gym
 
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities.loss import LossMixin
 from rl_equation_solver.utilities.utilities import ReplayMemory
 from rl_equation_solver.policy.base import MlpPolicy
+from rl_equation_solver.utilities.history import History
 
 
 logger = logging.getLogger(__name__)
 
 
-class BaseAgent(LossMixin, MlpPolicy):
+class BaseAgent(LossMixin, MlpPolicy, History):
     """Agent with DQN target and policy networks"""
 
     def __init__(self, env, config=None, device='cpu'):
@@ -32,17 +34,16 @@ class BaseAgent(LossMixin, MlpPolicy):
             Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
         MlpPolicy.__init__(self, env)
+        History.__init__(self)
 
         self.env = env
         self.n_actions = env.n_actions
         self.n_observations = env.n_obs
         self.memory = None
         self.optimizer = None
-        self._history = {}
         self._device = device
         self._config = config
         self.config = None
-        self.solution_steps_max = 10000
 
         # Configuration properties
         self.batch_size = None
@@ -71,7 +72,7 @@ class BaseAgent(LossMixin, MlpPolicy):
 
     def update_config(self, config):
         """Update configuration"""
-        self.config = config
+        self._config = config
         self.init_config()
 
     @abstractmethod
@@ -80,38 +81,16 @@ class BaseAgent(LossMixin, MlpPolicy):
         representation or graph representation"""
 
     @abstractmethod
-    def convert_state(self, state_string):
+    def convert_state(self, state_string) -> object:
         """Convert state string to appropriate representation. This can be a
         vector representation or graph representation"""
 
     @abstractmethod
-    def batch_states(self, states):
+    def batch_states(self, states) -> object:
         """Convert states into a batch"""
 
     @property
-    def solution_steps(self):
-        """Get total number of steps done across all episodes until solution
-        is found"""
-        return self.env.solution_steps
-
-    @solution_steps.setter
-    def solution_steps(self, value):
-        """Set total number of steps done across all episodes until solution
-        is found"""
-        self.env.solution_steps = value
-
-    @property
-    def current_episode(self):
-        """Get current episode"""
-        return self.env.current_episode
-
-    @current_episode.setter
-    def current_episode(self, value):
-        """Set current episode"""
-        self.env.current_episode = value
-
-    @property
-    def device(self):
+    def device(self) -> torch.device:
         """Get device for training network"""
         if self._device is None:
             if torch.cuda.is_available():
@@ -129,7 +108,8 @@ class BaseAgent(LossMixin, MlpPolicy):
         """Set device for training network"""
         self._device = value
 
-    def step(self, state, training=False):
+    def step(self, state,
+             training=False) -> tuple[torch.Tensor, object, bool, dict]:
         """Take next step from current state
 
         Parameters
@@ -155,23 +135,24 @@ class BaseAgent(LossMixin, MlpPolicy):
         info : dict
             Dictionary with loss, reward, and state information
         """
+        state_string = self.state_string
         action = self.choose_action(state, training=training)
         _, _, done, info = self.env.step(action.item())
 
-        if done:
-            next_state = None
-        else:
-            next_state = self.convert_state(self.state_string)
+        if not done:
+            state_string = self.state_string
+        next_state = self.convert_state(state_string)
 
         return action, next_state, done, info
 
-    def compute_loss(self, state_action_values, expected_state_action_values):
+    def compute_loss(self, state_action_values,
+                     expected_state_action_values) -> torch.Tensor:
         """Compute Huber loss"""
-        loss = self.smooth_l1_loss(state_action_values,
-                                   expected_state_action_values.unsqueeze(1))
-        return loss
+        self.loss = self.smooth_l1_loss(
+            state_action_values, expected_state_action_values.unsqueeze(1))
+        return self.loss
 
-    def compute_batch_loss(self):
+    def compute_batch_loss(self) -> torch.Tensor:
         """Compute loss for batch using the stored memory."""
 
         if len(self.memory) < self.batch_size:
@@ -188,31 +169,9 @@ class BaseAgent(LossMixin, MlpPolicy):
                                  expected_state_action_values)
 
         self.update_info('loss', loss.item())
-        self.env.update_history('loss', loss.item())
+        self.update_history('loss', loss.item())
 
         return loss
-
-    def update_info(self, key, value):
-        """Update history info with given value for the given key"""
-        self.info[key] = value
-
-    @property
-    def run_find_solution(self):
-        """Run find_solution while this check is valid"""
-        return (np.isnan(self.solution_steps)
-                and self.steps_done < self.solution_steps_max)
-
-    def find_solution(self):
-        r"""Run the model until the solution is found a single time. This
-        can be used for hyperparameter tuning.
-        """
-        self.history = {}
-        self.current_episode = 0
-        self.steps_done = 0
-        self.solution_steps = np.nan
-
-        while self.run_find_solution:
-            self.run_episode(eval=False)
 
     def fill_memory(self, eval=False):
         """Fill memory with experiences
@@ -237,9 +196,9 @@ class BaseAgent(LossMixin, MlpPolicy):
                 state = next_state
                 steps += 1
         if steps > 0:
-            self.env.reset_history()
+            self.reset_history()
 
-    def train(self, num_episodes, eval=False):
+    def train(self, num_episodes, eval=False, progress_bar=True):
         """Train the model for the given number of episodes.
 
         Parameters
@@ -251,20 +210,20 @@ class BaseAgent(LossMixin, MlpPolicy):
         """
         logger.info(f'Running training routine for {num_episodes} episodes in '
                     f'eval={eval} mode.')
-        if eval:
-            self.history = {}
-            self.current_episode = 0
-            self.eps_decay = 0
-            self.steps_done = 0
-
-        self.fill_memory()
 
         start = self.current_episode
         end = start + num_episodes
-        for _ in range(start, end):
-            self.run_episode(eval)
 
-    def run_episode(self, eval):
+        pbar = None
+        if progress_bar:
+            pbar = tqdm(num_episodes)
+        for _ in range(start, end):
+            self.run_episode(eval, pbar=pbar)
+            if progress_bar:
+                pbar.update(1)
+                pbar.set_description(str(self.get_log_info()))
+
+    def run_episode(self, eval: bool, pbar: tqdm = None):
         """Run single episode of training or evaluation
 
         eval : bool
@@ -273,24 +232,25 @@ class BaseAgent(LossMixin, MlpPolicy):
         training = bool(not eval)
         state = self.init_state()
         for _ in count():
-            next_state, done = self.add_experience(state,
-                                                   training=training)
+            next_state, done = self.add_experience(state, training=training)
 
             loss = self.compute_batch_loss()
 
-            if not done:
+            if not done and not eval:
                 self.optimize_model(loss)
 
             if not eval:
                 self.update_networks()
 
             if done:
-                self.terminate_msg()
                 break
 
             state = next_state
 
-    def add_experience(self, state, training=True):
+            if pbar is not None:
+                pbar.set_description(str(self.get_log_info()))
+
+    def add_experience(self, state, training=True) -> tuple[object, bool]:
         """Add experience to the memory for a given starting state
 
         Parameters
@@ -309,42 +269,9 @@ class BaseAgent(LossMixin, MlpPolicy):
             if training / evaluation should continue
         """
         action, next_state, done, info = self.step(state, training=training)
-        reward = torch.tensor([info['reward']], device=self.device)
-        self.memory.push(state, action, next_state, reward)
+        reward = torch.tensor([info.reward], device=self.device)
+        self.memory.push(state, next_state, action, reward, done, info)
         return next_state, done
-
-    def terminate_msg(self):
-        """Log message about solver termination
-
-        Parameters
-        ----------
-        total_reward : list
-            List of reward
-
-        """
-        current_episode = list(self.history.keys())[-1]
-        total_reward = np.nansum(self.history[current_episode]['reward'])
-        mean_loss = np.nanmean(self.history[current_episode]['loss'])
-        msg = (f"\nEpisode: {current_episode}, steps_done: {self.steps_done}. "
-               f"loop_steps: {self.env.loop_step}, "
-               f"total_reward = {total_reward:.3e}, "
-               f"mean_loss = {mean_loss:.3e}, "
-               f"state = {self.state_string}")
-        if not np.isnan(self.env.solution_steps):
-            msg += f", solution_steps = {self.env.solution_steps}, "
-            logger.info(msg)
-        else:
-            logger.debug(msg)
-
-    @property
-    def history(self):
-        """Get training history of the agent"""
-        return self.env.history
-
-    @history.setter
-    def history(self, value):
-        """Set training history of the agent"""
-        self.env.history = value
 
     def predict(self, state_string):
         """
@@ -352,18 +279,22 @@ class BaseAgent(LossMixin, MlpPolicy):
         """
         state = self.convert_state(state_string)
         done = False
-        t = 0
+        steps = 0
+        states = [state_string]
         while not done:
-            _, _, _, done = self.step(state, training=False)
-            complexity = self.env.solution_complexity(self.env.state_string)
-            t += 1
-
-        logger.info(f"Solver terminated after {t + 1} steps. Final "
-                    f"state = {self.env.state_string} with complexity = "
-                    f"{complexity}.")
+            _, next_state, done, _ = self.step(state, training=False)
+            steps += 1
+            if next_state is None:
+                break
+            state = next_state
+            states.append(self.state_string)
+        self.complexity = self.env.get_solution_complexity(self.state_string)
+        logger.info(f'Final state: {self.state_string}. Complexity: '
+                    f'{self.complexity}. Steps: {steps}.')
+        return states
 
     # pylint: disable=invalid-unary-operand-type
-    def is_constant_complexity(self):
+    def is_constant_complexity(self) -> bool:
         """Check for constant loss over a long number of steps"""
         current_episode = list(self.history.keys())[-1]
         complexities = self.history[current_episode]['complexity']
@@ -399,17 +330,7 @@ class BaseAgent(LossMixin, MlpPolicy):
         """Set state string representation"""
         self.env.state_string = value
 
-    @property
-    def info(self):
-        """Get environment info"""
-        return self.env.info
-
-    @info.setter
-    def info(self, value):
-        """Set environment info"""
-        self.env.info = value
-
-    def get_env(self):
+    def get_env(self) -> gym.Env:
         """Get environment"""
         return self.env
 

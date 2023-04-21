@@ -33,23 +33,16 @@ class MlpPolicy:
         self.device = None
         self.eps_decay_steps = None
         self.batch_size = None
+        self.epsilon_threshold = None
+        self.steps_done = 0
+        self.max_solution_steps = None
 
-    @property
-    def steps_done(self):
-        """Get total number of steps done across all episodes"""
-        return self.env.steps_done
-
-    @steps_done.setter
-    def steps_done(self, value):
-        """Set total number of steps done across all episodes"""
-        self.env.steps_done = value
-
-    def _get_eps_decay(self):
+    def _get_eps_decay(self, steps_done):
         """Get epsilon decay for current number of steps"""
         decay = 0
         if self.eps_decay is None:
             decay = self.eps_start - self.eps_end
-            decay *= math.exp(-1. * self.steps_done / self.eps_decay_steps)
+            decay *= math.exp(-1. * steps_done / self.eps_decay_steps)
         return decay
 
     def init_optimizer(self):
@@ -79,19 +72,23 @@ class MlpPolicy:
         equation :math:`Q(s, a) = E(R_{s + 1} + \gamma *
         max_{a^{'}} Q(s^{'}, a^{'}))`
         """
-        return batch.reward_batch + (self.gamma * self.compute_V(batch))
+        with torch.no_grad():
+            out = batch.rewards
+            out += self.gamma * torch.mul(1 - batch.dones,
+                                          self.compute_next_Q(batch))
+        return out
 
-    def compute_V(self, batch):
+    def compute_next_Q(self, batch):
         """
-        Compute :math:`V(s_{t+1})` for all next states. Expected values
-        for non_final_next_states are computed based on the "older"
-        target_net; selecting their best reward with max(1)[0].
+        Compute :math:`max_{a} Q(s_{t+1}, a)` for all next states. Expected
+        values for non_final_next_states are computed based on the "older"
+        target_net; selecting their best reward].
         """
         next_state_values = torch.zeros(self.batch_size, device=self.device)
 
         with torch.no_grad():
-            next_state_values[batch.non_final_mask] = \
-                self.target_network(batch.non_final_next_states).max(1)[0]
+            next_state_values = \
+                self.target_network(batch.next_states).max(1)[0]
 
         return next_state_values
 
@@ -100,8 +97,7 @@ class MlpPolicy:
         Compute :math:`Q(s_t, a)`. These are the actions which would've
         been taken for each batch state according to policy_net
         """
-        return self.policy_network(batch.state_batch) \
-            .gather(1, batch.action_batch)
+        return self.policy_network(batch.states).gather(1, batch.actions)
 
     def update_networks(self):
         r"""
@@ -132,9 +128,19 @@ class MlpPolicy:
         loss.backward()
 
         # In-place gradient clipping
-        torch.nn.utils.clip_grad_value_(self.policy_network.parameters(),
-                                        self.grad_clip)
+        torch.nn.utils.clip_grad_norm_(self.policy_network.parameters(),
+                                       self.grad_clip)
         self.optimizer.step()
+
+    def get_epsilon_threshold(self, steps_done, training):
+        """Get epsilon threshold for eps-greedy routine"""
+        epsilon_threshold = self.epsilon_threshold
+        if self.epsilon_threshold is None:
+            epsilon_threshold = self.eps_end + self._get_eps_decay(steps_done)
+
+            if not training:
+                epsilon_threshold = self.eps_end
+        return epsilon_threshold
 
     def choose_action(self, state, training=False):
         """
@@ -142,12 +148,9 @@ class MlpPolicy:
         random action depending on training step.
         """
         random_float = random.random()
-        epsilon_threshold = self.eps_end + self._get_eps_decay()
 
-        if not training:
-            epsilon_threshold = self.eps_end
-
-        if random_float > epsilon_threshold:
+        if random_float > self.get_epsilon_threshold(self.steps_done,
+                                                     training=training):
             return self.choose_optimal_action(state)
         else:
             return self.choose_random_action()

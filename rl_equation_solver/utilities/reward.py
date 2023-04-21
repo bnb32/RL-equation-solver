@@ -7,7 +7,7 @@ class RewardMixin:
     """Reward function collection"""
 
     @abstractmethod
-    def solution_complexity(self, state):
+    def get_solution_complexity(self, state):
         """Get the graph / expression complexity for a given state. This is
         equal to number_of_nodes + number_of_edges"""
 
@@ -36,8 +36,8 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_old = self.solution_complexity(state_old)
-        loss_new = self.solution_complexity(state_new)
+        loss_old = self.get_solution_complexity(state_old)
+        loss_new = self.get_solution_complexity(state_new)
         return loss_old - loss_new
 
     # pylint: disable=unused-argument
@@ -57,7 +57,7 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_new = self.solution_complexity(state_new)
+        loss_new = self.get_solution_complexity(state_new)
         return -1 * loss_new
 
     # pylint: disable=unused-argument
@@ -77,7 +77,7 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_new = self.solution_complexity(state_new)
+        loss_new = self.get_solution_complexity(state_new)
         return np.exp(-loss_new)
 
     # pylint: disable=unused-argument
@@ -97,5 +97,5 @@ class RewardMixin:
         reward : int
             Difference between loss for state_new and state_old
         """
-        loss_new = self.solution_complexity(state_new)
+        loss_new = self.get_solution_complexity(state_new)
         return 1 / (1 + loss_new)

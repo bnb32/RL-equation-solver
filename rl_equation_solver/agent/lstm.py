@@ -39,7 +39,7 @@ class Agent(BaseAgent):
 
     def init_state(self):
         """Initialize state as a vector"""
-        self.env._init_state()
+        _ = self.env.reset()
         self.env.state_vec = utilities.to_vec(self.env.state_string,
                                               self.env.feature_dict,
                                               self.env.state_dim)
@@ -57,7 +57,7 @@ class Agent(BaseAgent):
         """Batch agent states"""
         batch = utilities.Batch()(states, device)
         batch.non_final_next_states = torch.cat(batch.non_final_next_states)
-        batch.state_batch = torch.cat(batch.state_batch)
+        batch.states = torch.cat(batch.states)
         return batch
 
     def compute_loss(self, state_action_values, expected_state_action_values):

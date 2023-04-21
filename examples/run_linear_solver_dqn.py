@@ -12,4 +12,4 @@ if __name__ == '__main__':
     env = Env(order=2)
     agent = Agent(env)
     agent.train(num_episodes=10)
-    agent.predict(env._init_state())
+    agent.predict(env.initial_state)

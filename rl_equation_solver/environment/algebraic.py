@@ -9,13 +9,13 @@ import numpy as np
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities import utilities
 from rl_equation_solver.utilities.reward import RewardMixin
-from rl_equation_solver.utilities.history import HistoryMixin
+from rl_equation_solver.utilities.history import History
 
 
 logger = logging.getLogger(__name__)
 
 
-class Env(gym.Env, RewardMixin, HistoryMixin):
+class Env(gym.Env, RewardMixin, History):
     r"""
     Environment for solving algebraic equations using RL.
 
@@ -69,7 +69,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             in rl_equation_solver.config will be used.
         """
 
-        HistoryMixin.__init__(self)
+        History.__init__(self)
 
         # Initialize the state
         self.order = order
@@ -80,26 +80,17 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         self._terms = None
         self._feature_dict = None
         self._state_vec = None
+        self._next_state_vec = None
         self._state_graph = None
         self._equation = None
-        self.info = None
-        self.loop_step = 0
-        self.steps_done = 0
-        self.current_episode = 0
         self.window = None
         self.config = config
-        self.solution_approx = None
-        self.complexity = None
         self.reward_function = None
-        self.solution_steps = np.nan
-        self.solution_steps_max = 10000
-
         self.state_dim = None
         self._initial_state = init_state
+        self.state_string = self.initial_state
 
         self.init_config()
-
-        self.state_string = init_state or self._init_state()
 
         # Gym compatibility
         self.action_dim = len(self.actions)
@@ -126,7 +117,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             if hasattr(self, key):
                 setattr(self, key, val)
 
-    def update_config(self, config):
+    def update_config(self, config: dict) -> None:
         """Update configuration"""
         self.config = config
         self.init_config()
@@ -218,6 +209,14 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
                                            self.state_dim)
         return self._state_vec
 
+    @property
+    def next_state_vec(self):
+        """Get next state vector"""
+        self._next_state_vec = utilities.to_vec(self.next_state_string,
+                                                self.feature_dict,
+                                                self.state_dim)
+        return self._next_state_vec
+
     @state_vec.setter
     def state_vec(self, value):
         """Set state_vec value"""
@@ -240,15 +239,14 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         """Get node labels for current state graph"""
         return utilities.get_node_labels(self.state_graph)
 
-    def _init_state(self):
+    @property
+    def initial_state(self):
         """
         Initialize environment state
         """
-        self.loop_step = 0
-        self.solution_steps = np.nan
         if self._initial_state is None:
             self._initial_state = symbols('0')
-        self.state_string = self._initial_state
+        return self._initial_state
 
     # pylint: disable=unused-argument
     def reset(self, seed=None, options=None):
@@ -262,7 +260,8 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         info : dict
             Dictionary with training info
         """
-        self._init_state()
+        self.loop_step = 0
+        self.state_string = self.initial_state
         return self.state_vec
 
     def _get_equation(self):
@@ -298,7 +297,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
 
     def _get_feature_dict(self):
         """Return feature dict representing features at each node"""
-        keys = ['Add', 'Mul', 'Pow', '0', '1']
+        keys = ['Add', 'Mul', 'Pow']
         keys += [str(sym) for sym in self._get_algebraic_symbols()]
         keys += [str(sym) for sym in self._get_numerical_symbols()]
         keys += ['I']
@@ -322,7 +321,17 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             raise ValueError('Env has no reward function named '
                              f'{self.reward_function}')
         method = getattr(self, self.reward_function)
-        return method(state_old, state_new)
+        reward = method(state_old, state_new)
+        return reward
+
+    def extra_reward(self, reward):
+        """Extra penalty / reward for time elapsed, if solution found and if
+        state too long"""
+        if self.too_long(self.next_state_vec):
+            reward -= 100
+        if self.complexity == 0:
+            reward += 100 / (self.loop_step + 1)
+        return reward
 
     def too_long(self, state):
         """
@@ -380,7 +389,7 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
 
         return complexity
 
-    def solution_complexity(self, state):
+    def get_solution_complexity(self, state):
         """Get the graph / expression complexity for a given state. This is
         equal to number_of_nodes + number_of_edges"""
         soln = self.get_solution_approx(state)
@@ -416,57 +425,62 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         info : dict
             Additional information
         """
-        # action is 0,1,2,3, ...,  get the physical actions it indexes
-        [operation, term] = self.actions[action]
-        self.next_state_string = operation(self.state_string, term)
-        new_state_vec = utilities.to_vec(self.next_state_string,
-                                         self.feature_dict,
-                                         self.state_dim)
+        self.next_state_string = self.get_next_state(action)
 
-        # Reward
-        reward = self.find_reward(self.state_string, self.next_state_string)
-        reward -= self.loop_step
+        self.reward = self.find_reward(self.state_string,
+                                       self.next_state_string)
 
-        # Done
-        done = too_long = False
-        if self.too_long(new_state_vec):
-            done = too_long = True
+        self.reset_state_check(self.next_state_vec)
 
-        if not too_long:
-            self.solution_approx = self.get_solution_approx(
-                self.next_state_string)
-            self.complexity = self.get_expression_complexity(
-                self.solution_approx)
-            self.state_string = self.next_state_string
+        self.solution_approx = self.get_solution_approx(self.next_state_string)
+        self.complexity = self.get_expression_complexity(self.solution_approx)
 
-        if self.complexity == 0:
-            done = True
-            logger.info(f'solution is: {self.state_string}')
-            reward += 100
-            self.solution_steps = self.steps_done
+        self.reward = self.extra_reward(self.reward)
 
-        # Extra info
-        self.info = {'ep': self.current_episode,
-                     'step': self.steps_done,
-                     'complexity': self.complexity,
-                     'loss': np.nan,
-                     'reward': reward,
-                     'state': self.state_string,
-                     'approx': self.solution_approx,
-                     'solution_steps': self.solution_steps}
         self.append_history(self.info)
 
+        msg = self.get_log_info()
+        logger.debug(msg)
+
+        done = self.check_if_done()
+
+        self.state_string = self.next_state_string
+
+        return self.state_vec, self.reward, done, self.info
+
+    def check_if_done(self):
+        """Check if solution was found or max steps was reached"""
+        done = self.max_steps_reached() or self.complexity == 0
+        if done:
+            self.current_episode += 1
+            msg = self.get_log_info()
+            logger.info(msg)
         self.steps_done += 1
         self.loop_step += 1
 
-        if done:
-            self.log_info()
-            self.current_episode += 1
+        return done
 
-        return self.state_vec, reward, done, self.info
+    def max_steps_reached(self):
+        """Check if max steps was reached"""
+        check = self.loop_step > self.max_solution_steps
+        if check:
+            logger.info(f'loop_step {self.loop_step} exceeded max '
+                        f'{self.max_solution_steps}')
+        return check
+
+    def reset_state_check(self, state_vec: np.ndarray):
+        """Check if state is too long and reset state if True"""
+        self.reset_step = self.too_long(state_vec)
+        if self.reset_step:
+            self.next_state_string = self.initial_state
+
+    def get_next_state(self, action: int):
+        """Get next state from given action"""
+        [operation, term] = self.actions[action]
+        return operation(self.state_string, term)
 
     # pylint: disable=unused-argument
-    def render(self, mode='human'):
+    def render(self, mode: str = 'human'):
         """
         Print the state string representation
         """

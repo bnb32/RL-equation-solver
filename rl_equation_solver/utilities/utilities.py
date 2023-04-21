@@ -14,8 +14,8 @@ from rl_equation_solver.utilities.operators import fraction
 random.seed(42)
 
 
-Experience = namedtuple('Experience',
-                        ('state', 'action', 'next_state', 'reward'))
+Experience = namedtuple(
+    'Experience', ('state', 'next_state', 'action', 'reward', 'done', 'info'))
 
 
 class ReplayMemory:
@@ -41,12 +41,12 @@ class Batch:
     def __init__(self):
         """Initialize the batch"""
         self.experience = None
-        self.non_final_mask = None
-        self.non_final_next_states = None
-        self.non_final_next_states = None
-        self.state_batch = None
-        self.action_batch = None
-        self.reward_batch = None
+        self.next_mask = None
+        self.states = None
+        self.next_states = None
+        self.actions = None
+        self.rewards = None
+        self.dones = None
 
     @classmethod
     def __call__(cls, states, device):
@@ -54,15 +54,12 @@ class Batch:
         can be either instances of GraphEmbedding or np.ndarray"""
         batch = cls()
         batch.experience = Experience(*zip(*states))
-        batch.non_final_mask = torch.tensor(
-            tuple(map(lambda s: s is not None, batch.experience.next_state)),
-            device=device, dtype=torch.bool)
-        batch.non_final_next_states = [s for s in batch.experience.next_state
-                                       if s is not None]
-        batch.state_batch = [s for s in batch.experience.state
-                             if s is not None]
-        batch.action_batch = torch.cat(batch.experience.action)
-        batch.reward_batch = torch.cat(batch.experience.reward)
+        batch.states = list(batch.experience.state)
+        batch.next_states = list(batch.experience.next_state)
+        batch.dones = torch.tensor([int(s) for s in batch.experience.done],
+                                   device=device)
+        batch.actions = torch.cat(batch.experience.action)
+        batch.rewards = torch.cat(batch.experience.reward)
         return batch
 
 
@@ -108,7 +105,8 @@ class GraphEmbedding:
     """Graph embedding class for embedding node features in matrix of fixed
     sizes"""
     def __init__(self, graph, n_observations, n_features, device):
-        G = from_networkx(graph)
+        self.graph = graph
+        G = from_networkx(self.graph)
         self._x = G.x.to(device)
         self.adj = G.edge_index.to(device)
 
