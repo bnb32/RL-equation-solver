@@ -1,16 +1,16 @@
 """Environment for linear equation solver"""
-import gym
-from gym import spaces
-from sympy import symbols, nsimplify, simplify, parse_expr, expand
-from operator import add, sub, truediv, pow
 import logging
+from operator import add, pow, sub, truediv
+
+import gym
 import numpy as np
+from gym import spaces
+from sympy import expand, nsimplify, parse_expr, simplify, symbols
 
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities import utilities
-from rl_equation_solver.utilities.reward import RewardMixin
 from rl_equation_solver.utilities.history import History
-
+from rl_equation_solver.utilities.reward import RewardMixin
 
 logger = logging.getLogger(__name__)
 
@@ -96,17 +96,21 @@ class Env(gym.Env, RewardMixin, History):
         self.action_dim = len(self.actions)
         self.action_space = spaces.Discrete(self.action_dim)
         min_val = min(self.feature_dict.values())
-        self.observation_space = spaces.Box(min_val,
-                                            min_val + self.state_dim,
-                                            shape=(self.state_dim,),
-                                            dtype=np.float32)
+        self.observation_space = spaces.Box(
+            min_val,
+            min_val + self.state_dim,
+            shape=(self.state_dim,),
+            dtype=np.float32,
+        )
         self.n_actions = self.action_space.n
         self.n_obs = self.observation_space.shape[0]
 
-        logger.info(f'Initializing environment with order={order}, |S| = '
-                    f'{self.n_actions} x {self.n_obs} = '
-                    f'{self.n_actions * self.n_obs}')
-        logger.info(f'Using reward function: {self.reward_function}.')
+        logger.info(
+            f"Initializing environment with order={order}, |S| = "
+            f"{self.n_actions} x {self.n_obs} = "
+            f"{self.n_actions * self.n_obs}"
+        )
+        logger.info(f"Using reward function: {self.reward_function}.")
 
     def init_config(self):
         """Initialize model configuration"""
@@ -185,37 +189,29 @@ class Env(gym.Env, RewardMixin, History):
         -------
         symbols
         """
-        symbol_list = 'x '
-        symbol_list += ' '.join([f'a{i}' for i in range(self.order)])
+        symbol_list = "x "
+        symbol_list += " ".join([f"a{i}" for i in range(self.order)])
         return symbols(symbol_list)
 
     def _get_numerical_symbols(self):
         """Get numerical symbols like '0', '1', '-1'"""
-        return symbols('0 1')
+        return symbols("0 1")
 
     def _get_terms(self):
         """Get terms for quadratic equation"""
         _, *coeffs = self._get_algebraic_symbols()
         terms = [*coeffs, *self._get_numerical_symbols()]
         for n in range(2, self.order):
-            terms.append(symbols(f'1 / {n}'))
+            terms.append(symbols(f"1 / {n}"))
         return terms
 
     @property
     def state_vec(self):
         """Get current state vector"""
-        self._state_vec = utilities.to_vec(self.state_string,
-                                           self.feature_dict,
-                                           self.state_dim)
+        self._state_vec = utilities.to_vec(
+            self.state_string, self.feature_dict, self.state_dim
+        )
         return self._state_vec
-
-    @property
-    def next_state_vec(self):
-        """Get next state vector"""
-        self._next_state_vec = utilities.to_vec(self.next_state_string,
-                                                self.feature_dict,
-                                                self.state_dim)
-        return self._next_state_vec
 
     @state_vec.setter
     def state_vec(self, value):
@@ -223,10 +219,17 @@ class Env(gym.Env, RewardMixin, History):
         self._state_vec = value
 
     @property
+    def next_state_vec(self):
+        """Get next state vector"""
+        self._next_state_vec = utilities.to_vec(
+            self.next_state_string, self.feature_dict, self.state_dim
+        )
+        return self._next_state_vec
+
+    @property
     def state_graph(self):
         """Get current state graph"""
-        self._state_graph = utilities.to_graph(self.state_string,
-                                               self.feature_dict)
+        self._state_graph = utilities.to_graph(self.state_string, self.feature_dict)
         return self._state_graph
 
     @state_graph.setter
@@ -245,7 +248,7 @@ class Env(gym.Env, RewardMixin, History):
         Initialize environment state
         """
         if self._initial_state is None:
-            self._initial_state = symbols('0')
+            self._initial_state = symbols("0")
         return self._initial_state
 
     # pylint: disable=unused-argument
@@ -288,19 +291,27 @@ class Env(gym.Env, RewardMixin, History):
         actions : list
             List of operation, term pairs
         """
-        illegal_actions = [[truediv, symbols('0')], [add, symbols('0')],
-                           [sub, symbols('0')], [pow, symbols('1')],
-                           [pow, symbols('0')]]
-        actions = [[op, term] for op in self.operations for term in self.terms
-                   if [op, term] not in illegal_actions]
+        illegal_actions = [
+            [truediv, symbols("0")],
+            [add, symbols("0")],
+            [sub, symbols("0")],
+            [pow, symbols("1")],
+            [pow, symbols("0")],
+        ]
+        actions = [
+            [op, term]
+            for op in self.operations
+            for term in self.terms
+            if [op, term] not in illegal_actions
+        ]
         return actions
 
     def _get_feature_dict(self):
         """Return feature dict representing features at each node"""
-        keys = ['Add', 'Mul', 'Pow']
+        keys = ["Add", "Mul", "Pow"]
         keys += [str(sym) for sym in self._get_algebraic_symbols()]
         keys += [str(sym) for sym in self._get_numerical_symbols()]
-        keys += ['I']
+        keys += ["I"]
         return {key: -(i + 2) for i, key in enumerate(keys)}
 
     def find_reward(self, state_old, state_new):
@@ -318,8 +329,9 @@ class Env(gym.Env, RewardMixin, History):
             Difference between loss for state_new and state_old
         """
         if not hasattr(self, self.reward_function):
-            raise ValueError('Env has no reward function named '
-                             f'{self.reward_function}')
+            raise ValueError(
+                "Env has no reward function named " f"{self.reward_function}"
+            )
         method = getattr(self, self.reward_function)
         reward = method(state_old, state_new)
         return reward
@@ -356,8 +368,8 @@ class Env(gym.Env, RewardMixin, History):
         numbers = expr.find(lambda e: e.is_Number, group=True)
         n_count = 0
         for n in numbers:
-            if '/' in str(n):
-                a, b = str(n).split('/')
+            if "/" in str(n):
+                a, b = str(n).split("/")
                 n_count += abs(float(a))
                 n_count += abs(float(b))
             else:
@@ -397,7 +409,7 @@ class Env(gym.Env, RewardMixin, History):
 
     def get_solution_approx(self, state):
         """Get the approximate solution from the given state"""
-        expr = self.equation.replace(symbols('x'), nsimplify(state))
+        expr = self.equation.replace(symbols("x"), nsimplify(state))
         solution_approx = simplify(expand(expr))
         return solution_approx
 
@@ -427,8 +439,7 @@ class Env(gym.Env, RewardMixin, History):
         """
         self.next_state_string = self.get_next_state(action)
 
-        self.reward = self.find_reward(self.state_string,
-                                       self.next_state_string)
+        self.reward = self.find_reward(self.state_string, self.next_state_string)
 
         self.reset_state_check(self.next_state_vec)
 
@@ -464,8 +475,9 @@ class Env(gym.Env, RewardMixin, History):
         """Check if max steps was reached"""
         check = self.loop_step > self.max_solution_steps
         if check:
-            logger.info(f'loop_step {self.loop_step} exceeded max '
-                        f'{self.max_solution_steps}')
+            logger.info(
+                f"loop_step {self.loop_step} exceeded max " f"{self.max_solution_steps}"
+            )
         return check
 
     def reset_state_check(self, state_vec: np.ndarray):
@@ -480,7 +492,7 @@ class Env(gym.Env, RewardMixin, History):
         return operation(self.state_string, term)
 
     # pylint: disable=unused-argument
-    def render(self, mode: str = 'human'):
+    def render(self, mode: str = "human"):
         """
         Print the state string representation
         """

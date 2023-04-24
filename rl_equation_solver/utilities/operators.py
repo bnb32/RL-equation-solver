@@ -15,7 +15,7 @@ def root(a, b):
 # pylint: disable=unused-argument
 def sqrt(a, b):
     """Define sqrt function"""
-    return a ** 0.5
+    return a**0.5
 
 
 # pylint: disable=unused-argument

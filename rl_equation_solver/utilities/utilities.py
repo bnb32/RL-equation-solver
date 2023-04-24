@@ -1,13 +1,14 @@
 """Collection of useful functions"""
-import numpy as np
 import random
-import scipy.sparse as sp
-from collections import namedtuple, deque
-import torch
-from torch_geometric.utils.convert import from_networkx
+from collections import deque, namedtuple
+
 import networkx as nx
-from networkx.readwrite import json_graph
+import numpy as np
+import scipy.sparse as sp
+import torch
 from networkx.drawing.nx_pydot import graphviz_layout
+from networkx.readwrite import json_graph
+from torch_geometric.utils.convert import from_networkx
 
 from rl_equation_solver.utilities.operators import fraction
 
@@ -15,11 +16,13 @@ random.seed(42)
 
 
 Experience = namedtuple(
-    'Experience', ('state', 'next_state', 'action', 'reward', 'done', 'info'))
+    "Experience", ("state", "next_state", "action", "reward", "done", "info")
+)
 
 
 class ReplayMemory:
     """Stores the Experience Replay buffer"""
+
     def __init__(self, capacity):
         self.memory = deque([], maxlen=capacity)
 
@@ -56,8 +59,9 @@ class Batch:
         batch.experience = Experience(*zip(*states))
         batch.states = list(batch.experience.state)
         batch.next_states = list(batch.experience.next_state)
-        batch.dones = torch.tensor([int(s) for s in batch.experience.done],
-                                   device=device)
+        batch.dones = torch.tensor(
+            [int(s) for s in batch.experience.done], device=device
+        )
         batch.actions = torch.cat(batch.experience.action)
         batch.rewards = torch.cat(batch.experience.reward)
         return batch
@@ -65,6 +69,7 @@ class Batch:
 
 class Id:
     """A helper class for autoincrementing node numbers."""
+
     counter = -1
 
     @classmethod
@@ -92,18 +97,19 @@ class Node:
         return self.name
 
 
-class VectorEmbedding:
+class VectorEmbedding(object):
     """Vector embedding class for embedding feature vector in vector of
     fixed size"""
+
     def __init__(self, vector, n_observations, device):
         self.vector = pad_array(vector, n_observations)
-        self.vector = torch.tensor(self.vector, device=device,
-                                   dtype=torch.float32)
+        self.vector = torch.tensor(self.vector, device=device, dtype=torch.float32)
 
 
-class GraphEmbedding:
+class GraphEmbedding(object):
     """Graph embedding class for embedding node features in matrix of fixed
     sizes"""
+
     def __init__(self, graph, n_observations, n_features, device):
         self.graph = graph
         G = from_networkx(self.graph)
@@ -121,8 +127,9 @@ class GraphEmbedding:
         self.x[:max_i, :max_j] = self._x[:max_i:, :max_j]
 
         self.x = torch.tensor(self.x, device=device, dtype=torch.float32)
-        self.onehot_values = torch.tensor(self.onehot_values, device=device,
-                                          dtype=torch.float32).unsqueeze(0)
+        self.onehot_values = torch.tensor(
+            self.onehot_values, device=device, dtype=torch.float32
+        ).unsqueeze(0)
 
 
 def graph_walk(parent, expr, node_list, link_list):
@@ -140,7 +147,7 @@ def graph_walk(parent, expr, node_list, link_list):
     link_list : list
         List of link dictionaries with 'source' and 'target' keys
     """
-    if parent.name == 'Root':
+    if parent.name == "Root":
         Id.reset()
 
     if expr.is_Atom:
@@ -218,14 +225,12 @@ def get_json_graph(expr):
 
     # Create the graph from the lists of nodes and links:
     graph_json = {"nodes": node_list, "links": link_list}
-    node_labels = {node['id']: node['name'] for node
-                   in graph_json['nodes']}
-    for n in graph_json['nodes']:
-        del n['name']
-    graph = json_graph.node_link_graph(graph_json, directed=True,
-                                       multigraph=False)
+    node_labels = {node["id"]: node["name"] for node in graph_json["nodes"]}
+    for n in graph_json["nodes"]:
+        del n["name"]
+    graph = json_graph.node_link_graph(graph_json, directed=True, multigraph=False)
     for node in graph.nodes:
-        graph.nodes[node]['name'] = node_labels.get(node, 'Root')
+        graph.nodes[node]["name"] = node_labels.get(node, "Root")
     graph.remove_node(-1)
     return graph
 
@@ -248,7 +253,7 @@ def to_graph(expr, feature_dict):
     graph = get_json_graph(expr)
     node_features = get_node_features(graph, feature_dict)
     for i, node in enumerate(list(graph.nodes)):
-        graph.nodes[node]['x'] = node_features[i]
+        graph.nodes[node]["x"] = node_features[i]
     return graph
 
 
@@ -281,7 +286,7 @@ def get_node_labels(graph):
     graph : networkx.graph
         Networkx graph object with node['name'] attributes
     """
-    node_labels = {k: graph.nodes[k]['name'] for k in graph.nodes}
+    node_labels = {k: graph.nodes[k]["name"] for k in graph.nodes}
     return node_labels
 
 
@@ -292,17 +297,25 @@ def plot_state_as_graph(expr):
     graph = to_graph(expr)
     labels = get_node_labels(graph)
     pos = graphviz_layout(graph, prog="dot")
-    nx.draw(graph.to_directed(), pos, labels=labels,
-            node_shape="s", node_color="none",
-            bbox={'facecolor': 'skyblue', 'edgecolor': 'black',
-                  'boxstyle': 'round,pad=0.2'})
+    nx.draw(
+        graph.to_directed(),
+        pos,
+        labels=labels,
+        node_shape="s",
+        node_color="none",
+        bbox={
+            "facecolor": "skyblue",
+            "edgecolor": "black",
+            "boxstyle": "round,pad=0.2",
+        },
+    )
 
 
 def normalize(mx):
     """Row-normalize sparse matrix"""
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
-    r_inv[np.isinf(r_inv)] = 0.
+    r_inv[np.isinf(r_inv)] = 0.0
     r_mat_inv = sp.diags(r_inv)
     mx = r_mat_inv.dot(mx)
     return mx
@@ -312,7 +325,8 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""
     sparse_mx = sparse_mx.tocoo().astype(np.float32)
     indices = torch.from_numpy(
-        np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64))
+        np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64)
+    )
     values = torch.from_numpy(sparse_mx.data)
     shape = torch.Size(sparse_mx.shape)
     return torch.sparse.FloatTensor(indices, values, shape)
@@ -322,9 +336,11 @@ def build_adjacency_matrix_custom(graph):
     """Build adjacency matrix from graph edges and labels"""
     edges = np.array(graph.edges)
     labels = np.array(graph.nodes)
-    adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
-                        shape=(labels.shape[0], labels.shape[0]),
-                        dtype=np.float32)
+    adj = sp.coo_matrix(
+        (np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
+        shape=(labels.shape[0], labels.shape[0]),
+        dtype=np.float32,
+    )
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
     adj = normalize(adj + sp.eye(adj.shape[0]))
     adj = sparse_mx_to_torch_sparse_tensor(adj)
@@ -340,8 +356,6 @@ def build_adjacency_matrix(graph):
 def encode_onehot(labels):
     """Onehot encoding"""
     classes = set(labels)
-    classes_dict = {c: np.identity(len(classes))[i, :] for i, c in
-                    enumerate(classes)}
-    labels_onehot = np.array(list(map(classes_dict.get, labels)),
-                             dtype=np.int32)
+    classes_dict = {c: np.identity(len(classes))[i, :] for i, c in enumerate(classes)}
+    labels_onehot = np.array(list(map(classes_dict.get, labels)), dtype=np.int32)
     return labels_onehot, classes_dict

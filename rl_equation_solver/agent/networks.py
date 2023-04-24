@@ -1,7 +1,7 @@
 """Networks for agent policies"""
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
 from torch_geometric.nn import GCNConv
 
 
@@ -53,10 +53,8 @@ class GCN(nn.Module):
         self.n_observations = n_observations
         self.n_actions = n_actions
         self.hidden_size = hidden_size
-        self.layer1 = GCNConv(n_observations, hidden_size, normalize=True,
-                              cached=True)
-        self.layer2 = GCNConv(hidden_size, n_actions, normalize=True,
-                              cached=True)
+        self.layer1 = GCNConv(n_observations, hidden_size, normalize=True, cached=True)
+        self.layer2 = GCNConv(hidden_size, n_actions, normalize=True, cached=True)
         self.dropout = dropout
 
     def _forward(self, graph):
@@ -82,15 +80,18 @@ class LSTM(nn.Module):
     """LSTM network"""
 
     def __init__(self, n_observations, n_actions, hidden_size, n_features):
-
         super().__init__()
         self.n_actions = n_actions
         self.n_features = n_features
         self.n_observations = n_observations
         self.hidden_size = hidden_size
 
-        self.lstm = nn.LSTM(input_size=n_observations, hidden_size=hidden_size,
-                            num_layers=n_features, batch_first=True)
+        self.lstm = nn.LSTM(
+            input_size=n_observations,
+            hidden_size=hidden_size,
+            num_layers=n_features,
+            batch_first=True,
+        )
         self.linear = nn.Linear(hidden_size, n_actions)
 
     def forward(self, x):
