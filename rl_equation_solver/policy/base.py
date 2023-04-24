@@ -46,7 +46,6 @@ class BasePolicy(ABC):
         self.batch_size = None
         self.epsilon_threshold = None
         self.steps_done = 0
-        self.max_solution_steps = None
         self._config = config
 
         self.init_config()

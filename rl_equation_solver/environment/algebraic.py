@@ -89,6 +89,8 @@ class Env(gym.Env, RewardMixin, History):
         self.state_dim = None
         self._initial_state = init_state
         self.state_string = self.initial_state
+        self.device = None
+        self.feature_num = None
 
         self.init_config()
 

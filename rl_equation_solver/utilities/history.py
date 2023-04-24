@@ -69,7 +69,7 @@ class History(Info):
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor"""
-        obj = super(History, cls).__new__(cls)
+        obj = super().__new__(cls)
         obj.__dict__ = cls._shared_history
         return obj
 

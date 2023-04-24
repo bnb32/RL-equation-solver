@@ -3,14 +3,14 @@ import logging
 
 import torch
 
-from rl_equation_solver.agent.base import OffPolicyAgent
+from rl_equation_solver.agent.base import OffPolicyAgent, VectorState
 from rl_equation_solver.agent.networks import DQN
 from rl_equation_solver.utilities import utilities
 
 logger = logging.getLogger(__name__)
 
 
-class Agent(OffPolicyAgent):
+class Agent(VectorState, OffPolicyAgent):
     """Agent with DQN target and policy networks"""
 
     def __init__(self, policy="MlpPolicy", env=None, config=None):
@@ -28,7 +28,11 @@ class Agent(OffPolicyAgent):
         device : str
             Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
-        super().__init__(policy, env, config)
+        OffPolicyAgent.__init__(self, policy, env, config)
+        VectorState.__init__(self, env=self.env,
+                             n_observations=self.n_observations,
+                             n_actions=self.n_actions,
+                             device=self.device)
         self.policy.policy_network = DQN(
             self.n_observations, self.n_actions, self.hidden_size
         ).to(self.device)
@@ -41,26 +45,3 @@ class Agent(OffPolicyAgent):
         self.policy.init_optimizer()
 
         logger.info(f"Initialized Agent with device {self.device}")
-
-    def init_state(self):
-        """Initialize state as a vector"""
-        _ = self.env.reset()
-        return torch.tensor(
-            self.env.state_vec, dtype=torch.float32, device=self.device
-        ).unsqueeze(0)
-
-    def convert_state(self, state):
-        """Convert state string to vector representation"""
-        self.env.state_vec = utilities.to_vec(
-            state, self.env.feature_dict, self.env.state_dim
-        )
-        return torch.tensor(
-            self.env.state_vec, dtype=torch.float32, device=self.device
-        ).unsqueeze(0)
-
-    def batch_states(self, states, device) -> utilities.Batch:
-        """Batch agent states"""
-        batch = utilities.Batch()(states, device)
-        batch.next_states = torch.cat(batch.next_states)
-        batch.states = torch.cat(batch.states)
-        return batch

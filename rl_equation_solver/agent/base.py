@@ -4,6 +4,7 @@ import pickle
 from abc import ABC, abstractmethod
 from itertools import count
 from typing import Union
+import numpy as np
 
 import gym
 import torch
@@ -15,11 +16,12 @@ from rl_equation_solver.utilities import utilities
 from rl_equation_solver.utilities.history import History, Info
 from rl_equation_solver.utilities.loss import LossMixin
 from rl_equation_solver.utilities.utilities import ReplayMemory
+from rl_equation_solver.utilities.utilities import GraphEmbedding
 
 logger = logging.getLogger(__name__)
 
 
-class BaseAgent(ABC, LossMixin, History):
+class BaseAgent(LossMixin, History, ABC):
     """Base Agent without imlemented policy"""
 
     def __init__(self, policy="MlpPolicy", env=None, config=None):
@@ -60,6 +62,7 @@ class BaseAgent(ABC, LossMixin, History):
         self.feature_num = None
         self.fill_memory_steps = None
         self.learning_rate = None
+        self.gamma = None
 
         self.init_config()
 
@@ -222,9 +225,10 @@ class BaseAgent(ABC, LossMixin, History):
         eval : bool
             Whether to run in eval mode - without updating model weights
         """
+        done = False
         training = bool(not eval)
         state = self.init_state()
-        for _ in count():
+        while not done:
             next_state, done = self.add_experience(state, training=training)
 
             loss = self.compute_batch_loss()
@@ -359,3 +363,206 @@ class OffPolicyAgent(BaseAgent):
         self.update_history("loss", loss.item())
 
         return loss
+
+
+class VectorState:
+    """Class for vector state representation"""
+
+    def __init__(self, env, n_observations, n_actions, device):
+        self.env = env
+        self.n_observations = n_observations
+        self.n_actions = n_actions
+        self.device = device
+
+    def init_state(self) -> torch.Tensor:
+        """Initialize state as a vector"""
+        _ = self.env.reset()
+        return torch.tensor(
+            self.env.state_vec, dtype=torch.float32, device=self.device
+        ).unsqueeze(0)
+
+    def convert_state(self, state) -> torch.Tensor:
+        """Convert state string to vector representation"""
+        self.env.state_vec = utilities.to_vec(
+            state, self.env.feature_dict, self.env.state_dim
+        )
+        return torch.tensor(
+            self.env.state_vec, dtype=torch.float32, device=self.device
+        ).unsqueeze(0)
+
+    def batch_states(self, states, device) -> utilities.Batch:
+        """Batch agent states"""
+        batch = utilities.Batch()(states, device)
+        batch.next_states = torch.cat(batch.next_states)
+        batch.states = torch.cat(batch.states)
+        return batch
+
+
+class GraphState:
+    """Class for graph state representation"""
+
+    def __init__(self, env, n_observations, n_actions, feature_num, device):
+        self.env = env
+        self.n_observations = n_observations
+        self.n_actions = n_actions
+        self.feature_num = feature_num
+        self.device = device
+
+    def init_state(self) -> GraphEmbedding:
+        """Initialize state as a graph"""
+        _ = self.env.reset()
+        self.env.graph = utilities.to_graph(
+            self.env.state_string, self.env.feature_dict
+        )
+        return GraphEmbedding(
+            self.env.graph,
+            n_observations=self.n_observations,
+            n_features=self.feature_num,
+            device=self.device,
+        )
+
+    def convert_state(self, state) -> GraphEmbedding:
+        """Convert state string to graph representation"""
+        self.env.graph = utilities.to_graph(state, self.env.feature_dict)
+        return GraphEmbedding(
+            self.env.graph,
+            n_observations=self.n_observations,
+            n_features=self.feature_num,
+            device=self.device,
+        )
+
+    def batch_states(self, states, device) -> utilities.Batch:
+        """Batch agent states"""
+        batch = utilities.Batch()(states, device)
+        return batch
+
+
+class Memory():
+    def __init__(self):
+        self.log_probs = []
+        self.values = []
+        self.rewards = []
+        self.dones = []
+
+    def push(self, log_prob, value, reward, done):
+        self.log_probs.append(log_prob)
+        self.values.append(value)
+        self.rewards.append(reward)
+        self.dones.append(done)
+
+    def clear(self):
+        self.log_probs.clear()
+        self.values.clear()
+        self.rewards.clear()
+        self.dones.clear()
+
+    def _zip(self):
+        return zip(self.log_probs,
+                self.values,
+                self.rewards,
+                self.dones)
+
+    def __iter__(self):
+        for data in self._zip():
+            return data
+
+    def reversed(self):
+        for data in list(self._zip())[::-1]:
+            yield data
+
+    def __len__(self):
+        return len(self.rewards)
+
+
+class OnPolicyAgent(BaseAgent):
+
+    # train function
+    def optimize_model(self, q_val):
+        values = torch.stack(self.memory.values)
+        q_vals = np.zeros((len(self.memory), 1))
+
+        # target values are calculated backward
+        # it's super important to handle correctly done states,
+        # for those cases we want our to target to be equal to the reward only
+        for i, (_, _, reward, done) in enumerate(self.memory.reversed()):
+            q_val = reward + self.gamma * q_val * (1.0 - done)
+            # store values from the end to the beginning
+            q_vals[len(self.memory) - 1 - i] = q_val.item()
+
+        advantage = torch.tensor(q_vals, device=self.device) - values
+
+        critic_loss = advantage.pow(2).mean()
+        self.opt_critic.zero_grad()
+        critic_loss.backward()
+        self.opt_critic.step()
+
+        actor_loss = (-torch.stack(self.memory.log_probs)*advantage.detach()).mean()
+        self.opt_actor.zero_grad()
+        actor_loss.backward()
+        self.opt_actor.step()
+
+        self.update_info('loss', critic_loss.item())
+        self.update_history("loss", critic_loss.item())
+
+    def run_episode(self, eval=False, pbar=None):
+        done = False
+        state = self.init_state()
+
+        training = bool(not eval)
+        steps = 0
+        while not done:
+            _, next_state, done, _ = self.step(state, training=training)
+            steps += 1
+            state = next_state
+
+            # train if done or num steps > max_steps
+            if done or (steps % self.max_steps == 0):
+                last_q_val = self.critic(next_state)
+                self.optimize_model(last_q_val)
+                self.memory.clear()
+
+            if pbar is not None:
+                pbar.set_description(str(self.get_log_info()))
+
+    def step(self, state, training=False) -> tuple[torch.Tensor, object, bool, Info]:
+        """Take next step from current state
+
+        Parameters
+        ----------
+        state : str
+            State string representation
+        episode : int
+            Episode number
+        training : str
+            Whether the step is part of training or inference. Determines
+            whether to update the history.
+
+        Returns
+        -------
+        action : Tensor
+            Action taken. Represented as a pytorch tensor.
+        next_state : Tensor
+            Next state after action. Represented as a pytorch tensor or
+            GraphEmbedding.
+        done : bool
+            Whether solution has been found or if state size conditions have
+            been exceeded.
+        info : dict
+            Dictionary with loss, reward, and state information
+        """
+        state_string = self.state_string
+        dist, action = self.choose_action(state)
+        next_state, reward, done, info = self.env.step(action.item())
+        self.memory.push(dist.log_prob(action), self.critic(state), reward, done)
+
+        if not done:
+            state_string = self.state_string
+        next_state = self.convert_state(state_string)
+
+        return action, next_state, done, info
+
+    def choose_action(self, state):
+        probs = self.actor(state)
+        dist = torch.distributions.Categorical(probs=probs)
+        action = dist.sample()
+        return dist, action
