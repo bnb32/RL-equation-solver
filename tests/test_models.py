@@ -60,9 +60,10 @@ def test_model_train(i, log=True, plot=True):
             ax[1].set_title("reward")
             ax[2].scatter(x, hist["loop_step"])
             ax[2].set_title("steps")
-            fig_name = "rl_equation_solver/dev/figs/"
-            fig_name += f"{agent_name}_history_{hist_name}.png"
-            fig.savefig(fig_name)
+
+            with TemporaryDirectory() as td:
+                fig_name = f"{td}/{agent_name}_history_{hist_name}.png"
+                fig.savefig(fig_name)
 
 
 @pytest.mark.parametrize("agent", Agents)

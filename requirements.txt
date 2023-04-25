@@ -12,3 +12,4 @@ mypy
 black
 isort
 tqdm
+matplotlib
