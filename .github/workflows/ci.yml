@@ -47,7 +47,6 @@ jobs:
         make check-codestyle
     - name: Type check
       run: |
-        mypy --install-types
         make mypy
       # skip mypy type check for python3.7 (result is different to all other versions)
       if: "!(matrix.python-version == '3.7')"

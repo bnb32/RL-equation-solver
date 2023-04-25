@@ -101,34 +101,30 @@ class LSTM(nn.Module):
         return x
 
 
-class LinearActor(nn.Module):
-    """Actor network with linear layers"""
-    def __init__(self, state_dim, n_actions):
+class ActorCritic(nn.Module):
+    """ActorCritic networks"""
+
+    def __init__(self, n_obs, n_actions, hidden_size) -> None:
         super().__init__()
-        self.model = nn.Sequential(
-            nn.Linear(state_dim, 64),
+
+        self.actor = nn.Sequential(
+            nn.Linear(n_obs, hidden_size),
             nn.Tanh(),
-            nn.Linear(64, 32),
+            nn.Linear(hidden_size, 32),
             nn.Tanh(),
             nn.Linear(32, n_actions),
-            nn.Softmax()
+            nn.Softmax(),
+        )
+
+        self.critic = nn.Sequential(
+            nn.Linear(n_obs, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1),
         )
 
     def forward(self, X):
-        return self.model(X)
-
-
-class LinearCritic(nn.Module):
-    """Critic network with linear layers"""
-    def __init__(self, state_dim):
-        super().__init__()
-        self.model = nn.Sequential(
-            nn.Linear(state_dim, 64),
-            nn.ReLU(),
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, 1)
-        )
-
-    def forward(self, X):
-        return self.model(X)
+        values = self.critic(X)
+        actions = self.actor(X)
+        return values, actions

@@ -8,10 +8,10 @@ pytype:
 	pytype -j auto
 
 mypy:
-	mypy ${LINT_PATHS}
+	mypy --install-types --non-interactive ${LINT_PATHS} 
 
 missing-annotations:
-	mypy --disallow-untyped-calls --disallow-untyped-defs --ignore-missing-imports stable_baselines3
+	mypy --disallow-untyped-calls --disallow-untyped-defs --ignore-missing-imports
 
 # missing docstrings
 # pylint -d R,C,W,E -e C0116 stable_baselines3 -j 4

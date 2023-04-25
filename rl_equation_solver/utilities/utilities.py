@@ -20,6 +20,27 @@ Experience = namedtuple(
 )
 
 
+class RolloutMemory:
+    """Memory for on policy agents"""
+
+    def __init__(self):
+        self.states, self.actions, self.true_values = [], [], []
+
+    def push(self, state, action, true_value):
+        self.states.append(state)
+        self.actions.append(action)
+        self.true_values.append(true_value)
+
+    def pop_all(self, device):
+        states = torch.stack(self.states)
+        actions = torch.tensor(self.actions, device=device)
+        true_values = torch.tensor(self.true_values, device=device).unsqueeze(1)
+
+        self.states, self.actions, self.true_values = [], [], []
+
+        return states, actions, true_values
+
+
 class ReplayMemory:
     """Stores the Experience Replay buffer"""
 

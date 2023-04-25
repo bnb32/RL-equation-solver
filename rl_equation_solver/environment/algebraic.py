@@ -153,6 +153,13 @@ class Env(gym.Env, RewardMixin, History):
         """Get list of valid operations"""
         if self._operations is None:
             self._operations = [add, sub, truediv, pow]
+            if self.order > 2:
+                for n in range(2, self.order):
+
+                    def nth_root(a, b):
+                        return pow(a, 1 / n)
+
+                    self._operations.append(nth_root)
         return self._operations
 
     @property
@@ -203,8 +210,6 @@ class Env(gym.Env, RewardMixin, History):
         """Get terms for quadratic equation"""
         _, *coeffs = self._get_algebraic_symbols()
         terms = [*coeffs, *self._get_numerical_symbols()]
-        for n in range(2, self.order):
-            terms.append(symbols(f"1 / {n}"))
         return terms
 
     @property
@@ -467,6 +472,7 @@ class Env(gym.Env, RewardMixin, History):
         if done:
             self.current_episode += 1
             msg = self.get_log_info()
+            self.loop_step = 0
             logger.info(msg)
         self.steps_done += 1
         self.loop_step += 1

@@ -2,7 +2,7 @@
 
 DefaultConfig = {
     # BATCH_SIZE is the number of Experience sampled from the replay buffer
-    "batch_size": 64,
+    "batch_size": 32,
     # GAMMA is the discount factor
     "gamma": 0.9,
     # EPSILON_START is the starting value of epsilon
@@ -39,7 +39,11 @@ DefaultConfig = {
     # reward function
     "reward_function": "diff_loss_reward",
     # max number of steps to search for solution when calling find_solution
-    "max_solution_steps": 10000,
+    "max_solution_steps": 2000,
     # device to use for training
     "device": "cuda:0",
+    # entropy coefficient
+    "entropy_coef": 0.1,
+    # critic coefficient
+    "critic_coef": 0.5,
 }
