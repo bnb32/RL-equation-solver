@@ -5,7 +5,7 @@ import pickle
 import random
 from abc import ABC, abstractmethod
 from itertools import count
-from typing import Optional, Union
+from typing import Union
 
 import gym
 import torch
@@ -14,13 +14,9 @@ from tqdm import tqdm
 
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities import utilities
-from rl_equation_solver.utilities.history import History, Info
+from rl_equation_solver.utilities.history import History
 from rl_equation_solver.utilities.loss import LossMixin
-from rl_equation_solver.utilities.utilities import (
-    GraphEmbedding,
-    ReplayMemory,
-    RolloutMemory,
-)
+from rl_equation_solver.utilities.utilities import GraphEmbedding, Memory
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +77,7 @@ class BaseAgent(LossMixin, History, ABC):
 
         logger.info(f"Initialized Agent with device {self.device}")
 
-        self.memory = ReplayMemory(self.memory_cap)
+        self.memory = Memory(self.memory_cap)
 
     def init_config(self) -> None:
         """Initialize model configuration"""
@@ -116,26 +112,14 @@ class BaseAgent(LossMixin, History, ABC):
         """Convert states into a batch"""
 
     @abstractmethod
-    def compute_batch_loss(self) -> Union[torch.Tensor, None]:
-        """Compute loss for batch using the stored memory."""
-
-    @abstractmethod
-    def update_model(
-        self, eval: bool, done: bool, loss: Optional[torch.Tensor]
-    ) -> None:
-        """Optimize and update the model weights"""
+    def update_model(self, done: bool, eval: bool) -> None:
+        """Compute loss and update the model weights"""
 
     @abstractmethod
     def choose_action(
         self, state: Union[torch.Tensor, GraphEmbedding], training: bool
     ) -> torch.Tensor:
         """Choose action for given state"""
-
-    @abstractmethod
-    def add_experience(
-        self, state: Union[torch.Tensor, GraphEmbedding], training: bool = True
-    ) -> tuple[Union[torch.Tensor, GraphEmbedding], bool]:
-        """Add state variables to memory"""
 
     @property
     def device(self) -> torch.device:
@@ -181,7 +165,7 @@ class BaseAgent(LossMixin, History, ABC):
 
     def step(
         self, state, training: bool = False
-    ) -> tuple[torch.Tensor, Union[torch.Tensor, GraphEmbedding], bool, Info]:
+    ) -> tuple[Union[torch.Tensor, GraphEmbedding], bool]:
         """Take next step from current state
 
         Parameters
@@ -209,13 +193,16 @@ class BaseAgent(LossMixin, History, ABC):
         """
         state_string = self.state_string
         action = self.choose_action(state, training=training)
-        _, _, done, info = self.env.step(action.item())
+        _, reward, done, info = self.env.step(action.item())
 
         if not done:
             state_string = self.state_string
         next_state = self.convert_state(state_string)
 
-        return action, next_state, done, info
+        reward = torch.tensor([reward], device=self.device)
+        done = torch.tensor([done], device=self.device)
+        self.memory.push(state, next_state, action, reward, done, info)
+        return next_state, done
 
     def compute_loss(
         self, state_action_values, expected_state_action_values
@@ -241,7 +228,7 @@ class BaseAgent(LossMixin, History, ABC):
         while len(self.memory) < self.fill_memory_steps:
             state = self.init_state()
             for _ in count():
-                next_state, done = self.add_experience(state, training=training)
+                next_state, done = self.step(state, training=training)
                 if done:
                     break
 
@@ -287,11 +274,9 @@ class BaseAgent(LossMixin, History, ABC):
         training = bool(not eval)
         state = self.init_state()
         while not done:
-            next_state, done = self.add_experience(state, training=training)
+            next_state, done = self.step(state, training=training)
 
-            loss = self.compute_batch_loss()
-
-            self.update_model(eval, done, loss)
+            self.update_model(done=done, eval=eval)
 
             if done:
                 break
@@ -310,7 +295,7 @@ class BaseAgent(LossMixin, History, ABC):
         steps = 0
         states = [state_string]
         while not done:
-            _, next_state, done, _ = self.step(state, training=False)
+            next_state, done = self.step(state, training=False)
             steps += 1
             if next_state is None:
                 break
@@ -375,11 +360,11 @@ class BaseAgent(LossMixin, History, ABC):
 class OffPolicyAgent(BaseAgent):
     """Off Policy Base Agent"""
 
-    def compute_batch_loss(self) -> Union[torch.Tensor, None]:
-        """Compute loss for batch using the stored memory."""
+    def update_model(self, done: bool, eval: bool) -> None:
+        """Compute loss and update model"""
 
         if len(self.memory) < self.batch_size:
-            return None
+            return
 
         transition = self.memory.sample(self.batch_size)
         batch = self.batch_states(transition, device=self.device)
@@ -393,7 +378,11 @@ class OffPolicyAgent(BaseAgent):
         self.update_info("loss", loss.item())
         self.update_history("loss", loss.item())
 
-        return loss
+        if not done and not eval:
+            self.optimize_model(loss)
+
+        if not eval:
+            self.update_networks()
 
     def _get_eps_decay(self, steps_done):
         """Get epsilon decay for current number of steps"""
@@ -434,13 +423,6 @@ class OffPolicyAgent(BaseAgent):
             return self.choose_optimal_action(state)
         else:
             return self.choose_random_action()
-
-    def update_model(self, eval, done, loss):
-        if not done and not eval:
-            self.optimize_model(loss)
-
-        if not eval:
-            self.update_networks()
 
     def choose_optimal_action(self, state):
         """
@@ -500,31 +482,6 @@ class OffPolicyAgent(BaseAgent):
             value = target + self.tau * (policy - target)
             target_net_state_dict[key] = value
         self.model.target_network.load_state_dict(target_net_state_dict)
-
-    def add_experience(
-        self, state: Union[torch.Tensor, GraphEmbedding], training: bool = True
-    ) -> tuple[Union[torch.Tensor, GraphEmbedding], bool]:
-        """Add experience to the memory for a given starting state
-
-        Parameters
-        ----------
-        state : sympy.expr
-            Symbolic expression of current approximate solution
-        training : bool
-            Whether this during training or evaluation
-
-        Returns
-        -------
-        next_state : sympy.expr
-            Symbolic expression for next approximate solution
-        done : bool
-            Whether the solution is exact / state vector size exceeded limit or
-            if training / evaluation should continue
-        """
-        action, next_state, done, info = self.step(state, training=training)
-        reward = torch.tensor([info.reward], device=self.device)
-        self.memory.push(state, next_state, action, reward, done, info)
-        return next_state, done
 
 
 class VectorState:
@@ -602,76 +559,7 @@ class GraphState:
 class OnPolicyAgent(BaseAgent):
     """on policy agent class"""
 
-    def __init__(self, env, config):
-        super().__init__(env, config)
-        self.memory = RolloutMemory()
-
-    def update_model(self, eval, done, loss):
-        if not done:
-            self.optimize_model(loss)
-
-    def step(self, state, training=True):
-        """Take next step from current state
-
-        Parameters
-        ----------
-        state : str
-            State string representation
-        episode : int
-            Episode number
-        training : str
-            Whether the step is part of training or inference. Determines
-            whether to update the history.
-
-        Returns
-        -------
-        action : Tensor
-            Action taken. Represented as a pytorch tensor.
-        next_state : Tensor
-            Next state after action. Represented as a pytorch tensor or
-            GraphEmbedding.
-        done : bool
-            Whether solution has been found or if state size conditions have
-            been exceeded.
-        info : dict
-            Dictionary with loss, reward, and state information
-        """
-        state_string = self.state_string
-        action = self.choose_action(state)
-        _, reward, done, info = self.env.step(action.item())
-
-        if not done:
-            state_string = self.state_string
-        state = self.convert_state(state_string)
-
-        value = self.compute_expected_Q(state, reward, done)
-        return action, state, done, value, info
-
-    def add_experience(
-        self, state: Union[torch.Tensor, GraphEmbedding], training: bool = True
-    ) -> tuple[Union[torch.Tensor, GraphEmbedding], bool]:
-        """Add experience to the memory for a given starting state
-
-        Parameters
-        ----------
-        state : sympy.expr
-            Symbolic expression of current approximate solution
-        training : bool
-            Whether this during training or evaluation
-
-        Returns
-        -------
-        next_state : sympy.expr
-            Symbolic expression for next approximate solution
-        done : bool
-            Whether the solution is exact / state vector size exceeded limit or
-            if training / evaluation should continue
-        """
-        action, next_state, done, value, _ = self.step(state, training=training)
-        self.memory.push(next_state, action, value)
-        return next_state, done
-
-    def choose_action(self, state):
+    def choose_action(self, state, training=False):
         """
         Choose action based on given state. Either choose optimal action or
         random action depending on training step.
@@ -681,41 +569,72 @@ class OnPolicyAgent(BaseAgent):
         action = dist.sample()
         return action
 
-    def compute_batch_loss(self) -> Union[torch.Tensor, None]:
+    def update_model(self, done: bool, eval: bool) -> None:
         """Compute loss for batch using the stored memory."""
-        states, actions, true_values = self.memory.pop_all(device=self.device)
+        states, next_states, actions, rewards, dones, _ = self.memory.pop_all(
+            device=self.device
+        )
+        true_values = self.compute_expected_Q(next_states, rewards, dones)
         values, log_probs, entropy = self.evaluate_action(states, actions)
         advantages = true_values - values
         critic_loss = advantages.pow(2).mean()
-        actor_loss = -(log_probs * advantages).mean()
-        total_loss = self.critic_coef * critic_loss
-        total_loss += actor_loss - (self.entropy_coef * entropy)
+        actor_loss = -(log_probs * advantages)
+        total_loss = self.critic_coef * critic_loss + actor_loss
+        total_loss -= self.entropy_coef * entropy
 
         self.update_info("loss", total_loss.item())
         self.update_history("loss", total_loss.item())
-        return total_loss
 
-    def evaluate_action(self, state, action):
-        value, actor_features = self.model.forward(state)
-        dist = torch.distributions.Categorical(actor_features)
+        if not done:
+            self.optimize_model(total_loss)
 
-        log_probs = dist.log_prob(action)
+    def evaluate_action(
+        self, state: torch.Tensor, action: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Evaluate the action for the given state
+
+        Parameters
+        ----------
+        state : torch.Tensor
+            current state representation
+        action : torch.Tensor
+            action for the current state
+
+        Returns
+        -------
+        value : torch.Tensor
+            q value for the current state
+        log_probs : torch.Tensor
+            log probability for the current state action
+        entropy : torch.Tensor
+            entropy for current state distribution
+        """
+        value, probs = self.model.forward(state)
+        dist = torch.distributions.Categorical(probs=probs)
+
+        log_probs = dist.log_prob(action).view(-1, 1)
         entropy = dist.entropy().mean()
 
         return value, log_probs, entropy
 
-    def get_critic(self, x):
-        return self.model.critic(x)
+    def compute_expected_Q(
+        self, next_state: torch.Tensor, reward: torch.Tensor, done: torch.Tensor
+    ) -> torch.Tensor:
+        """Bellman update for critic
 
-    def compute_expected_Q(self, states, rewards, dones):
-        if dones:
-            next_value = rewards
-        else:
-            next_value = self.get_critic(states)
+        Parameters
+        ----------
+        next_state : torch.Tensor
+            Next state respresentation
+        reward : torch.Tensor
+            Reward for current state
+        done : torch.Tensor
+            Whether routine is done for the current state
 
-        if not dones:
-            next_value = rewards + next_value * self.gamma
-        else:
-            next_value = rewards
-
-        return torch.tensor(next_value, device=self.device)
+        Returns
+        -------
+        value : torch.Tensor
+            Updated q value
+        """
+        next_value = self.model.critic(next_state)
+        return reward + (1 - int(done.item())) * self.gamma * next_value

@@ -20,32 +20,12 @@ Experience = namedtuple(
 )
 
 
-class RolloutMemory:
-    """Memory for on policy agents"""
-
-    def __init__(self):
-        self.states, self.actions, self.true_values = [], [], []
-
-    def push(self, state, action, true_value):
-        self.states.append(state)
-        self.actions.append(action)
-        self.true_values.append(true_value)
-
-    def pop_all(self, device):
-        states = torch.stack(self.states)
-        actions = torch.tensor(self.actions, device=device)
-        true_values = torch.tensor(self.true_values, device=device).unsqueeze(1)
-
-        self.states, self.actions, self.true_values = [], [], []
-
-        return states, actions, true_values
-
-
-class ReplayMemory:
+class Memory:
     """Stores the Experience Replay buffer"""
 
     def __init__(self, capacity):
-        self.memory = deque([], maxlen=capacity)
+        self.capacity = capacity
+        self.memory = deque([], maxlen=self.capacity)
 
     def push(self, *args):
         """Save the Experience into memory"""
@@ -54,6 +34,19 @@ class ReplayMemory:
     def sample(self, batch_size):
         """select a random batch of Experience for training"""
         return random.sample(self.memory, batch_size)
+
+    def pop_all(self, device):
+        out = {k: [] for k in self.memory[0]._fields}
+        for i in range(len(self.memory)):
+            for j, k in enumerate(self.memory[i]._fields):
+                out[k].append(self.memory[i][j])
+        for k, v in out.items():
+            if "state" in k:
+                out[k] = torch.stack(v)
+            elif "info" not in k:
+                out[k] = torch.tensor(v, device=device)
+        self.memory = deque([], maxlen=self.capacity)
+        return out.values()
 
     def __len__(self):
         return len(self.memory)

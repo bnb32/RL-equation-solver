@@ -13,13 +13,13 @@ class Model(nn.Module):
     """Unified DQN model with policy and target networks"""
 
     def __init__(self, n_observations, n_actions, hidden_size, feature_num, device):
+        super().__init__()
         self.policy_network = LSTM(
-            n_observations,
-            n_actions,
-            hidden_size,
-            feature_num,
+            n_observations, n_actions, hidden_size, feature_num
         ).to(device)
-        self.target_network = LSTM(n_observations, n_actions, hidden_size).to(device)
+        self.target_network = LSTM(
+            n_observations, n_actions, hidden_size, feature_num
+        ).to(device)
         self.target_network.load_state_dict(self.policy_network.state_dict())
 
     def forward(self, X):

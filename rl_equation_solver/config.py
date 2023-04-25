@@ -39,11 +39,11 @@ DefaultConfig = {
     # reward function
     "reward_function": "diff_loss_reward",
     # max number of steps to search for solution when calling find_solution
-    "max_solution_steps": 2000,
+    "max_solution_steps": 10000,
     # device to use for training
     "device": "cuda:0",
     # entropy coefficient
-    "entropy_coef": 0.1,
+    "entropy_coef": 0.01,
     # critic coefficient
     "critic_coef": 0.5,
 }

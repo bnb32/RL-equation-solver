@@ -20,6 +20,6 @@ class Agent(VectorState, OnPolicyAgent):
         self.model = ActorCritic(
             self.n_observations, self.n_actions, self.hidden_size
         ).to(self.device)
-        self.optimizer = torch.optim.RMSprop(
+        self.optimizer = torch.optim.Adam(
             self.model.parameters(), lr=self.learning_rate, eps=1e-5
         )

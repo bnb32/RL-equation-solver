@@ -94,7 +94,7 @@ class History(Info):
                 if k in ("loss", "reward", "complexity"):
                     out[k].append(np.nanmean(series[k]))
                 else:
-                    out[k].append(series[-1])
+                    out[k].append(series[k][-1])
         return out
 
     @property
