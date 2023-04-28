@@ -1,8 +1,9 @@
-"""Test model loading, training, and running"""
+"""Test model loading, training, and running."""
 import os
 import pickle
 import pprint
 from tempfile import TemporaryDirectory
+from typing import Callable
 
 import matplotlib.pyplot as plt
 import pytest
@@ -14,27 +15,27 @@ from rl_equation_solver.agent.gcn import Agent as AgentGCN
 from rl_equation_solver.agent.lstm import Agent as AgentLSTM
 from rl_equation_solver.environment.algebraic import Env
 
-Agents = [AgentLSTM, AgentA2C, AgentGCN, AgentDQN]
+Agents: list[Callable] = [AgentLSTM, AgentA2C, AgentGCN, AgentDQN]
 agent_names = ["lstm", "a2c", "gcn", "dqn"]
 config = {"max_solution_steps": 10, "device": "cpu"}
 
 
-def test_model_load():
-    """Test environment loading"""
+def test_model_load() -> None:
+    """Test environment loading."""
     _ = Env()
 
 
 @pytest.mark.parametrize("i", list(range(len(Agents))))
-def test_model_train(i, log=True, plot=True):
-    """Test DQN training"""
-    agent = Agents[i]
+def test_model_train(i: int, log: bool = True, plot: bool = True) -> None:
+    """Test DQN training."""
+    Agent = Agents[i]
     agent_name = agent_names[i]
     if log:
         init_logger(__name__, log_level="DEBUG")
         init_logger("rl_equation_solver", log_level="DEBUG")
 
     env = Env()
-    agent = agent(env=env, config=config)
+    agent = Agent(env=env, config=config)
     agent.train(num_episodes=2)
 
     with TemporaryDirectory() as td:
@@ -66,24 +67,22 @@ def test_model_train(i, log=True, plot=True):
                 fig.savefig(fig_name)
 
 
-@pytest.mark.parametrize("agent", Agents)
-def test_model_predict(agent, log=True):
-    """Test Agent prediction"""
-
+@pytest.mark.parametrize("Agent", Agents)
+def test_model_predict(Agent: Callable, log: bool = True) -> None:
+    """Test Agent prediction."""
     if log:
         init_logger(__name__, log_level="DEBUG")
         init_logger("rl_equation_solver", log_level="DEBUG")
 
     env = Env()
-    agent = agent(env=env, config=config)
+    agent = Agent(env=env, config=config)
     agent.train(num_episodes=2)
     agent.predict(env._initial_state)
 
 
-@pytest.mark.parametrize("agent", Agents)
-def test_model_save_load(agent, log=True):
-    """Test saving and loading of agent"""
-
+@pytest.mark.parametrize("Agent", Agents)
+def test_model_save_load(Agent: Callable, log: bool = True) -> None:
+    """Test saving and loading of agent."""
     if log:
         init_logger(__name__, log_level="DEBUG")
         init_logger("rl_equation_solver", log_level="DEBUG")
@@ -91,9 +90,9 @@ def test_model_save_load(agent, log=True):
     with TemporaryDirectory() as td:
         outfile = os.path.join(td, "model_file.pkl")
         env = Env()
-        agent = agent(env=env, config=config)
+        agent = Agent(env=env, config=config)
         agent.train(num_episodes=2)
-        agent.save(outfile)
+        agent.save(model_file=outfile)
 
-        agent = agent.load(outfile)
+        agent = agent.load(model_file=outfile)
         agent.predict(env._initial_state)

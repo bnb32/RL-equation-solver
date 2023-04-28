@@ -1,1 +1,1 @@
-"""Environment module"""
+"""Environment module."""

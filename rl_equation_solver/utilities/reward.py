@@ -1,29 +1,32 @@
-"""Collection of reward functions"""
+"""Collection of reward functions."""
 from abc import abstractmethod
 
 import numpy as np
+from sympy.core import Expr
 
 
 class RewardMixin:
-    """Reward function collection"""
+
+    """Reward function collection."""
 
     @abstractmethod
-    def get_solution_complexity(self, state):
+    def get_solution_complexity(self, state: Expr) -> int:
         """Get the graph / expression complexity for a given state. This is
-        equal to number_of_nodes + number_of_edges"""
+        equal to number_of_nodes + number_of_edges.
+        """
 
     @abstractmethod
-    def get_expression_complexity(self, expr):
+    def get_expression_complexity(self, expr: Expr) -> int:
         """Get the graph / expression complexity for a given expression. This
-        is equal to number_of_nodes + number_of_edges"""
+        is equal to number_of_nodes + number_of_edges.
+        """
 
     @abstractmethod
-    def get_solution_approx(self, state):
+    def get_solution_approx(self, state: Expr) -> Expr:
         """Get the approximate solution for the given state."""
 
-    def diff_loss_reward(self, state_old, state_new):
-        """
-        Reward is decrease in complexity
+    def diff_loss_reward(self, state_old: Expr, state_new: Expr) -> float:
+        """Reward is decrease in complexity.
 
         Parameters
         ----------
@@ -42,9 +45,8 @@ class RewardMixin:
         return loss_old - loss_new
 
     # pylint: disable=unused-argument
-    def sub_loss_reward(self, state_old, state_new):
-        """
-        Reward is decrease in complexity
+    def sub_loss_reward(self, state_old: Expr, state_new: Expr) -> float:
+        """Reward is decrease in complexity.
 
         Parameters
         ----------
@@ -62,9 +64,8 @@ class RewardMixin:
         return -1 * loss_new
 
     # pylint: disable=unused-argument
-    def exp_loss_reward(self, state_old, state_new):
-        """
-        Reward is decrease in complexity
+    def exp_loss_reward(self, state_old: Expr, state_new: Expr) -> float:
+        """Reward is decrease in complexity.
 
         Parameters
         ----------
@@ -82,9 +83,8 @@ class RewardMixin:
         return np.exp(-loss_new)
 
     # pylint: disable=unused-argument
-    def inv_loss_reward(self, state_old, state_new):
-        """
-        Reward is decrease in complexity
+    def inv_loss_reward(self, state_old: Expr, state_new: Expr) -> float:
+        """Reward is decrease in complexity.
 
         Parameters
         ----------

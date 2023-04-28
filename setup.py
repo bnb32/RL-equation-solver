@@ -1,6 +1,4 @@
-"""
-setup.py
-"""
+"""setup.py."""
 import os
 import shlex
 from codecs import open
@@ -26,18 +24,15 @@ version = version.split("=")[-1].strip().strip('"').strip("'")
 
 
 class PostDevelopCommand(develop):
-    """
-    Class to run post setup commands
-    """
 
-    def run(self):
-        """
-        Run method that tries to install pre-commit hooks
-        """
+    """Class to run post setup commands."""
+
+    def run(self, show_deprecation: bool = False) -> None:
+        """Run method that tries to install pre-commit hooks."""
         try:
             check_call(shlex.split("pre-commit install"))
         except Exception as e:
-            warn("Unable to run 'pre-commit install': {}".format(e))
+            warn(f"Unable to run 'pre-commit install': {e}")
 
         develop.run(self)
 

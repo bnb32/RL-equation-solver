@@ -1,1 +1,1 @@
-"""Reinforcement Learning based equation solver package"""
+"""Reinforcement Learning based equation solver package."""

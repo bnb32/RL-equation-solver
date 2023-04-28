@@ -1,37 +1,45 @@
-"""Agent with GCN based policy"""
+"""Agent with GCN based policy."""
 import logging
+from typing import Optional
 
-from torch import nn
+import torch
 
-from rl_equation_solver.agent.base import GraphState, OffPolicyAgent
-from rl_equation_solver.agent.networks import GCN
+from rl_equation_solver.agent.networks import GCN, QNetwork
+from rl_equation_solver.agent.off_policy import OffPolicyAgent
+from rl_equation_solver.agent.state import GraphState
+from rl_equation_solver.environment.algebraic import Env
 
 logger = logging.getLogger(__name__)
 
 
-class Model(nn.Module):
-    """Unified DQN model with policy and target networks"""
+class Model(QNetwork):
+    """Unified DQN model with policy and target networks."""
 
-    def __init__(self, n_observations, n_actions, hidden_size, device):
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+        device: torch.device,
+    ) -> None:
+        """Initialize the network model."""
         super().__init__()
-        self.policy_network = GCN(n_observations, n_actions, hidden_size).to(device)
-        self.target_network = GCN(n_observations, n_actions, hidden_size).to(device)
+        self.policy_network = GCN(n_observations, n_actions, hidden_size).to(
+            device
+        )
+        self.target_network = GCN(n_observations, n_actions, hidden_size).to(
+            device
+        )
         self.target_network.load_state_dict(self.policy_network.state_dict())
-
-    def forward(self, X):
-        policy = self.policy_network(X)
-        target = self.target_network(X)
-        return policy, target
 
 
 class Agent(GraphState, OffPolicyAgent):
-    """Agent with GCN target and policy networks"""
+    """Agent with GCN target and policy networks."""
 
-    def __init__(self, env=None, config=None):
-        """
-        Parameters
+    def __init__(self, env: Env, config: Optional[dict] = None) -> None:
+        """Parameters
         ----------
-        env : Object
+        env : gym.Env
             Environment instance.
             e.g. rl_equation_solver.env_linear_equation.Env()
         config : dict | None
@@ -47,7 +55,6 @@ class Agent(GraphState, OffPolicyAgent):
             n_observations=self.n_observations,
             n_actions=self.n_actions,
             feature_num=self.feature_num,
-            device=self.device,
         )
         self.model = Model(
             self.n_observations, self.n_actions, self.hidden_size, self.device

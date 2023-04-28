@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Documentation config file
-"""
+"""Documentation config file."""
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -180,7 +177,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "rl_equation_solver", "RL-Equation-Solver Documentation", [author], 1)
+    (
+        master_doc,
+        "rl_equation_solver",
+        "RL-Equation-Solver Documentation",
+        [author],
+        1,
+    )
 ]
 
 # -- Options for Texinfo output ----------------------------------------------

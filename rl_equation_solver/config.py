@@ -1,4 +1,4 @@
-"""Default Model configuration"""
+"""Default Model configuration."""
 
 DefaultConfig = {
     # BATCH_SIZE is the number of Experience sampled from the replay buffer
@@ -19,7 +19,7 @@ DefaultConfig = {
     # used for epsilon decay
     "epsilon_threshold": None,
     # TAU is the update rate of the target network
-    "tau": 0.05,
+    "tau": 0.005,
     # LR is the learning rate of the AdamW optimizer
     "learning_rate": 3e-4,
     # the hidden layers in the DQN
@@ -43,7 +43,9 @@ DefaultConfig = {
     # device to use for training
     "device": "cuda:0",
     # entropy coefficient
-    "entropy_coef": 0.01,
+    "entropy_coef": 0.05,
     # critic coefficient
-    "critic_coef": 0.5,
+    "critic_coef": 0.6,
+    # step frequency for which to update the model
+    "update_freq": 30,
 }

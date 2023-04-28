@@ -1,18 +1,29 @@
-"""Agent with DQN based policy"""
+"""Agent with DQN based policy."""
 import logging
+from typing import Optional
 
-from torch import nn
+import torch
 
-from rl_equation_solver.agent.base import OffPolicyAgent, VectorState
-from rl_equation_solver.agent.networks import LSTM
+from rl_equation_solver.agent.networks import LSTM, QNetwork
+from rl_equation_solver.agent.off_policy import OffPolicyAgent
+from rl_equation_solver.agent.state import VectorState
+from rl_equation_solver.environment.algebraic import Env
 
 logger = logging.getLogger(__name__)
 
 
-class Model(nn.Module):
-    """Unified DQN model with policy and target networks"""
+class Model(QNetwork):
+    """Unified DQN model with policy and target networks."""
 
-    def __init__(self, n_observations, n_actions, hidden_size, feature_num, device):
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+        feature_num: int,
+        device: torch.device,
+    ) -> None:
+        """Initialize the network model."""
         super().__init__()
         self.policy_network = LSTM(
             n_observations, n_actions, hidden_size, feature_num
@@ -22,20 +33,14 @@ class Model(nn.Module):
         ).to(device)
         self.target_network.load_state_dict(self.policy_network.state_dict())
 
-    def forward(self, X):
-        policy = self.policy_network(X)
-        target = self.target_network(X)
-        return policy, target
-
 
 class Agent(VectorState, OffPolicyAgent):
-    """Agent with LSTM target and policy networks"""
+    """Agent with LSTM target and policy networks."""
 
-    def __init__(self, env=None, config=None):
-        """
-        Parameters
+    def __init__(self, env: Env, config: Optional[dict] = None) -> None:
+        """Parameters
         ----------
-        env : Object
+        env : gym.Env
             Environment instance.
             e.g. rl_equation_solver.env_linear_equation.Env()
         config : dict | None
@@ -50,7 +55,6 @@ class Agent(VectorState, OffPolicyAgent):
             env=self.env,
             n_observations=self.n_observations,
             n_actions=self.n_actions,
-            device=self.device,
         )
         self.model = Model(
             self.n_observations,
@@ -61,10 +65,3 @@ class Agent(VectorState, OffPolicyAgent):
         )
         self.init_optimizer()
         logger.info(f"Initialized Agent with device {self.device}")
-
-    def compute_loss(self, state_action_values, expected_state_action_values):
-        """Compute L2 loss"""
-        loss = self.l2_loss(
-            state_action_values, expected_state_action_values.unsqueeze(1)
-        )
-        return loss
