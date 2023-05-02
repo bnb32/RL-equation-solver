@@ -125,7 +125,6 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
         self.optimizer = optim.AdamW(
             self.model.parameters(),
             lr=self.learning_rate,
-            amsgrad=True,
         )
 
     def step(
@@ -191,6 +190,7 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
         # optimize the model
         self.optimizer.zero_grad()
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
         self.optimizer.step()
 
     def fill_memory(self, eval: bool = False) -> None:

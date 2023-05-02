@@ -59,5 +59,3 @@ class Agent(VectorState, OffPolicyAgent):
             self.n_observations, self.n_actions, self.hidden_size, self.device
         )
         self.init_optimizer()
-
-        logger.info(f"Initialized Agent with device {self.device}")

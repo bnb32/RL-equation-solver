@@ -64,4 +64,3 @@ class Agent(VectorState, OffPolicyAgent):
             self.device,
         )
         self.init_optimizer()
-        logger.info(f"Initialized Agent with device {self.device}")

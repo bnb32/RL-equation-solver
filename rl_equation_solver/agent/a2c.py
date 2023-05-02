@@ -1,8 +1,6 @@
 """A2C implementation."""
 from typing import Optional
 
-import torch
-
 from rl_equation_solver.agent.networks import ActorCritic
 from rl_equation_solver.agent.on_policy import OnPolicyAgent
 from rl_equation_solver.agent.state import VectorState
@@ -24,6 +22,5 @@ class Agent(VectorState, OnPolicyAgent):
         self.model = ActorCritic(
             self.n_observations, self.n_actions, self.hidden_size
         ).to(self.device)
-        self.optimizer = torch.optim.Adam(
-            self.model.parameters(), lr=self.learning_rate
-        )
+
+        self.init_optimizer()
