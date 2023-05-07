@@ -28,6 +28,12 @@ class OffPolicyAgent(BaseAgent):
             in rl_equation_solver.config will be used.
         """
         self.model: QNetwork
+        self.eps_start: float = 0.99
+        self.eps_end: float = 0.05
+        self.tau: float = 0.005
+        self.eps_decay_steps: int = 1000
+        self._eps_decay = None
+        self._epsilon_threshold = None
         BaseAgent.__init__(self, env, config)
 
     def update_model(self):
@@ -37,8 +43,8 @@ class OffPolicyAgent(BaseAgent):
 
         loss = self.compute_loss()
 
-        self.update_info("loss", loss.item())
-        self.update_history("loss", loss.item())
+        self.env.update_info("loss", loss.item())
+        self.env.update_history("loss", loss.item())
 
         self.step_optimizer(loss)
         self.update_networks()

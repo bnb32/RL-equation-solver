@@ -12,14 +12,14 @@ from torch import nn, optim
 from rl_equation_solver.agent.state import BaseState
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.environment.algebraic import Env
-from rl_equation_solver.utilities.history import History, ProgressBar
+from rl_equation_solver.utilities.history import ProgressBar
 from rl_equation_solver.utilities.loss import LossMixin
 from rl_equation_solver.utilities.utilities import GraphEmbedding, Memory
 
 logger = logging.getLogger(__name__)
 
 
-class BaseAgent(LossMixin, History, BaseState, ABC):
+class BaseAgent(LossMixin, BaseState, ABC):
     """Base Agent without imlemented policy."""
 
     def __init__(self, env: Env, config: Optional[dict] = None) -> None:
@@ -35,8 +35,6 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
             in rl_equation_solver.config will be used.
         """
         self.env = env
-        History.__init__(self)
-
         self.n_actions: int = env.n_actions
         self.n_observations: int = env.n_obs
         self.optimizer: torch.optim.Optimizer
@@ -46,28 +44,26 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
 
         # Configuration properties
         self.batch_size: int = 64
-        self.eps_start: float = 0.99
-        self.eps_end: float = 0.05
         self.hidden_size: int = 64
         self.memory_cap: int = 10000
-        self.vec_dim: int = 256
+        self.state_dim: int = 256
         self.feature_num: int = 100
         self.fill_memory_steps: int = 100
         self.learning_rate: float = 1e-3
         self.gamma: float = 0.99
         self.grad_clip: float = 10
-        self.tau: float = 0.005
-        self.eps_decay_steps: int = 1000
         self.steps_done: int = 0
-        self.update_freq: int = 10
-        self._eps_decay = None
-        self._epsilon_threshold = None
 
         self.init_config()
 
         self.memory = Memory(self.memory_cap)
 
         logger.info(f"Initialized Agent with device {self.device}")
+
+    @property
+    def history(self):
+        """Get environment history."""
+        return self.env.history
 
     def init_config(self) -> None:
         """Initialize model configuration."""
@@ -123,8 +119,7 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
     def init_optimizer(self) -> None:
         """Initialize optimizer."""
         self.optimizer = optim.AdamW(
-            self.model.parameters(),
-            lr=self.learning_rate,
+            self.model.parameters(), lr=self.learning_rate
         )
 
     def step(
@@ -157,12 +152,12 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
         info : dict
             Dictionary with loss, reward, and state information
         """
-        state_string = self.state_string
+        state_string = self.env.state_string
         action = self.choose_action(state, training=training)
         _, reward, done, info = self.env.step(int(action.item()))
 
         if not done:
-            state_string = self.state_string
+            state_string = self.env.state_string
         next_state = self.convert_state(state_string, self.device)
 
         self.memory.push(
@@ -179,8 +174,8 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
         self, values: torch.Tensor, true_values: torch.Tensor
     ) -> torch.Tensor:
         """Compute Huber loss."""
-        self.loss = self.smooth_l1_loss(values, true_values.unsqueeze(1))
-        return self.loss
+        self.env.loss = self.smooth_l1_loss(values, true_values.unsqueeze(1))
+        return self.env.loss
 
     def step_optimizer(self, loss: Union[torch.Tensor, None]) -> None:
         """Perform one step of the optimization (on the policy network)."""
@@ -215,7 +210,7 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
                 state = next_state
                 steps += 1
         if steps > 0:
-            self.reset_history()
+            self.env.reset_history()
 
     def learn(
         self, num_episodes: int, eval: bool = False, progress_bar: bool = True
@@ -244,12 +239,8 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
             f"Running training routine for {num_episodes} episodes in "
             f"eval={eval} mode."
         )
-
-        start = self.current_episode
-        end = start + num_episodes
-
         self.pbar = ProgressBar(num_episodes, show_progress=progress_bar)
-        for _ in range(start, end):
+        for _ in range(num_episodes):
             self.run_episode(eval)
             self.pbar.update(1)
         self.pbar.clear()
@@ -271,10 +262,10 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
             next_state, done = self.step(state, training=training)
             steps += 1
 
-            if (done or (steps % self.update_freq == 0)) and not eval:
+            if (done or (steps % self.env.update_freq == 0)) and not eval:
                 self.update_model()
 
-            self.pbar.update_desc(str(self.get_log_info()))
+            self.pbar.update_desc(str(self.env.get_log_info()))
 
             state = next_state
 
@@ -290,10 +281,12 @@ class BaseAgent(LossMixin, History, BaseState, ABC):
             if next_state is None:
                 break
             state = next_state
-            states.append(self.state_string)
-        self.complexity = self.env.get_solution_complexity(self.state_string)
+            states.append(self.env.state_string)
+        self.complexity = self.env.get_solution_complexity(
+            self.env.state_string
+        )
         logger.info(
-            f"Final state: {self.state_string}. Complexity: "
+            f"Final state: {self.env.state_string}. Complexity: "
             f"{self.complexity}. Steps: {steps}."
         )
         return states

@@ -10,9 +10,11 @@ from rl_equation_solver.environment.algebraic import Env
 class Agent(VectorState, OnPolicyAgent):
     """A2C Agent."""
 
-    def __init__(self, env: Env, config: Optional[dict] = None) -> None:
+    def __init__(
+        self, env: Env, config: Optional[dict] = None, **kwargs
+    ) -> None:
         """Initialize A2C Agent."""
-        OnPolicyAgent.__init__(self, env, config)
+        OnPolicyAgent.__init__(self, env, config, **kwargs)
         VectorState.__init__(
             self,
             env=self.env,

@@ -31,7 +31,7 @@ DefaultConfig = {
     # reset after this many steps with constant loss
     "reset_steps": 100,
     # state vec max size
-    "state_dim": 128,
+    "state_dim": 512,
     # max number of node features
     "feature_num": 100,
     # gradient norm clipping value
@@ -43,9 +43,9 @@ DefaultConfig = {
     # device to use for training
     "device": "cuda:0",
     # entropy coefficient
-    "entropy_coef": 0.05,
+    "entropy_coef": 0.2,
     # critic coefficient
-    "critic_coef": 0.6,
+    "critic_coef": 0.7,
     # step frequency for which to update the model
-    "update_freq": 30,
+    "update_freq": 10,
 }

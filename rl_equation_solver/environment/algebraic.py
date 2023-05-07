@@ -89,14 +89,14 @@ class Env(gym.Env, RewardMixin, History):
         self.equation = self._get_equation()
         self.reward_function = "diff_loss_reward"
         self._state_vec: np.ndarray
-        self._next_state_vec: np.ndarray
         self._state_graph: nx.Graph
         self._config = config
         self._initial_state = init_state
-        self.state_dim: int = 256
-        self.state_string: Expr = self.initial_state
+        self._state_string: Expr = self.initial_state
+        self.state_dim: int = 128
         self.device: str = "cpu"
         self.feature_num: int = 100
+        self.include_roots: bool = False
 
         self.init_config()
 
@@ -137,7 +137,7 @@ class Env(gym.Env, RewardMixin, History):
     def _get_operations(self) -> list:
         """Get list of valid operations."""
         operations = [add, sub, truediv, pow]
-        if self.order > 2:
+        if self.order > 2 and self.include_roots:
             for power in range(2, self.order):
                 operations.append(nth_root(power))
         return operations
@@ -164,10 +164,24 @@ class Env(gym.Env, RewardMixin, History):
         return terms
 
     @property
+    def state_string(self) -> Expr:
+        """Get current state string representation. Enforce length constraint
+        according to state_dim value.
+        """
+        if self.too_long(self.state_vec):
+            self._state_string = self.initial_state
+        return self._state_string
+
+    @state_string.setter
+    def state_string(self, value):
+        """Set current state string representation."""
+        self._state_string = value
+
+    @property
     def state_vec(self) -> np.ndarray:
         """Get current state vector."""
         self._state_vec = utilities.to_vec(
-            self.state_string, self.feature_dict, self.state_dim
+            self._state_string, self.feature_dict, self.state_dim
         )
         return self._state_vec
 
@@ -175,14 +189,6 @@ class Env(gym.Env, RewardMixin, History):
     def state_vec(self, value: np.ndarray) -> None:
         """Set state_vec value."""
         self._state_vec = value
-
-    @property
-    def next_state_vec(self) -> np.ndarray:
-        """Get next state vector."""
-        self._next_state_vec = utilities.to_vec(
-            self.next_state_string, self.feature_dict, self.state_dim
-        )
-        return self._next_state_vec
 
     @property
     def state_graph(self) -> nx.Graph:
@@ -242,6 +248,21 @@ class Env(gym.Env, RewardMixin, History):
             eqn += coeff * pow(x, i + 1)
         return eqn
 
+    def _get_illegal_actions(self) -> list:
+        """Get illegal actions to filter from actions list."""
+        illegal_actions = [
+            [truediv, symbols("0")],
+            [truediv, symbols("1")],
+            [add, symbols("0")],
+            [sub, symbols("0")],
+            [pow, symbols("1")],
+            [pow, symbols("0")],
+        ]
+        for n in range(2, self.order):
+            illegal_actions.append([nth_root(n), symbols("0")])
+            illegal_actions.append([nth_root(n), symbols("1")])
+        return illegal_actions
+
     def _get_actions(self) -> list:
         """Operations x terms.
 
@@ -250,13 +271,7 @@ class Env(gym.Env, RewardMixin, History):
         actions : list
             List of operation, term pairs
         """
-        illegal_actions = [
-            [truediv, symbols("0")],
-            [add, symbols("0")],
-            [sub, symbols("0")],
-            [pow, symbols("1")],
-            [pow, symbols("0")],
-        ]
+        illegal_actions = self._get_illegal_actions()
         actions = [
             [op, term]
             for op in self.operations
@@ -296,7 +311,7 @@ class Env(gym.Env, RewardMixin, History):
         reward = method(state_old, state_new)
         return reward
 
-    def extra_reward(self, reward: float) -> float:
+    def extra_reward(self, state_string: Expr) -> float:
         """Extra penalty / reward.
 
         This is applied for time elapsed, if solution found and if state too
@@ -304,19 +319,25 @@ class Env(gym.Env, RewardMixin, History):
 
         Parameters
         ----------
-        reward : float
-            Reward before applying extra rewards.
+        state_string : Expr
+            State string to check for length.
 
         Returns
         -------
-        reward : float
-            Reward after applying extra rewards.
+        extra_reward : float
+            Extra reward to add to current reward.
         """
-        if self.too_long(self.next_state_vec):
-            reward -= 100
-        if self.complexity == 0:
-            reward += 1000 / (self.loop_step + 1)
-        return reward
+        extra_reward = 0.0
+        is_too_long = self.too_long(
+            utilities.to_vec(state_string, self.feature_dict, self.state_dim)
+        )
+        if is_too_long:
+            extra_reward -= 100
+        elif self.complexity == 0:
+            extra_reward += 1000 / (self.loop_step + 1)
+        else:
+            extra_reward -= 1
+        return extra_reward
 
     def too_long(self, state: np.ndarray) -> bool:
         """Check if state dimension is too large.
@@ -409,25 +430,20 @@ class Env(gym.Env, RewardMixin, History):
         info : dict
             Additional information
         """
-        self.next_state_string = self.get_next_state(action)
+        next_state_string = self.get_next_state(action)
 
-        self.reward = self.find_reward(
-            self.state_string, self.next_state_string
-        )
+        self.reward = self.find_reward(self.state_string, next_state_string)
+        self.reward += self.extra_reward(next_state_string)
 
-        self.reset_state_check(self.next_state_vec)
+        self.state_string = next_state_string
 
-        self.solution_approx = self.get_solution_approx(self.next_state_string)
+        self.solution_approx = self.get_solution_approx(self.state_string)
         self.complexity = self.get_expression_complexity(self.solution_approx)
-
-        self.reward = self.extra_reward(self.reward)
 
         self.append_history(self.info)
 
         msg = self.get_log_info()
         logger.debug(msg)
-
-        self.state_string = self.next_state_string
 
         done = self.check_if_done()
 
@@ -443,7 +459,7 @@ class Env(gym.Env, RewardMixin, History):
             else:
                 logger.info(msg)
             self.current_episode += 1
-            self.loop_step = 0
+            self.loop_step = -1
         self.steps_done += 1
         self.loop_step += 1
 
@@ -459,18 +475,11 @@ class Env(gym.Env, RewardMixin, History):
             )
         return check
 
-    def reset_state_check(self, state_vec: np.ndarray) -> None:
-        """Check if state is too long and reset state if True."""
-        self.reset_step = self.too_long(state_vec)
-        if self.reset_step:
-            self.next_state_string = self.initial_state
-
     def get_next_state(self, action: int) -> Expr:
         """Get next state from given action."""
         [operation, term] = self.actions[action]
         return operation(self.state_string, term)
 
-    # pylint: disable=unused-argument
     def render(self, mode: str = "human") -> None:
         """Print the state string representation."""
         print(self.state_string)

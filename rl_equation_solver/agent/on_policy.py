@@ -43,8 +43,8 @@ class OnPolicyAgent(BaseAgent):
         """Compute loss for batch using the stored memory."""
         loss = self.compute_loss()
 
-        self.update_info("loss", loss.item())
-        self.update_history("loss", loss.item())
+        self.env.update_info("loss", loss.item())
+        self.env.update_history("loss", loss.item())
 
         self.step_optimizer(loss)
 

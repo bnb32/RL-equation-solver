@@ -12,57 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class AttrDict(dict):
-
     """Attribute dictionary."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the AttrDict."""
         super().__init__(*args, **kwargs)
         self.__dict__ = self
-
-
-# pylint: disable=unused-argument
-class Info:
-
-    """Shared info class."""
-
-    _shared_info: dict = {}
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize the Info class."""
-        self.state_string: Expr = symbols("0")
-        self.next_state_string: Expr = symbols("0")
-        self.loss: torch.Tensor = torch.Tensor([np.nan])
-        self.reward: float = 0
-        self.complexity: float = np.nan
-        self.current_episode: int = 0
-        self.steps_done: int = 0
-        self.loop_step: int = 0
-        self.solution_approx: Expr = symbols("0")
-        self.reset_step: bool = False
-        self.max_solution_steps: int = 10000
-
-    def __new__(cls, *args: Any, **kwargs: Any):
-        """Singleton constructor."""
-        obj = super().__new__(cls)
-        obj.__dict__ = cls._shared_info
-        return obj
-
-    @property
-    def info(self) -> AttrDict:
-        """Get info attrs."""
-        return AttrDict(
-            ep=self.current_episode,
-            step=self.steps_done,
-            loop_step=self.loop_step,
-            complexity=self.complexity,
-            loss=self.loss,
-            reward=self.reward,
-            previous_state=self.state_string,
-            state=self.next_state_string,
-            approx=self.solution_approx,
-            reset_step=self.reset_step,
-        )
 
 
 class ProgressBar:
@@ -103,26 +58,54 @@ class ProgressBar:
             self._pbar = None
 
 
-class History(Info):
-
+class History:
     """Collection of history methods."""
-
-    _shared_history: dict = {}
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         """Initialize a new History."""
-        super().__init__(self)
         self._history: list[dict] = []
         self.pbar: ProgressBar = ProgressBar(
             num_episodes=0, show_progress=False
         )
         self.reset_steps: int = 100
+        self.state_string: Expr = symbols("0")
+        self.reward: float = 0
+        self.complexity: float = np.nan
+        self.current_episode: int = 0
+        self.steps_done: int = 0
+        self.loop_step: int = 0
+        self.solution_approx: Expr = symbols("0")
+        self.max_solution_steps: int = 10000
+        self.update_freq: int = 10
+        self._loss = None
 
-    def __new__(cls, *args: tuple, **kwargs: dict):
-        """Singleton constructor."""
-        obj = super().__new__(cls)
-        obj.__dict__ = cls._shared_history
-        return obj
+    @property
+    def loss(self) -> torch.Tensor:
+        """Get the current loss value."""
+        if self._loss is None:
+            loss = torch.Tensor([np.nan])
+        else:
+            loss = self._loss
+        return loss
+
+    @loss.setter
+    def loss(self, value):
+        """Set loss value."""
+        self._loss = value
+
+    @property
+    def info(self) -> AttrDict:
+        """Get info attrs."""
+        return AttrDict(
+            ep=self.current_episode,
+            step=self.steps_done,
+            loop_step=self.loop_step,
+            complexity=self.complexity,
+            loss=self.loss,
+            reward=self.reward,
+            state=self.state_string,
+            approx=self.solution_approx,
+        )
 
     @property
     def history(self) -> list[dict]:
@@ -218,6 +201,10 @@ class History(Info):
     def get_log_info(self) -> dict:
         """Get log message."""
         hist = self.history[-1]
+        if len(self.history) > 1:
+            hist = self.history[-2]
+            for k, v in hist.items():
+                hist[k] = np.concatenate([v, self.history[-1][k]])
         out: dict[str, str] = {}
         _out = {}
         for k, v in hist.items():
@@ -225,11 +212,12 @@ class History(Info):
                 _out[k] = v.cpu().item()
             else:
                 _out[k] = v
-        for k in ("approx", "reset_step"):
+        for k in ("approx",):
             _out.pop(k)
         for k, v in _out.items():
             if any(key in k for key in ("loss", "reward", "complexity")):
-                out[k] = f"{self.get_non_nan(v)[-1]:.2e}"
+                tmp = self.get_non_nan(v)[-1]
+                out[k] = f"{tmp:.2e}"
             else:
                 out[k] = v[-1]
         for k in out:
@@ -266,7 +254,6 @@ class History(Info):
         self.current_episode = 0
         self.steps_done = 0
         self.loop_step = 0
-        self.reset_step = False
 
     def update_info(self, key: str, value: Any) -> None:
         """Update history info with given value for the given key."""
