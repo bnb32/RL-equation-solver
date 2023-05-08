@@ -1,7 +1,7 @@
 """Example usage of hyperparameter tuner."""
 from rex import init_logger
 
-from rl_equation_solver.agent.a2c import Agent
+from rl_equation_solver.agent.linear_a2c import Agent
 from rl_equation_solver.utilities.tuner import Tuner
 
 if __name__ == "__main__":

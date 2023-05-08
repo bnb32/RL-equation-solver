@@ -7,7 +7,7 @@ from sympy.core import Expr
 
 from rl_equation_solver.environment.algebraic import Env
 from rl_equation_solver.utilities import utilities
-from rl_equation_solver.utilities.utilities import Batch, GraphEmbedding
+from rl_equation_solver.utilities.utilities import GraphEmbedding
 
 
 class BaseState(ABC):
@@ -29,14 +29,6 @@ class BaseState(ABC):
 
         This can be a vector representation or graph representation.
         """
-
-    @abstractmethod
-    def batch_states(
-        self,
-        states: list[Union[torch.Tensor, GraphEmbedding]],
-        device: torch.device,
-    ) -> Batch:
-        """Convert states into a batch."""
 
 
 class VectorState(BaseState):
@@ -63,13 +55,6 @@ class VectorState(BaseState):
         return torch.tensor(
             self.env.state_vec, dtype=torch.float32, device=device
         ).unsqueeze(0)
-
-    def batch_states(self, states, device):
-        """Batch agent states."""
-        batch = Batch()(states, device)
-        batch.next_states = torch.cat(batch.next_states)
-        batch.states = torch.cat(batch.states)
-        return batch
 
 
 class GraphState(BaseState):
@@ -110,7 +95,3 @@ class GraphState(BaseState):
             n_features=self.feature_num,
             device=device,
         )
-
-    def batch_states(self, states, device):
-        """Batch agent states."""
-        return Batch()(states, device)

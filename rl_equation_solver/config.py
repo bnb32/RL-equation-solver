@@ -43,9 +43,9 @@ DefaultConfig = {
     # device to use for training
     "device": "cuda:0",
     # entropy coefficient
-    "entropy_coef": 0.2,
+    "entropy_coef": 0.3,
     # critic coefficient
-    "critic_coef": 0.7,
+    "critic_coef": 0.8,
     # step frequency for which to update the model
     "update_freq": 10,
 }

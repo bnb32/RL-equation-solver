@@ -68,7 +68,6 @@ class History:
             num_episodes=0, show_progress=False
         )
         self.reset_steps: int = 100
-        self.state_string: Expr = symbols("0")
         self.reward: float = 0
         self.complexity: float = np.nan
         self.current_episode: int = 0
@@ -77,6 +76,7 @@ class History:
         self.solution_approx: Expr = symbols("0")
         self.max_solution_steps: int = 10000
         self.update_freq: int = 10
+        self._state_string: Expr = symbols("0")
         self._loss = None
 
     @property
@@ -92,6 +92,11 @@ class History:
     def loss(self, value):
         """Set loss value."""
         self._loss = value
+
+    @property
+    def state_string(self) -> Expr:
+        """Get state string representation."""
+        return self._state_string
 
     @property
     def info(self) -> AttrDict:
@@ -211,7 +216,7 @@ class History:
         for k in ("approx",):
             _out.pop(k)
         for k, v in _out.items():
-            if any(key in k for key in ("loss", "reward", "complexity")):
+            if any(key in k for key in ("loss",)):
                 tmp = self.get_non_nan(v)[-1]
                 out[k] = f"{tmp:.2e}"
             else:
@@ -223,7 +228,7 @@ class History:
                 else:
                     out[k] = f"{out[k]:<4}"
             else:
-                out[k] = f"{str(parse_expr(str(out[k]))):<20}"
+                out[k] = f"{str(out[k]):<20}"
         return out
 
     def get_extended_history(self):

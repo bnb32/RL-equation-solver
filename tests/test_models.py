@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import pytest
 from rex import init_logger
 
-from rl_equation_solver.agent.a2c import Agent as AgentA2C
 from rl_equation_solver.agent.dqn import Agent as AgentDQN
 from rl_equation_solver.agent.gcn import Agent as AgentGCN
+from rl_equation_solver.agent.linear_a2c import Agent as AgentA2C
 from rl_equation_solver.agent.lstm import Agent as AgentLSTM
 from rl_equation_solver.environment.algebraic import Env
 

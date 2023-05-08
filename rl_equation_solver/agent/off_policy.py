@@ -51,8 +51,7 @@ class OffPolicyAgent(BaseAgent):
 
     def compute_loss(self):
         """Sample memory and compute loss."""
-        transition = self.memory.sample(self.batch_size)
-        batch = self.batch_states(transition, device=self.device)
+        batch = self.memory.get_batch(self.batch_size, device=self.device)
 
         values = self.compute_Q(batch)
 

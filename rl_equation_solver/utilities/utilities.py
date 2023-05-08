@@ -21,6 +21,19 @@ Experience = namedtuple(
 )
 
 
+class Batch:
+    """Graph Embedding or state vector Batch."""
+
+    def __init__(self) -> None:
+        """Initialize the batch."""
+        self.experience: Experience
+        self.states: Union[torch.Tensor, list]
+        self.next_states: Union[torch.Tensor, list]
+        self.actions: torch.Tensor
+        self.rewards: torch.Tensor
+        self.dones: torch.Tensor
+
+
 class GraphEmbedding:
     """Graph embedding class. This is for embedding node features in matrix of
     fixed sizes.
@@ -95,9 +108,7 @@ class Memory:
             Experience(state, next_state, action, reward, done, info)
         )
 
-    def sample(
-        self, batch_size: int
-    ) -> list[Union[torch.Tensor, GraphEmbedding]]:
+    def sample(self, batch_size: int) -> Iterable[Any]:
         """Select a random batch of Experience for training."""
         return random.sample(self.memory, batch_size)
 
@@ -109,7 +120,10 @@ class Memory:
                 out[k].append(self.memory[i][j])
         for k, v in out.items():
             if "state" in k:
-                out[k] = torch.stack(v)
+                if self.has_graph(v):
+                    out[k] = v
+                else:
+                    out[k] = torch.stack(v)
             elif "info" not in k:
                 out[k] = torch.tensor(v, device=device)
         return tuple(out.values())
@@ -122,33 +136,32 @@ class Memory:
         """Get length of memory."""
         return len(self.memory)
 
+    def has_graph(self, v) -> bool:
+        """Check if list has GraphEmbedding."""
+        has_graph = isinstance(v, GraphEmbedding) or isinstance(
+            v[0], GraphEmbedding
+        )
+        return has_graph
 
-class Batch:
-    """Graph Embedding or state vector Batch."""
-
-    def __init__(self) -> None:
-        """Initialize the batch."""
-        self.experience: Experience
-        self.states: list[torch.Tensor]
-        self.next_states: list[torch.Tensor]
-        self.actions: torch.Tensor
-        self.rewards: torch.Tensor
-        self.dones: torch.Tensor
-
-    @classmethod
-    def __call__(cls, states: Iterable[Any], device: torch.device):
-        """Batch states for given set of states and send to device. States can
-        be either instances of GraphEmbedding or np.ndarray.
-        """
-        batch = cls()
-        batch.experience = Experience(*zip(*states))
-        batch.states = list(batch.experience.state)
-        batch.next_states = list(batch.experience.next_state)
+    def get_batch(self, batch_size: int, device: torch.device):
+        """Get sampled batch from memory."""
+        experiences = self.sample(batch_size)
+        batch = Batch()
+        batch.experience = Experience(*zip(*experiences))
+        states = list(batch.experience.state)
+        next_states = list(batch.experience.next_state)
         batch.dones = torch.tensor(
             [int(s) for s in batch.experience.done], device=device
         )
         batch.actions = torch.cat(batch.experience.action)
         batch.rewards = torch.cat(batch.experience.reward)
+        graph_check = self.has_graph(states) or self.has_graph(next_states)
+        if not graph_check:
+            batch.next_states = torch.cat(next_states)
+            batch.states = torch.cat(states)
+        else:
+            batch.next_states = next_states
+            batch.states = states
         return batch
 
 

@@ -1,4 +1,5 @@
 """Networks for agent policies."""
+from abc import abstractmethod
 from typing import Union
 
 import networkx as nx
@@ -132,6 +133,54 @@ class LSTM(nn.Module):
         return x
 
 
+class GraphLSTM(nn.Module):
+    """GCN + LSTM network."""
+
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+        n_features: int,
+    ) -> None:
+        """Initialize the GraphLSTM network.
+
+        Parameters
+        ----------
+        n_observations: int
+            observation/state size of the environment
+        n_actions : int
+            number of discrete actions available in the environment
+        hidden_size : int
+            size of hidden layers
+        n_features : int
+            Number of features to use in network.
+        """
+        super().__init__()
+        self.n_actions = n_actions
+        self.n_features = n_features
+        self.n_observations = n_observations
+        self.hidden_size = hidden_size
+
+        self.gcn = GCN(n_observations, 64, hidden_size)
+        self.lstm = nn.LSTM(
+            input_size=64,
+            hidden_size=hidden_size,
+            num_layers=n_features,
+            batch_first=True,
+        )
+        self.linear = nn.Linear(hidden_size, n_actions)
+
+    def forward(
+        self, graph: Union[list[nx.Graph], nx.Graph]
+    ) -> tuple[torch.Tensor, ...]:
+        """Forward pass on state x."""
+        x = self.gcn(graph)
+        x, _ = self.lstm(x)
+        x = self.linear(x)
+        return x
+
+
 class ActorCritic(nn.Module):
     """ActorCritic networks."""
 
@@ -157,12 +206,46 @@ class ActorCritic(nn.Module):
         self.n_actions = n_actions
         self.hidden_size = hidden_size
 
-        self.feature_size = (
-            self.features(torch.zeros(1, 1, self.n_obs)).view(1, -1).size(1)
+    def features(self, X) -> Union[torch.Tensor, GraphEmbedding]:
+        """Get features from input state. This could be a CNN to extract
+        features or simply the indentiy operation on the input
+        representation.
+        """
+        return X
+
+    @abstractmethod
+    def get_critic(self, X) -> torch.Tensor:
+        """Get output from critic network."""
+
+
+class LinearActorCritic(ActorCritic):
+    """ActorCritic networks."""
+
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+    ) -> None:
+        """Initialize the ActorCritic network.
+
+        Parameters
+        ----------
+        n_observations: int
+            observation/state size of the environment
+        n_actions : int
+            number of discrete actions available in the environment
+        hidden_size : int
+            size of hidden layers
+        """
+        super().__init__(
+            n_observations=n_observations,
+            n_actions=n_actions,
+            hidden_size=hidden_size,
         )
 
         self.actor = nn.Sequential(
-            nn.Linear(self.feature_size, self.hidden_size),
+            nn.Linear(self.n_obs, self.hidden_size),
             nn.Tanh(),
             nn.Linear(self.hidden_size, 32),
             nn.Tanh(),
@@ -171,37 +254,125 @@ class ActorCritic(nn.Module):
         )
 
         self.critic = nn.Sequential(
-            nn.Linear(self.feature_size, self.hidden_size),
+            nn.Linear(self.n_obs, self.hidden_size),
             nn.ReLU(),
             nn.Linear(self.hidden_size, 32),
             nn.ReLU(),
             nn.Linear(32, 1),
         )
 
-    def features(self, X) -> torch.Tensor:
-        """Get features from input state. This could be a CNN to extract
-        features or simply the indentiy operation on the input
-        representation.
-        """
-        return X
-
-    def forward(
-        self, X: Union[torch.Tensor, GraphEmbedding]
-    ) -> tuple[torch.Tensor, ...]:
+    def forward(self, X: torch.Tensor) -> tuple[torch.Tensor, ...]:
         """Forward pass the state through critic and actor networks."""
-        x = self.features(X)
-        x = x.view(-1, self.feature_size)
+        x = X.view(-1, self.n_obs)
         values = self.critic(x)
         actions = self.actor(x)
         return values, actions
 
-    def get_critic(
-        self, X: Union[torch.Tensor, GraphEmbedding]
-    ) -> torch.Tensor:
+    def get_critic(self, X: torch.Tensor) -> torch.Tensor:
         """Get critic output."""
-        x = self.features(X)
-        x = x.view(-1, self.feature_size)
+        x = X.view(-1, self.n_obs)
         return self.critic(x)
+
+
+class GraphActorCritic(ActorCritic):
+    """ActorCritic networks using GCNs."""
+
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+    ) -> None:
+        """Initialize the ActorCritic GCN network.
+
+        Parameters
+        ----------
+        n_observations: int
+            observation/state size of the environment
+        n_actions : int
+            number of discrete actions available in the environment
+        hidden_size : int
+            size of hidden layers
+        """
+        super().__init__(
+            n_observations=n_observations,
+            n_actions=n_actions,
+            hidden_size=hidden_size,
+        )
+
+        self.actor = nn.Sequential(
+            GCN(n_observations, n_actions, hidden_size),
+            nn.Softmax(dim=1),
+        )
+
+        self.critic = nn.Sequential(
+            GCN(n_observations, 32, hidden_size),
+            nn.Linear(32, 1),
+        )
+
+    def forward(
+        self, graph: Union[list[nx.Graph], nx.Graph]
+    ) -> tuple[torch.Tensor, ...]:
+        """Forward pass the state through critic and actor networks."""
+        values = self.critic(graph)
+        actions = self.actor(graph)
+        return values, actions
+
+    def get_critic(self, graph: GraphEmbedding) -> torch.Tensor:
+        """Get critic network output."""
+        return self.critic(graph)
+
+
+class GraphLstmActorCritic(GraphActorCritic):
+    """ActorCritic networks using GCN + LSTMs."""
+
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+        n_features: int,
+    ) -> None:
+        """Initialize the ActorCritic GCN + LSTM network.
+
+        Parameters
+        ----------
+        n_observations: int
+            observation/state size of the environment
+        n_actions : int
+            number of discrete actions available in the environment
+        hidden_size : int
+            size of hidden layers
+        n_features : int
+            Number of features to use for LSTM network
+        """
+        super().__init__(
+            n_observations=n_observations,
+            n_actions=n_actions,
+            hidden_size=hidden_size,
+        )
+
+        self.actor = nn.Sequential(
+            GraphLSTM(n_observations, n_actions, hidden_size, n_features),
+            nn.Softmax(dim=1),
+        )
+
+        self.critic = nn.Sequential(
+            GraphLSTM(n_observations, 32, hidden_size, n_features),
+            nn.Linear(32, 1),
+        )
+
+    def forward(
+        self, graph: Union[list[nx.Graph], nx.Graph]
+    ) -> tuple[torch.Tensor, ...]:
+        """Forward pass the state through critic and actor networks."""
+        values = self.critic(graph)
+        actions = self.actor(graph)
+        return values, actions
+
+    def get_critic(self, graph: GraphEmbedding) -> torch.Tensor:
+        """Get critic network output."""
+        return self.critic(graph)
 
 
 class QNetwork(nn.Module):
