@@ -442,9 +442,6 @@ class Env(gym.Env, RewardMixin, History):
 
         self.append_history(self.info)
 
-        msg = self.get_log_info()
-        logger.debug(msg)
-
         done = self.check_if_done()
 
         return self.state_vec, self.reward, done, self.info

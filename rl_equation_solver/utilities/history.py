@@ -177,7 +177,7 @@ class History:
 
     def append_history(self, entry: dict) -> None:
         """Append latest step for training history of policy_network."""
-        episode = entry["ep"]
+        episode = self.current_episode
         if episode >= len(self._history):
             self._history.append({k: [] for k in entry.keys()})
         for k, v in entry.items():
@@ -200,11 +200,7 @@ class History:
 
     def get_log_info(self) -> dict:
         """Get log message."""
-        hist = self.history[-1]
-        if len(self.history) > 1:
-            hist = self.history[-2]
-            for k, v in hist.items():
-                hist[k] = np.concatenate([v, self.history[-1][k]])
+        hist = self.get_extended_history()
         out: dict[str, str] = {}
         _out = {}
         for k, v in hist.items():
@@ -229,6 +225,15 @@ class History:
             else:
                 out[k] = f"{str(parse_expr(str(out[k]))):<20}"
         return out
+
+    def get_extended_history(self):
+        """Get history for past two episodes if possible."""
+        hist = self.history[-1].copy()
+        if len(self.history) > 1:
+            hist = self.history[-2].copy()
+            for k, v in hist.items():
+                hist[k] = np.concatenate([v, self.history[-1][k]])
+        return hist
 
     def get_terminate_msg(self) -> str:
         """Get log message about solver termination."""
