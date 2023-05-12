@@ -223,7 +223,8 @@ class History:
                 else:
                     out[k] = f"{out[k]:<4}"
             else:
-                out[k] = f"{str(parse_expr(str(out[k]))):<20}"
+                value = str(parse_expr(str(out[k])))
+                out[k] = f"{value:<20}"
         return out
 
     def get_extended_history(self):
