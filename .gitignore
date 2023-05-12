@@ -5,3 +5,5 @@ rl_equation_solver/q_learning/__pycache__/*
 *.pyc
 rl_equation_solver/dev/figs/*
 rl_equation_solver/dev/data/*
+.mypy_cache
+.coverage

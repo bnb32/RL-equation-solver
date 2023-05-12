@@ -1,3 +1,3 @@
-"""
-Utilities module with loss/reward functions, operators, and misc fuinctions
+"""Utilities module with loss functions, reward functions, operators, and misc
+functions.
 """

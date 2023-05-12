@@ -1,146 +1,138 @@
-"""DQN module"""
-import math
-import random
-from itertools import count
-import torch
-from torch import optim
+"""DQN module."""
 import logging
-from abc import abstractmethod
-import numpy as np
+import pickle
+from abc import ABC, abstractmethod
+from itertools import count
+from typing import Optional, Union
 
+import torch
+from sympy.core import Expr
+from torch import nn, optim
+
+from rl_equation_solver.agent.state import BaseState
 from rl_equation_solver.config import DefaultConfig
+from rl_equation_solver.environment.algebraic import Env
+from rl_equation_solver.utilities.history import ProgressBar
 from rl_equation_solver.utilities.loss import LossMixin
-from rl_equation_solver.utilities.utilities import ReplayMemory
-
+from rl_equation_solver.utilities.utilities import GraphEmbedding, Memory
 
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=not-callable
-class BaseAgent(LossMixin):
-    """Agent with DQN target and policy networks"""
+class BaseAgent(LossMixin, BaseState, ABC):
+    """Base Agent without imlemented policy."""
 
-    def __init__(self, env, config=None, device='cpu'):
-        """
+    def __init__(self, env: Env, config: Optional[dict] = None) -> None:
+        """Initialize the Agent.
+
         Parameters
         ----------
-        env : Object
+        env : gym.Env
             Environment instance.
             e.g. rl_equation_solver.env_linear_equation.Env()
         config : dict | None
             Model configuration. If None then the default model configuration
             in rl_equation_solver.config will be used.
-        device : str
-            Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
         self.env = env
-        self.n_actions = env.n_actions
-        self.n_observations = env.n_obs
-        self.memory = None
-        self.policy_network = None
-        self.target_network = None
-        self.optimizer = None
-        self._history = {}
-        self._device = device
-        self.config = config
+        self.n_actions: int = env.n_actions
+        self.n_observations: int = env.n_obs
+        self.optimizer: torch.optim.Optimizer
+        self.model: nn.Module
+        self._device = None
+        self._config = config
 
         # Configuration properties
-        self.batch_size = None
-        self.gamma = None
-        self.eps_start = None
-        self.eps_end = None
-        self.hidden_size = None
-        self.eps_decay = None
-        self.eps_decay_steps = None
-        self.tau = None
-        self.learning_rate = None
-        self.memory_cap = None
-        self.reset_steps = None
-        self.vec_dim = None
-        self.feature_num = None
-        self.grad_clip = None
+        self.batch_size: int = 64
+        self.hidden_size: int = 64
+        self.memory_cap: int = 10000
+        self.state_dim: int = 256
+        self.feature_num: int = 100
+        self.fill_memory_steps: int = 100
+        self.learning_rate: float = 1e-3
+        self.gamma: float = 0.99
+        self.grad_clip: float = 10
+        self.steps_done: int = 0
 
         self.init_config()
 
-        self.memory = ReplayMemory(self.memory_cap)
+        self.memory = Memory(self.memory_cap)
 
-    def init_config(self):
-        """Initialize model configuration"""
+        logger.info(f"Initialized Agent with device {self.device}")
+
+    @property
+    def history(self):
+        """Get environment history."""
+        return self.env.history
+
+    def init_config(self) -> None:
+        """Initialize model configuration."""
         config = DefaultConfig
-        if self.config is not None:
-            config.update(self.config)
+        if self._config is not None:
+            config.update(self._config)
+
+        config_log = {}
         for key, val in config.items():
             if hasattr(self, key):
                 setattr(self, key, val)
+                config_log[key] = val
+        logger.info(f"Initialized Agent with config: {config_log}")
 
-    def update_config(self, config):
-        """Update configuration"""
-        self.config = config
+    def update_config(self, config: dict) -> None:
+        """Update configuration."""
+        self._config = config
         self.init_config()
 
     @abstractmethod
-    def init_state(self):
-        """Initialize state from the environment. This can be a vector
-        representation or graph representation"""
+    def update_model(self) -> None:
+        """Compute loss and update the model weights."""
 
     @abstractmethod
-    def convert_state(self, state_string):
-        """Convert state string to appropriate representation. This can be a
-        vector representation or graph representation"""
+    def choose_action(
+        self, state: Union[torch.Tensor, GraphEmbedding], training: bool
+    ) -> torch.Tensor:
+        """Choose action for given state."""
 
     @abstractmethod
-    def batch_states(self, states):
-        """Convert states into a batch"""
-
-    def init_optimizer(self):
-        """Initialize optimizer"""
-        self.optimizer = optim.AdamW(self.policy_network.parameters(),
-                                     lr=self.learning_rate, amsgrad=True)
-
-    def _get_eps_decay(self):
-        """Get epsilon decay for current number of steps"""
-        decay = 0
-        if self.eps_decay is None:
-            decay = self.eps_start - self.eps_end
-            decay *= math.exp(-1. * self.steps_done / self.eps_decay_steps)
-        return decay
+    def compute_loss(self) -> torch.Tensor:
+        """Sample memory and compute loss."""
 
     @property
-    def steps_done(self):
-        """Get total number of steps done across all episodes"""
-        return self.env.steps_done
-
-    @property
-    def current_episode(self):
-        """Get current episode"""
-        return self.env.current_episode
-
-    @current_episode.setter
-    def current_episode(self, value):
-        """Set current episode"""
-        self.env.current_episode = value
-
-    @property
-    def device(self):
-        """Get device for training network"""
+    def device(self) -> torch.device:
+        """Get device for training network."""
         if self._device is None:
             if torch.cuda.is_available():
-                self._device = torch.device('cuda:0')
+                self._device = torch.device("cuda:0")
             elif torch.backends.mps.is_available():
-                self._device = torch.device('mps:0')
+                self._device = torch.device("mps:0")
             else:
-                self._device = torch.device('cpu')
+                self._device = torch.device("cpu")
         elif isinstance(self._device, str):
             self._device = torch.device(self._device)
         return self._device
 
-    def step(self, state, training=False):
-        """Take next step from current state
+    @device.setter
+    def device(self, value: Union[str, torch.device]) -> None:
+        """Set device for training network."""
+        self._device = value
+
+    def init_optimizer(self) -> None:
+        """Initialize optimizer."""
+        self.optimizer = optim.AdamW(
+            self.model.parameters(), lr=self.learning_rate
+        )
+
+    def step(
+        self,
+        state: Union[torch.Tensor, GraphEmbedding],
+        training: bool = False,
+    ) -> tuple[Union[torch.Tensor, GraphEmbedding], bool]:
+        """Take next step from current state.
 
         Parameters
         ----------
-        state : str
-            State string representation
+        state : Expr
+            sympy state representation
         episode : int
             Episode number
         training : str
@@ -160,133 +152,79 @@ class BaseAgent(LossMixin):
         info : dict
             Dictionary with loss, reward, and state information
         """
+        state_string = self.env.state_string
         action = self.choose_action(state, training=training)
-        _, _, done, info = self.env.step(action.item())
+        _, reward, done, info = self.env.step(int(action.item()))
 
-        if done:
-            next_state = None
-        else:
-            next_state = self.convert_state(self.state_string)
+        if not done:
+            state_string = self.env.state_string
+        next_state = self.convert_state(state_string, self.device)
 
-        return action, next_state, done, info
+        self.memory.push(
+            state,
+            next_state,
+            action,
+            torch.tensor([reward], device=self.device),
+            torch.tensor([done], device=self.device),
+            info,
+        )
+        return next_state, done
 
-    def choose_optimal_action(self, state):
-        """
-        Choose action with max expected reward :math:`:= max_a Q(s, a)`
+    def _compute_loss(
+        self, values: torch.Tensor, true_values: torch.Tensor
+    ) -> torch.Tensor:
+        """Compute Huber loss."""
+        self.env.loss = self.smooth_l1_loss(values, true_values.unsqueeze(1))
+        return self.env.loss
 
-        max(1) will return largest column value of each row. second column on
-        max result is index of where max element was found so we pick action
-        with the larger expected reward.
-        """
-        with torch.no_grad():
-            return self.policy_network(state).max(1)[1].view(1, 1)
-
-    def choose_action(self, state, training=False):
-        """
-        Choose action based on given state. Either choose optimal action or
-        random action depending on training step.
-        """
-        random_float = random.random()
-        epsilon_threshold = self.eps_end + self._get_eps_decay()
-
-        if not training:
-            epsilon_threshold = self.eps_end
-
-        if random_float > epsilon_threshold:
-            return self.choose_optimal_action(state)
-        else:
-            return self.choose_random_action()
-
-    def compute_loss(self, state_action_values, expected_state_action_values):
-        """Compute Huber loss"""
-        loss = self.smooth_l1_loss(state_action_values,
-                                   expected_state_action_values.unsqueeze(1))
-        return loss
-
-    def compute_batch_loss(self):
-        """Compute loss for batch using the stored memory."""
-
-        if len(self.memory) < self.batch_size:
-            return None
-
-        transition = self.memory.sample(self.batch_size)
-        batch = self.batch_states(transition, device=self.device)
-
-        state_action_values = self.compute_Q(batch)
-
-        next_state_values = self.compute_V(batch)
-
-        expected_state_action_values = self.compute_expected_Q(
-            batch, next_state_values)
-
-        loss = self.compute_loss(state_action_values,
-                                 expected_state_action_values)
-
-        self.update_info('loss', loss.item())
-        self.env.update_history('loss', loss.item())
-
-        return loss
-
-    def update_info(self, key, value):
-        """Update history info with given value for the given key"""
-        self.info[key] = value
-
-    def choose_random_action(self):
-        """Choose random action rather than the optimal action"""
-        return torch.tensor([[self.env.action_space.sample()]],
-                            device=self.device, dtype=torch.long)
-
-    def optimize_model(self, loss=None):
-        """
-        Perform one step of the optimization (on the policy network).
-        """
+    def step_optimizer(self, loss: Union[torch.Tensor, None]) -> None:
+        """Perform one step of the optimization (on the policy network)."""
         if loss is None:
             return
 
         # optimize the model
         self.optimizer.zero_grad()
         loss.backward()
-
-        # In-place gradient clipping
-        torch.nn.utils.clip_grad_value_(self.policy_network.parameters(),
-                                        self.grad_clip)
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
         self.optimizer.step()
 
-    def compute_expected_Q(self, batch, next_state_values):
-        """
-        Compute the expected Q values
-        """
-        return batch.reward_batch + (self.gamma * next_state_values)
+    def fill_memory(self, eval: bool = False) -> None:
+        """Fill memory with experiences.
 
-    def compute_V(self, batch):
+        num_episodes : int
+            Number of episodes to fill memory for
+        eval : bool
+            Whether to run in eval mode - without updating model weights
         """
-        Compute :math:`V(s_{t+1})` for all next states. Expected values of
-        actions for non_final_next_states are computed based on the "older"
-        target_net; selecting their best reward with max(1)[0].
-        """
-        next_state_values = torch.zeros(self.batch_size, device=self.device)
+        if len(self.memory) < self.fill_memory_steps:
+            logger.info(f"Filling memory for {self.fill_memory_steps} steps.")
+        training = bool(not eval)
+        steps = 0
+        while len(self.memory) < self.fill_memory_steps:
+            state = self.init_state(self.device)
+            for _ in count():
+                next_state, done = self.step(state, training=training)
+                if done:
+                    break
 
-        with torch.no_grad():
-            next_state_values[batch.non_final_mask] = \
-                self.target_network(batch.non_final_next_states).max(1)[0]
+                state = next_state
+                steps += 1
+        if steps > 0:
+            self.env.reset_history()
 
-        return next_state_values
+    def learn(
+        self, num_episodes: int, eval: bool = False, progress_bar: bool = True
+    ) -> None:
+        """Fill memory and train model."""
+        self.fill_memory(eval=eval)
+        self.train(
+            num_episodes=num_episodes, eval=eval, progress_bar=progress_bar
+        )
 
-    def compute_Q(self, batch):
-        """
-        Compute :math:`Q(s_t, a)`. These are the actions which would've been
-        taken for each batch state according to policy_net
-        """
-        return self.policy_network(batch.state_batch) \
-            .gather(1, batch.action_batch)
-
-    def train(self, num_episodes, eval=False):
-        r"""Train the model for the given number of episodes.
-
-        The agent will perform a soft update of the Target Network's weights,
-        with the equation :math:`\tau \text{ policy_net_state_dict} +
-        (1 - \tau) \text{ target_net_state_dict}`, this helps to make the
-        Target Network's weights converge to the Policy Network's weights.
+    def train(
+        self, num_episodes: int, eval: bool = False, progress_bar: bool = True
+    ) -> None:
+        """Train the model for the given number of episodes.
 
         Parameters
         ----------
@@ -294,150 +232,88 @@ class BaseAgent(LossMixin):
             Number of episodes to train for
         eval : bool
             Whether to run in eval mode - without updating model weights
+        progress_bar : bool
+            Whether to include a tqdm progress bar.
         """
-        logger.info(f'Running training routine for {num_episodes} episodes in '
-                    f'eval={eval} mode.')
-        training = bool(not eval)
-        if eval:
-            self.history = {}
-            self.current_episode = 0
-            self.eps_decay = 0
+        logger.info(
+            f"Running training routine for {num_episodes} episodes in "
+            f"eval={eval} mode."
+        )
+        self.pbar = ProgressBar(num_episodes, show_progress=progress_bar)
+        for _ in range(num_episodes):
+            self.run_episode(eval)
+            self.pbar.update(1)
+        self.pbar.clear()
 
-        start = self.current_episode
-        end = start + num_episodes
-        for _ in range(start, end):
-            state = self.init_state()
-            for _ in count():
-                action, next_state, done, info = self.step(state,
-                                                           training=training)
-                reward = torch.tensor([info['reward']], device=self.device)
-
-                self.memory.push(state, action, next_state, reward)
-
-                loss = self.compute_batch_loss()
-
-                if not done:
-                    self.optimize_model(loss)
-
-                if not eval:
-                    self.update_networks()
-
-                if done:
-                    self.terminate_msg()
-                    break
-
-                state = next_state
-
-    def terminate_msg(self):
-        """Log message about solver termination
+    def run_episode(self, eval: bool) -> None:
+        """Run single episode of training or evaluation. Update the model at
+        the update frequency if not running in eval mode.
 
         Parameters
         ----------
-        total_reward : list
-            List of reward
-
+        eval : bool
+            Whether to run in eval mode - without updating model weights
         """
-        current_episode = list(self.history.keys())[-1]
-        total_reward = np.nansum(self.history[current_episode]['reward'])
-        mean_loss = np.nanmean(self.history[current_episode]['loss'])
-        msg = (f"\nSolver terminated after {self.env.loop_step + 1} steps: "
-               f"total_reward = {total_reward:.3e}, "
-               f"mean_loss = {mean_loss:.3e}, "
-               f"state = {self.state_string}")
-        logger.info(msg)
-
-    def update_networks(self):
-        r"""
-        Soft update of the target network's weights :math:`\theta^{'}
-        \leftarrow \tau \theta + (1 - \tau) \theta^{'}`
-        policy_network.state_dict() returns the parameters of the policy
-        network target_network.load_state_dict() loads these parameters into
-        the target network.
-        """
-        target_net_state_dict = self.target_network.state_dict()
-        policy_net_state_dict = self.policy_network.state_dict()
-        for key in policy_net_state_dict:
-            value = policy_net_state_dict[key] * self.tau
-            value += target_net_state_dict[key] * (1 - self.tau)
-            target_net_state_dict[key] = value
-        self.target_network.load_state_dict(target_net_state_dict)
-
-    @property
-    def history(self):
-        """Get training history of policy_network"""
-        return self.env.history
-
-    @history.setter
-    def history(self, value):
-        """Set training history of policy_network"""
-        self.env.history = value
-
-    def predict(self, state_string):
-        """
-        Predict the solution from the given state_string.
-        """
-        state = self.convert_state(state_string)
         done = False
-        t = 0
+        training = bool(not eval)
+        state = self.init_state(self.device)
+        steps = 0
         while not done:
-            _, _, _, done = self.step(state, training=False)
-            complexity = self.env.expression_complexity(self.env.state_string)
-            t += 1
+            next_state, done = self.step(state, training=training)
+            steps += 1
 
-        logger.info(f"Solver terminated after {t + 1} steps. Final "
-                    f"state = {self.env.state_string} with complexity = "
-                    f"{complexity}.")
+            if (done or (steps % self.env.update_freq == 0)) and not eval:
+                self.update_model()
 
-    # pylint: disable=invalid-unary-operand-type
-    def is_constant_complexity(self):
-        """Check for constant loss over a long number of steps"""
-        current_episode = list(self.history.keys())[-1]
-        complexities = self.history[current_episode]['complexity']
-        check = (len(complexities) >= self.reset_steps
-                 and len(set(complexities[-self.reset_steps:])) <= 1)
-        if check:
-            logger.info('Complexity has been constant '
-                        f'({list(complexities)[-1]}) for {self.reset_steps} '
-                        'steps. Reseting.')
-        return check
+            self.pbar.update_desc(str(self.env.get_log_info()))
 
-    def save(self, output_file):
-        """Save the policy_network"""
-        torch.save(self.policy_network.state_dict(), output_file)
-        logger.info(f'Saved policy_network to {output_file}')
+            state = next_state
+
+    def predict(self, state_string: Expr) -> list[Expr]:
+        """Predict the solution from the given state_string."""
+        state = self.convert_state(state_string, self.device)
+        done = False
+        steps = 0
+        states = [state_string]
+        while not done:
+            next_state, done = self.step(state, training=False)
+            steps += 1
+            if next_state is None:
+                break
+            state = next_state
+            states.append(self.env.state_string)
+        self.complexity = self.env.get_solution_complexity(
+            self.env.state_string
+        )
+        logger.info(
+            f"Final state: {self.env.state_string}. Complexity: "
+            f"{self.complexity}. Steps: {steps}."
+        )
+        return states
+
+    def save(self, model_file: str) -> None:
+        """Save the agent."""
+        self.close()
+        with open(model_file, "wb") as f:
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        logger.info(f"Saved Agent to {model_file}")
 
     @classmethod
-    def load(cls, env, model_file):
-        """Load policy_network from model_file"""
-        agent = cls(env)
-        agent.policy_network.load_state_dict(torch.load(model_file))
-        logger.info(f'Loaded policy_network from {model_file}')
+    def load(cls, model_file: str):
+        """Load agent from model_file."""
+        with open(model_file, "rb") as f:
+            agent = pickle.load(f)
+        logger.info(f"Loaded agent from {model_file}")
         return agent
 
-    @property
-    def state_string(self):
-        """Get state string representation"""
-        return self.env.state_string
-
-    @state_string.setter
-    def state_string(self, value):
-        """Set state string representation"""
-        self.env.state_string = value
-
-    @property
-    def info(self):
-        """Get environment info"""
-        return self.env.info
-
-    @info.setter
-    def info(self, value):
-        """Set environment info"""
-        self.env.info = value
-
-    def get_env(self):
-        """Get environment"""
+    def get_env(self) -> Env:
+        """Get environment."""
         return self.env
 
-    def set_env(self, env):
-        """Set the environment"""
+    def set_env(self, env: Env) -> None:
+        """Set the environment."""
         self.env = env
+
+    def close(self) -> None:
+        """Close the model."""
+        self.pbar.pop()

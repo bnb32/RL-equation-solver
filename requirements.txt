@@ -8,3 +8,8 @@ numpy
 NREL-rex
 pydot
 torch_geometric
+mypy
+black
+isort
+tqdm
+matplotlib

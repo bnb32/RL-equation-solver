@@ -1,1 +1,1 @@
-"""Agent module"""
+"""Agent module."""

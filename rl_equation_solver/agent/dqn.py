@@ -1,23 +1,45 @@
-"""Agent with DQN based policy"""
-import torch
+"""Agent with DQN based policy."""
 import logging
+from typing import Optional
 
-from rl_equation_solver.agent.base import BaseAgent
-from rl_equation_solver.agent.networks import DQN
-from rl_equation_solver.utilities import utilities
+import torch
 
+from rl_equation_solver.agent.networks import DQN, QNetwork
+from rl_equation_solver.agent.off_policy import OffPolicyAgent
+from rl_equation_solver.agent.state import VectorState
+from rl_equation_solver.environment.algebraic import Env
 
 logger = logging.getLogger(__name__)
 
 
-class Agent(BaseAgent):
-    """Agent with DQN target and policy networks"""
+class Model(QNetwork):
+    """Unified DQN model with policy and target networks."""
 
-    def __init__(self, env, config=None, device='cpu'):
-        """
-        Parameters
+    def __init__(
+        self,
+        n_observations: int,
+        n_actions: int,
+        hidden_size: int,
+        device: torch.device,
+    ) -> None:
+        """Initialize the network model."""
+        super().__init__()
+        self.policy_network = DQN(n_observations, n_actions, hidden_size).to(
+            device
+        )
+        self.target_network = DQN(n_observations, n_actions, hidden_size).to(
+            device
+        )
+        self.target_network.load_state_dict(self.policy_network.state_dict())
+
+
+class Agent(VectorState, OffPolicyAgent):
+    """Agent with DQN target and policy networks."""
+
+    def __init__(self, env: Env, config: Optional[dict] = None) -> None:
+        """Parameters
         ----------
-        env : Object
+        env : gym.Env
             Environment instance.
             e.g. rl_equation_solver.env_linear_equation.Env()
         config : dict | None
@@ -26,32 +48,14 @@ class Agent(BaseAgent):
         device : str
             Device to use for torch objects. e.g. 'cpu' or 'cuda:0'
         """
-        super().__init__(env, config, device=device)
-        self.policy_network = DQN(self.n_observations, self.n_actions,
-                                  self.hidden_size).to(self.device)
-        self.target_network = DQN(self.n_observations, self.n_actions,
-                                  self.hidden_size).to(self.device)
-        self.target_network.load_state_dict(self.policy_network.state_dict())
+        OffPolicyAgent.__init__(self, env, config)
+        VectorState.__init__(
+            self,
+            env=self.env,
+            n_observations=self.n_observations,
+            n_actions=self.n_actions,
+        )
+        self.model = Model(
+            self.n_observations, self.n_actions, self.hidden_size, self.device
+        )
         self.init_optimizer()
-
-        logger.info(f'Initialized Agent with device {self.device}')
-
-    def init_state(self):
-        """Initialize state as a vector"""
-        self.env._init_state()
-        return torch.tensor(self.env.state_vec, dtype=torch.float32,
-                            device=self.device).unsqueeze(0)
-
-    def convert_state(self, state):
-        """Convert state string to vector representation"""
-        self.env.state_vec = utilities.to_vec(state, self.env.feature_dict,
-                                              self.env.state_dim)
-        return torch.tensor(self.env.state_vec, dtype=torch.float32,
-                            device=self.device).unsqueeze(0)
-
-    def batch_states(self, states, device):
-        """Batch agent states"""
-        batch = utilities.Batch()(states, device)
-        batch.non_final_next_states = torch.cat(batch.non_final_next_states)
-        batch.state_batch = torch.cat(batch.state_batch)
-        return batch

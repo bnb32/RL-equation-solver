@@ -1,25 +1,29 @@
-"""Environment for linear equation solver"""
-import gym
-from gym import spaces
-from sympy import symbols, nsimplify, simplify, parse_expr
-from operator import add, sub, truediv, pow
+"""Environment for linear equation solver."""
 import logging
+from operator import add, pow, sub, truediv
+from typing import Optional
+
+import gym
+import networkx as nx
 import numpy as np
+from gym import spaces
+from sympy import expand, nsimplify, parse_expr, simplify, symbols
+from sympy.core import Expr
+from sympy.core.symbol import Symbol
 
 from rl_equation_solver.config import DefaultConfig
 from rl_equation_solver.utilities import utilities
+from rl_equation_solver.utilities.history import History
+from rl_equation_solver.utilities.operators import nth_root
 from rl_equation_solver.utilities.reward import RewardMixin
-from rl_equation_solver.utilities.history import HistoryMixin
-
 
 logger = logging.getLogger(__name__)
 
 
-class Env(gym.Env, RewardMixin, HistoryMixin):
-    r"""
-    Environment for solving algebraic equations using RL.
+class Env(gym.Env, RewardMixin, History):
+    r"""Environment for solving algebraic equations using RL.
 
-    Example
+    Example:
     -------
     :math:`a x + b = 0`
 
@@ -53,12 +57,18 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, order=2, init_state=None, config=None):
-        """
+    def __init__(
+        self,
+        order: int = 2,
+        init_state: Optional[Expr] = None,
+        config: Optional[dict] = None,
+    ) -> None:
+        """Initialize the environment.
+
         Parameters
         ----------
         order : int
-            Order of alegraic equation. e.g. if order = 2 then the equation
+            Order of algebraic equation. e.g. if order = 2 then the equation
             to solve will be a0 * x + a1 = 0
         init_state : sympy.Equation | None
             Optional initial guess for equation solution. e.g. -b/a, using
@@ -68,170 +78,146 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
             Model configuration. If None then the default model configuration
             in rl_equation_solver.config will be used.
         """
-
-        HistoryMixin.__init__(self)
+        History.__init__(self)
 
         # Initialize the state
-        self.order = order
-        self._state_string = None
-        self._operations = None
-        self._actions = None
-        self._terms = None
-        self._feature_dict = None
-        self._state_vec = None
-        self._state_graph = None
-        self._equation = None
-        self.info = None
-        self.loop_step = 0
-        self.steps_done = 0
-        self.current_episode = 0
-        self.window = None
-        self.config = config
-
-        self.state_dim = None
+        self.order: int = order
+        self.operations = self._get_operations()
+        self.terms = self._get_terms()
+        self.actions = self._get_actions()
+        self.feature_dict = self._get_feature_dict()
+        self.equation = self._get_equation()
+        self.reward_function = "diff_loss_reward"
+        self._state_vec: np.ndarray
+        self._state_graph: nx.Graph
+        self._config = config
         self._initial_state = init_state
+        self._state_string: Expr = self.initial_state
+        self.state_dim: int = 128
+        self.device: str = "cpu"
+        self.feature_num: int = 100
+        self.include_roots: bool = False
 
         self.init_config()
 
-        self.state_string = init_state or self._init_state()
-
         # Gym compatibility
-        self.action_dim = len(self.actions)
+        self.action_dim: int = len(self.actions)
         self.action_space = spaces.Discrete(self.action_dim)
         min_val = min(self.feature_dict.values())
-        self.observation_space = spaces.Box(min_val,
-                                            min_val + self.state_dim,
-                                            shape=(self.state_dim,),
-                                            dtype=np.float32)
-        self.n_actions = self.action_space.n
-        self.n_obs = self.observation_space.shape[0]
+        self.observation_space = spaces.Box(
+            min_val,
+            min_val + self.state_dim,
+            shape=(self.state_dim,),
+            dtype=np.float32,
+        )
+        self.n_actions: int = self.action_space.n
+        self.n_obs: int = self.observation_space.shape[0]
 
-        logger.info(f'Initializing environment with order={order}, |S| = '
-                    f'{self.n_actions} x {self.n_obs} = '
-                    f'{self.n_actions * self.n_obs}')
+        logger.info(
+            f"Initializing environment with order={order}, |S| = "
+            f"{self.n_actions} x {self.n_obs} = "
+            f"{self.n_actions * self.n_obs}"
+        )
+        logger.info(f"Using reward function: {self.reward_function}.")
 
-    def init_config(self):
-        """Initialize model configuration"""
+    def init_config(self) -> None:
+        """Initialize model configuration."""
         config = DefaultConfig
-        if self.config is not None:
-            config.update(self.config)
+        if self._config is not None:
+            config.update(self._config)
         for key, val in config.items():
             if hasattr(self, key):
                 setattr(self, key, val)
 
-    def update_config(self, config):
-        """Update configuration"""
-        self.config = config
+    def update_config(self, config: dict) -> None:
+        """Update configuration."""
+        self._config = config
         self.init_config()
 
-    @property
-    def state_string(self):
-        """Get string representation of the solution state"""
-        return nsimplify(parse_expr(str(self._state_string)))
+    def _get_operations(self) -> list:
+        """Get list of valid operations."""
+        operations = [add, sub, truediv, pow]
+        if self.order > 2 and self.include_roots:
+            for power in range(2, self.order):
+                operations.append(nth_root(power))
+        return operations
 
-    @state_string.setter
-    def state_string(self, value):
-        """Set string representation of solution state"""
-        self._state_string = value
-
-    @property
-    def operations(self):
-        """Get list of valid operations"""
-        if self._operations is None:
-            self._operations = [add, sub, truediv, pow]
-        return self._operations
-
-    @property
-    def feature_dict(self):
-        """Get the feature dictionary"""
-        if self._feature_dict is None:
-            self._feature_dict = self._get_feature_dict()
-        return self._feature_dict
-
-    @property
-    def terms(self):
-        """Get list of fundamental terms"""
-        if self._terms is None:
-            self._terms = self._get_terms()
-        return self._terms
-
-    @property
-    def actions(self):
-        """Get list of fundamental actions"""
-        if self._actions is None:
-            self._actions = self._get_actions()
-        return self._actions
-
-    @property
-    def equation(self):
-        """Get equation from symbols"""
-        if self._equation is None:
-            self._equation = self._get_equation()
-        return self._equation
-
-    def _get_symbols(self):
-        """
-        Get equation symbols. e.g. symbols('x a b')
+    def _get_algebraic_symbols(self) -> tuple[Symbol]:
+        """Get equation symbols. e.g. symbols('x a b').
 
         Returns
         -------
         symbols
         """
-        symbol_list = 'x '
-        symbol_list += ' '.join([f'a{i}' for i in range(self.order)])
+        symbol_list = "x "
+        symbol_list += " ".join([f"a{i}" for i in range(self.order)])
         return symbols(symbol_list)
 
-    def _get_terms(self):
-        """Get terms for quadratic equation"""
-        _, *coeffs = self._get_symbols()
-        terms = [*coeffs, 0, 1]
-        for n in range(2, self.order):
-            terms.append(1 / n)
+    def _get_numerical_symbols(self) -> tuple[Symbol]:
+        """Get numerical symbols like '0', '1', '-1'."""
+        return symbols("0 1")
+
+    def _get_terms(self) -> list[Symbol]:
+        """Get terms for quadratic equation."""
+        coeffs = self._get_algebraic_symbols()
+        terms = [*coeffs[1:], *self._get_numerical_symbols()]
         return terms
 
     @property
-    def state_vec(self):
-        """Get current state vector"""
-        self._state_vec = utilities.to_vec(self.state_string,
-                                           self.feature_dict,
-                                           self.state_dim)
+    def state_string(self) -> Expr:
+        """Get current state string representation. Enforce length constraint
+        according to state_dim value.
+        """
+        if self.too_long(self.state_vec):
+            self._state_string = self.initial_state
+        return self._state_string
+
+    @state_string.setter
+    def state_string(self, value):
+        """Set current state string representation."""
+        self._state_string = value
+
+    @property
+    def state_vec(self) -> np.ndarray:
+        """Get current state vector."""
+        self._state_vec = utilities.to_vec(
+            self._state_string, self.feature_dict, self.state_dim
+        )
         return self._state_vec
 
     @state_vec.setter
-    def state_vec(self, value):
-        """Set state_vec value"""
+    def state_vec(self, value: np.ndarray) -> None:
+        """Set state_vec value."""
         self._state_vec = value
 
     @property
-    def state_graph(self):
-        """Get current state graph"""
-        self._state_graph = utilities.to_graph(self.state_string,
-                                               self.feature_dict)
+    def state_graph(self) -> nx.Graph:
+        """Get current state graph."""
+        self._state_graph = utilities.to_graph(
+            self.state_string, self.feature_dict
+        )
         return self._state_graph
 
     @state_graph.setter
-    def state_graph(self, value):
-        """Set state_graph value"""
+    def state_graph(self, value: nx.Graph) -> None:
+        """Set state_graph value."""
         self._state_graph = value
 
     @property
-    def node_labels(self):
-        """Get node labels for current state graph"""
+    def node_labels(self) -> dict:
+        """Get node labels for current state graph."""
         return utilities.get_node_labels(self.state_graph)
 
-    def _init_state(self):
-        """
-        Initialize environment state
-        """
-        self.loop_step = 0
+    @property
+    def initial_state(self) -> Expr:
+        """Initialize environment state."""
         if self._initial_state is None:
-            self._initial_state = symbols('1')
-        self.state_string = self._initial_state
+            self._initial_state = symbols("0")
+        return self._initial_state
 
     # pylint: disable=unused-argument
     def reset(self, seed=None, options=None):
-        """
-        Reset environment state
+        """Reset environment state.
 
         Returns
         -------
@@ -240,48 +226,71 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         info : dict
             Dictionary with training info
         """
-        self._init_state()
+        self.loop_step = 0
+        self.state_string = self.initial_state
         return self.state_vec
 
-    def _get_equation(self):
-        """
-        Simple linear equation
+    def _get_equation(self) -> Expr:
+        """Return symbolic expression for equation to solve.
 
         Returns
         -------
-        eqn : Object
+        eqn : Expr
             Equation object constructed from symbols
         """
-        x, *coeffs, const = self._get_symbols()
-        eqn = const
-        for i, coeff in enumerate(coeffs[::-1]):
+        coeff: Expr
+
+        syms = self._get_algebraic_symbols()
+        x = syms[0]
+        eqn = syms[-1]
+
+        for i, coeff in enumerate(syms[1:-1][::-1]):
             eqn += coeff * pow(x, i + 1)
         return eqn
 
-    def _get_actions(self):
-        """
-        Operations x terms
+    def _get_illegal_actions(self) -> list:
+        """Get illegal actions to filter from actions list."""
+        illegal_actions = [
+            [truediv, symbols("0")],
+            [truediv, symbols("1")],
+            [add, symbols("0")],
+            [sub, symbols("0")],
+            [pow, symbols("1")],
+            [pow, symbols("0")],
+        ]
+        for n in range(2, self.order):
+            illegal_actions.append([nth_root(n), symbols("0")])
+            illegal_actions.append([nth_root(n), symbols("1")])
+        return illegal_actions
+
+    def _get_actions(self) -> list:
+        """Operations x terms.
 
         Returns
         -------
         actions : list
             List of operation, term pairs
         """
-        illegal_actions = [[truediv, 0], [add, 0], [sub, 0], [pow, 1],
-                           [pow, 0]]
-        actions = [[op, term] for op in self.operations for term in self.terms
-                   if [op, term] not in illegal_actions]
+        illegal_actions = self._get_illegal_actions()
+        actions = [
+            [op, term]
+            for op in self.operations
+            for term in self.terms
+            if [op, term] not in illegal_actions
+        ]
         return actions
 
-    def _get_feature_dict(self):
-        """Return feature dict representing features at each node"""
-        keys = ['Add', 'Mul', 'Pow']
-        keys += [str(sym) for sym in self._get_symbols()]
-        keys += ['I']
+    def _get_feature_dict(self) -> dict:
+        """Return feature dict representing features at each node."""
+        keys = ["Add", "Mul", "Pow"]
+        keys += [str(sym) for sym in self._get_algebraic_symbols()]
+        keys += [str(sym) for sym in self._get_numerical_symbols()]
+        keys += ["I"]
         return {key: -(i + 2) for i, key in enumerate(keys)}
 
-    def find_reward(self, state_old, state_new):
-        """
+    def find_reward(self, state_old: Expr, state_new: Expr) -> float:
+        """Find reward for given old and new states.
+
         Parameters
         ----------
         state_old : str
@@ -294,16 +303,49 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         reward : int
             Difference between loss for state_new and state_old
         """
-        return self.diff_loss_reward(state_old, state_new)
+        if not hasattr(self, self.reward_function):
+            raise ValueError(
+                "Env has no reward function named " f"{self.reward_function}"
+            )
+        method = getattr(self, self.reward_function)
+        reward = method(state_old, state_new)
+        return reward
 
-    def too_long(self, state):
-        """
-        Check if state dimension is too large
+    def extra_reward(self, state_string: Expr) -> float:
+        """Extra penalty / reward.
+
+        This is applied for time elapsed, if solution found and if state too
+        long.
 
         Parameters
         ----------
-        state : str
-            State string representation
+        state_string : Expr
+            State string to check for length.
+
+        Returns
+        -------
+        extra_reward : float
+            Extra reward to add to current reward.
+        """
+        extra_reward = 0.0
+        is_too_long = self.too_long(
+            utilities.to_vec(state_string, self.feature_dict, self.state_dim)
+        )
+        if is_too_long:
+            extra_reward -= 100
+        elif self.complexity == 0:
+            extra_reward += 1000 / (self.loop_step + 1)
+        else:
+            extra_reward -= 1
+        return extra_reward
+
+    def too_long(self, state: np.ndarray) -> bool:
+        """Check if state dimension is too large.
+
+        Parameters
+        ----------
+        state : np.ndarray
+            State vector representation
 
         Returns
         -------
@@ -311,42 +353,63 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         """
         return len(state) > self.state_dim
 
-    def expression_complexity(self, state):
+    def get_expr_number_count(self, expr: Expr) -> int:
+        """Count all numbers in the given expression.
+
+        This is to increase the compexity of an expression if it includes
+        higher numbers. e.g. 4*a should have higher complexity than 2*a.
         """
-        Compute graph / expression complexity for the given state
+        numbers = expr.find(lambda e: e.is_Number, group=True)
+        n_count = 0
+        for n in numbers:
+            if "/" in str(n):
+                a, b = str(n).split("/")
+                n_count += abs(int(a))
+                n_count += abs(int(b))
+            else:
+                n_count += abs(int(n))
+        return n_count
+
+    def get_expression_complexity(self, expr: Expr) -> int:
+        """Compute graph / expression complexity for the given expression.
 
         Parameters
         ----------
-        state : str
-            String representation of the current state
+        expr : Expr
+            sympy representation of the expression
 
         Returns
         -------
         complexity : int
             Number of edges plus number of nodes in graph representation /
-            expression_tree of the current solution approximation
+            expression_tree of given expression
         """
-        solution_approx = self._get_solution_approx(state)
-        if solution_approx == 0:
+        if parse_expr(str(expr)) == 0:
             complexity = 0
         else:
-            state_graph = utilities.to_graph(solution_approx,
-                                             self.feature_dict)
+            state_graph = utilities.to_graph(expr, self.feature_dict)
             complexity = state_graph.number_of_nodes()
             complexity += state_graph.number_of_edges()
+            complexity += self.get_expr_number_count(expr)
 
         return complexity
 
-    def _get_solution_approx(self, state):
-        """Get the approximate solution from the given state"""
-        replaced = self.equation.replace(symbols('x'),
-                                         nsimplify(parse_expr(str(state))))
-        solution_approx = simplify(replaced)
+    def get_solution_complexity(self, state: Expr) -> int:
+        """Get the graph / expression complexity for a given state.
+
+        This is equal to number_of_nodes + number_of_edges.
+        """
+        soln = self.get_solution_approx(state)
+        return self.get_expression_complexity(soln)
+
+    def get_solution_approx(self, state: Expr) -> Expr:
+        """Get the approximate solution from the given state."""
+        expr = self.equation.replace(symbols("x"), nsimplify(state))
+        solution_approx = simplify(expand(expr))  # type: ignore
         return solution_approx
 
     def step(self, action: int):
-        """
-        Take step corresponding to the given action
+        """Take step corresponding to the given action.
 
         Parameters
         ----------
@@ -358,9 +421,8 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
 
         Returns
         -------
-        new_state : Tensor | GraphEmbedding
-            New state after action. Represented as a pytorch Tensor or
-            GraphEmbedding
+        new_state : np.ndarray
+            New state after action.
         reward : float
             Reward from taking this step
         done : bool
@@ -368,58 +430,53 @@ class Env(gym.Env, RewardMixin, HistoryMixin):
         info : dict
             Additional information
         """
-        # action is 0,1,2,3, ...,  get the physical actions it indexes
-        [operation, term] = self.actions[action]
-        new_state_string = operation(self.state_string, term)
-        new_state_string = nsimplify(new_state_string)
-        new_state_vec = utilities.to_vec(new_state_string,
-                                         self.feature_dict,
-                                         self.state_dim)
+        next_state_string = self.get_next_state(action)
 
-        # Reward
-        reward = self.find_reward(self.state_string, new_state_string)
+        self.reward = self.find_reward(self.state_string, next_state_string)
+        self.reward += self.extra_reward(next_state_string)
 
-        # Done
-        done = False
-        if self.too_long(new_state_vec):
-            done = True
+        self.state_string = next_state_string
 
-        # If complexity is zero, you have solved the problem
-        complexity = self.expression_complexity(new_state_string)
-        if complexity == 0:
-            done = True
+        self.solution_approx = self.get_solution_approx(self.state_string)
+        self.complexity = self.get_expression_complexity(self.solution_approx)
 
-        # Update
-        if not done or complexity == 0:
-            self.state_string = new_state_string
-
-        if complexity == 0:
-            logger.info(f'solution is: {self.state_string}')
-
-            # reward finding solution in fewer steps
-            reward += 10 / (1 + self.loop_step)
-
-        # Extra info
-        self.info = {'ep': self.current_episode,
-                     'step': self.steps_done,
-                     'complexity': complexity,
-                     'loss': np.nan,
-                     'reward': reward,
-                     'state': self.state_string}
         self.append_history(self.info)
 
+        done = self.check_if_done()
+
+        return self.state_vec, self.reward, done, self.info
+
+    def check_if_done(self) -> bool:
+        """Check if solution was found or max steps was reached."""
+        done = self.max_steps_reached() or self.complexity == 0
+        if done:
+            msg = self.get_log_info()
+            if self.pbar is not None:
+                self.pbar.update_desc(str(msg))
+            else:
+                logger.info(msg)
+            self.current_episode += 1
+            self.loop_step = -1
         self.steps_done += 1
         self.loop_step += 1
 
-        if done:
-            self.log_info()
-            self.current_episode += 1
+        return done
 
-        return self.state_vec, reward, done, self.info
+    def max_steps_reached(self) -> bool:
+        """Check if max steps was reached."""
+        check = self.loop_step > self.max_solution_steps
+        if check:
+            logger.info(
+                f"loop_step {self.loop_step} exceeded max "
+                f"{self.max_solution_steps}"
+            )
+        return check
 
-    # pylint: disable=unused-argument
-    def render(self, mode='human'):
-        """
-        Print the state string representation
-        """
+    def get_next_state(self, action: int) -> Expr:
+        """Get next state from given action."""
+        [operation, term] = self.actions[action]
+        return operation(self.state_string, term)
+
+    def render(self, mode: str = "human") -> None:
+        """Print the state string representation."""
         print(self.state_string)
